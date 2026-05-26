@@ -8,6 +8,47 @@
 * { margin: 0; padding: 0; box-sizing: border-box; }
 body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #1a1a2e; }
 
+
+
+/* Client Specs page */
+
+.cs-yes { color: #43a047; font-weight: 700; }
+.cs-no { color: #bbb; }
+.cs-custom { color: #e65100; font-size: 10px; }
+@keyframes cs-spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+.cs-spinning { animation: cs-spin 1s linear infinite; display: inline-block; }
+
+/* Inventory page */
+.inv-tab {
+    padding: 8px 16px; border: 1px solid #ccc; border-radius: 6px; background: white;
+    font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #555;
+}
+.inv-tab:hover { border-color: #1F4E79; color: #1F4E79; }
+.inv-tab.active { background: #1F4E79; color: white; border-color: #1F4E79; }
+.inv-cat-tab {
+    padding: 4px 12px; border: 1px solid #ddd; border-radius: 4px; background: white;
+    font-size: 11px; cursor: pointer; transition: all 0.2s; color: #666;
+}
+.inv-cat-tab:hover { border-color: #2E75B6; color: #2E75B6; }
+.inv-cat-tab.active { background: #2E75B6; color: white; border-color: #2E75B6; }
+.inv-summary-card {
+    background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;
+    text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+}
+.inv-summary-card .inv-label { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 4px; }
+.inv-summary-card .inv-value { font-size: 22px; font-weight: 700; color: #1F4E79; }
+.inv-summary-card .inv-sub { font-size: 11px; color: #999; margin-top: 2px; }
+.inv-trend-card {
+    background: white; border: 1px solid #e0e0e0; border-radius: 8px; padding: 16px;
+}
+.inv-trend-card h4 { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 8px; }
+.inv-bar-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
+.inv-bar-label { font-size: 10px; width: 28px; text-align: right; color: #888; }
+.inv-bar-wrap { flex: 1; height: 16px; background: #f0f2f5; border-radius: 3px; position: relative; overflow: hidden; display: flex; }
+.inv-bar-fc { height: 100%; background: #dbeafe; border-radius: 3px 0 0 3px; }
+.inv-bar-ac { height: 100%; background: #2E75B6; border-radius: 0 3px 3px 0; }
+.inv-bar-val { font-size: 10px; color: #555; width: 50px; }
+
 /* Layout */
 .app-layout { display: flex; min-height: 100vh; }
 
@@ -353,6 +394,8 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
         <a class="nav-item" href="#" onclick="switchPage('shipped', this); return false;">Shipped Data</a>
         <a class="nav-item" href="#" onclick="switchPage('profiles', this); return false;">Facility Profiles</a>
         <a class="nav-item" href="#" onclick="switchPage('utilization', this); return false;">Facilities Utilization</a>
+        <a class="nav-item" href="#" onclick="switchPage('inventory', this); return false;">Materials Inventory</a>
+        <a class="nav-item" href="#" onclick="switchPage('clientspecs', this); return false;">Client Specifications</a>
     </nav>
     <div class="sidebar-footer">
         <div class="sidebar-progress-label">Progress</div>
@@ -1931,6 +1974,8 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
 </div>
 
     <div class="profile-actions">
+        <button onclick="saveFacilityProfiles()" style="padding:8px 18px; background:#1F4E79; color:white; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">&#128190; Save Profiles</button>
+        <button onclick="resetFacilityProfile()" style="padding:8px 14px; background:#f5f5f5; color:#555; border:1px solid #ccc; border-radius:6px; font-size:12px; cursor:pointer;">Reset Current</button>
         <span class="save-msg" id="profileSaveMsg">Saved!</span>
         <button class="btn btn-reset" onclick="resetFacilityProfile()">Reset to Default</button>
         <button class="btn btn-export" onclick="exportFacilityProfiles()">Export All (JSON)</button>
@@ -2209,6 +2254,153 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
         Data source: MES kline-production.com (facility_id filter) | Filter: confirmed_date May 11&ndash;26, 2026 | Utilization = Daily Avg Units &divide; Facility Profile Daily Capacity | Cut type from Facility Profile Scallop Mix %
     </div>
 </div><!-- end page-utilization -->
+
+
+<div id="page-inventory" class="page">
+    <div style="padding: 24px 32px;">
+        <h2 style="font-size:20px; font-weight:700; color:#1F4E79; margin-bottom:4px;">Materials Inventory &mdash; MRP Report</h2>
+        <p style="font-size:13px; color:#666; margin-bottom:20px;">Capacity readiness &amp; consumption trends by facility (Jan&ndash;May 2026)</p>
+
+        <!-- Facility filter tabs -->
+        <div id="inv-tabs" style="display:flex; gap:8px; margin-bottom:20px; flex-wrap:wrap;">
+            <button class="inv-tab active" onclick="filterInventory('ALL',this)">All Facilities</button>
+            <button class="inv-tab" onclick="filterInventory('PT',this)">Portugal</button>
+            <button class="inv-tab" onclick="filterInventory('CFZ',this)">CFZ</button>
+            <button class="inv-tab" onclick="filterInventory('TJ',this)">Tijuana</button>
+            <button class="inv-tab" onclick="filterInventory('FL',this)">Florida</button>
+        </div>
+
+        <!-- Summary cards -->
+        <div id="inv-summary" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap:16px; margin-bottom:24px;"></div>
+
+        <!-- Category filter -->
+        <div style="display:flex; gap:8px; margin-bottom:16px; align-items:center;">
+            <span style="font-size:12px; color:#666; font-weight:600;">Category:</span>
+            <button class="inv-cat-tab active" onclick="filterCategory('ALL',this)">All</button>
+            <button class="inv-cat-tab" onclick="filterCategory('RMP',this)">Resins (RMP)</button>
+            <button class="inv-cat-tab" onclick="filterCategory('RMT',this)">Thermoforming (RMT)</button>
+        </div>
+
+        <!-- Main table -->
+        <div style="overflow-x:auto; border:1px solid #e0e0e0; border-radius:8px;">
+            <table id="inv-table" style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                    <tr style="background:#1F4E79; color:white;">
+                        <th style="padding:10px 12px; text-align:left; white-space:nowrap; position:sticky; left:0; background:#1F4E79; z-index:2;">Facility</th>
+                        <th style="padding:10px 12px; text-align:left; white-space:nowrap;">Item Name</th>
+                        <th style="padding:10px 12px; text-align:left;">Unit</th>
+                        <th style="padding:10px 8px; text-align:center;" colspan="4">Actual Consumption</th>
+                        <th style="padding:10px 8px; text-align:center; background:#1a4468;" colspan="5">Balance on Hand (BOH)</th>
+                        <th style="padding:10px 8px; text-align:center;">Avg Monthly Use</th>
+                        <th style="padding:10px 8px; text-align:center;">Months Left</th>
+                        <th style="padding:10px 8px; text-align:center;">Status</th>
+                    </tr>
+                    <tr style="background:#2567a0; color:rgba(255,255,255,0.85); font-size:11px;">
+                        <th style="padding:6px 12px; position:sticky; left:0; background:#2567a0; z-index:2;"></th>
+                        <th style="padding:6px 12px;"></th>
+                        <th style="padding:6px 12px;"></th>
+                        <th style="padding:6px 8px; text-align:center;">Jan</th>
+                        <th style="padding:6px 8px; text-align:center;">Feb</th>
+                        <th style="padding:6px 8px; text-align:center;">Mar</th>
+                        <th style="padding:6px 8px; text-align:center;">Apr</th>
+                        <th style="padding:6px 8px; text-align:center; background:#1a4468;">Jan</th>
+                        <th style="padding:6px 8px; text-align:center; background:#1a4468;">Feb</th>
+                        <th style="padding:6px 8px; text-align:center; background:#1a4468;">Mar</th>
+                        <th style="padding:6px 8px; text-align:center; background:#1a4468;">Apr</th>
+                        <th style="padding:6px 8px; text-align:center; background:#1a4468;">May</th>
+                        <th style="padding:6px 8px; text-align:center;"></th>
+                        <th style="padding:6px 8px; text-align:center;"></th>
+                        <th style="padding:6px 8px; text-align:center;"></th>
+                    </tr>
+                </thead>
+                <tbody id="inv-tbody"></tbody>
+            </table>
+        </div>
+
+        <!-- Consumption trend chart area -->
+        <div style="margin-top:24px;">
+            <h3 style="font-size:15px; font-weight:600; color:#1F4E79; margin-bottom:12px;">Forecasted vs Actual Consumption Trends</h3>
+            <div id="inv-trend-area" style="display:grid; grid-template-columns: 1fr 1fr; gap:16px;"></div>
+        </div>
+
+        <div class="util-note" style="margin-top:20px;">
+            Data source: MRP Monthly Consumption Report (Google Sheets) | BOH = Balance on Hand at end of month | Months Left = Current BOH &divide; Avg Monthly Consumption | Status: 🟢 &gt;3 months &bull; 🟡 1&ndash;3 months &bull; 🔴 &lt;1 month
+        </div>
+    </div>
+</div><!-- end page-inventory -->
+
+<div id="page-clientspecs" class="page">
+    <div style="padding: 24px 32px;">
+        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:20px;">
+            <div>
+                <h2 style="font-size:20px; font-weight:700; color:#1F4E79; margin-bottom:4px;">Client Specifications &amp; Packaging</h2>
+                <p style="font-size:13px; color:#666;">Merged packing requirements and material specifications per client</p>
+            </div>
+            <button id="cs-sync-btn" onclick="syncClientSpecs()" style="padding:10px 20px; background:#1F4E79; color:white; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:6px;">
+                <span id="cs-sync-icon" style="font-size:16px;">&#x21bb;</span> Sync from Google Sheets
+            </button>
+        </div>
+        <div id="cs-sync-status" style="display:none; padding:10px 16px; border-radius:6px; font-size:12px; margin-bottom:16px;"></div>
+
+        <!-- Search and filters -->
+        <div style="display:flex; gap:12px; margin-bottom:16px; flex-wrap:wrap; align-items:center;">
+            <input id="cs-search" type="text" placeholder="Search client name..." oninput="renderClientSpecs()" style="padding:8px 14px; border:1px solid #ccc; border-radius:6px; font-size:13px; width:280px;">
+            <select id="cs-filter-pouch" onchange="renderClientSpecs()" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-size:12px;">
+                <option value="">All Pouches</option>
+            </select>
+            <select id="cs-filter-box" onchange="renderClientSpecs()" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-size:12px;">
+                <option value="">All Box Types</option>
+            </select>
+            <select id="cs-filter-trimline" onchange="renderClientSpecs()" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-size:12px;">
+                <option value="">All Trimlines</option>
+            </select>
+            <select id="cs-filter-aligner" onchange="renderClientSpecs()" style="padding:8px 10px; border:1px solid #ccc; border-radius:6px; font-size:12px;">
+                <option value="">All Aligner Materials</option>
+            </select>
+            <span id="cs-count" style="font-size:12px; color:#888;"></span>
+        </div>
+
+
+
+        <!-- Table view -->
+        <div id="cs-table-view" style="overflow-x:auto; border:1px solid #e0e0e0; border-radius:8px;">
+            <table id="cs-table" style="width:100%; border-collapse:collapse; font-size:12px;">
+                <thead>
+                    <tr style="background:#1F4E79; color:white;">
+                        <th style="padding:10px 12px; text-align:left; position:sticky; left:0; background:#1F4E79; z-index:2; min-width:180px;">Client</th>
+                        <th style="padding:10px 8px; text-align:center; background:#2567a0;" colspan="7">Packaging</th>
+                        <th style="padding:10px 8px; text-align:center; background:#1a5276;" colspan="5">Materials &amp; Specifications</th>
+                        <th style="padding:10px 8px; text-align:center; background:#e65100;">Note</th>
+                    </tr>
+                    <tr style="background:#2567a0; color:rgba(255,255,255,0.9); font-size:11px;">
+                        <th style="padding:6px 12px; position:sticky; left:0; background:#2567a0; z-index:2;"></th>
+                        <th style="padding:6px 6px; text-align:center;">Pouches</th>
+                        <th style="padding:6px 6px; text-align:center;">Box</th>
+                        <th style="padding:6px 6px; text-align:center;">Ref. Box</th>
+                        <th style="padding:6px 6px; text-align:center;">Case</th>
+                        <th style="padding:6px 6px; text-align:center;">Flyer</th>
+                        <th style="padding:6px 6px; text-align:center;">Acc.</th>
+                        <th style="padding:6px 6px; text-align:center;">IPRs</th>
+                        <th style="padding:6px 6px; text-align:center; background:#1a5276;">Aligner</th>
+                        <th style="padding:6px 6px; text-align:center; background:#1a5276;">Template</th>
+                        <th style="padding:6px 6px; text-align:center; background:#1a5276;">Retainer</th>
+                        <th style="padding:6px 6px; text-align:center; background:#1a5276;">Trimline</th>
+                        <th style="padding:6px 6px; text-align:center; background:#1a5276;">Margin</th>
+                        <th style="padding:6px 6px; text-align:center; background:#e65100; color:white; font-size:10px;">Special</th>
+                    </tr>
+                </thead>
+                <tbody id="cs-tbody"></tbody>
+            </table>
+        </div>
+
+
+
+        <div class="util-note" style="margin-top:20px;">
+            Data source: Google Sheets &mdash; PACKING - PACKAGING - CLIENT SPECIFICATIONS | PORTUGAL | Last synced: <span id="cs-last-sync">embedded data</span>
+        </div>
+    </div>
+</div><!-- end page-clientspecs -->
+
 
 </div><!-- end main-content -->
 
@@ -2649,6 +2841,8 @@ function switchPage(pageId, navEl) {
     if (navEl) navEl.classList.add('active');
     if (pageId === 'eligibility') updateResults();
     if (pageId === 'utilization') refreshUtilization();
+    if (pageId === 'inventory') renderInventory();
+    if (pageId === 'clientspecs') renderClientSpecs();
 }
 
 // ══════════════════════════════════════════════════
@@ -2973,14 +3167,26 @@ function switchFacilityTab(facId) {
 
 function loadFacilityProfiles() {
     var saved = null;
-    try { saved = JSON.parse(localStorage.getItem('kline_facility_profiles')); } catch(e) {}
+    try {
+        var raw = localStorage.getItem('kline_facility_profiles');
+        if (raw) {
+            saved = JSON.parse(raw);
+            console.log('Loaded facility profiles from localStorage:', Object.keys(saved));
+        } else {
+            console.log('No saved facility profiles found, using defaults');
+        }
+    } catch(e) {
+        console.error('Error loading facility profiles:', e);
+    }
     loadCustomOptions();
     FACILITY_IDS.forEach(function(facId) {
         var data = (saved && saved[facId]) ? saved[facId] : PROFILE_DEFAULTS[facId];
         // Simple fields
         PROFILE_FIELDS_SIMPLE.forEach(function(field) {
             var el = document.getElementById('fp_' + facId + '_' + field);
-            if (el && data[field] !== undefined) el.value = data[field];
+            if (el && data[field] !== undefined) {
+                el.value = data[field];
+            }
         });
         // Multi-select fields
         MS_FIELDS_LIST.forEach(function(field) {
@@ -3001,16 +3207,32 @@ function saveFacilityProfiles() {
         all[facId] = {};
         PROFILE_FIELDS_SIMPLE.forEach(function(field) {
             var el = document.getElementById('fp_' + facId + '_' + field);
-            if (el) all[facId][field] = el.type === 'number' ? parseFloat(el.value) || 0 : el.value;
+            if (el) {
+                if (el.type === 'number') {
+                    all[facId][field] = parseFloat(el.value) || 0;
+                } else {
+                    all[facId][field] = el.value;
+                }
+            }
         });
         MS_FIELDS_LIST.forEach(function(field) {
             all[facId][field] = getMsValues('fp_' + facId + '_' + field);
         });
     });
-    localStorage.setItem('kline_facility_profiles', JSON.stringify(all));
+    try {
+        localStorage.setItem('kline_facility_profiles', JSON.stringify(all));
+        console.log('Facility profiles saved:', Object.keys(all));
+    } catch(e) {
+        console.error('Failed to save facility profiles:', e);
+        alert('Failed to save profiles. localStorage may be full or disabled.');
+        return;
+    }
     var msg = document.getElementById('profileSaveMsg');
-    msg.style.opacity = '1';
-    setTimeout(function() { msg.style.opacity = '0'; }, 2000);
+    if (msg) {
+        msg.style.opacity = '1';
+        msg.textContent = 'Saved!';
+        setTimeout(function() { msg.style.opacity = '0'; }, 2000);
+    }
 }
 
 function resetFacilityProfile() {
@@ -3180,6 +3402,389 @@ if (profilesContainer) {
         };
     })());
 }
+
+// ══════════════════════════════════════════════════
+// MATERIALS INVENTORY
+// ══════════════════════════════════════════════════
+var mrpData = [{"id": "RMP-0000001CFZ", "cat": "RMP", "code": "RMP-0000001", "fac": "CFZ", "name": "Resin, Yellow", "desc": "RP-405-TZ06Y, Yellow", "unit": "Kg", "fc": [800, 695, 826, 765, 262], "ac": [235, 240, 260, 285, 0], "boh": [5650, 5415, 5175, 4915, 4630], "ro": [0, 0, 0, 0]}, {"id": "RMP-0000005CFZ", "cat": "RMP", "code": "RMP-0000005", "fac": "CFZ", "name": "Resin, Wash Free", "desc": "MR-P1B-503-EN", "unit": "Kg", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [0, 0, 0, 0, 0], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000001CFZ", "cat": "RMT", "code": "RMT-0000001", "fac": "CFZ", "name": "Retainer sheet, Max Standard,125mm", "desc": "MAX Standard, 1mm/125mm", "unit": "Unit(s)", "fc": [3500, 3500, 3500, 3500, 592], "ac": [868, 813, 635, 328, 0], "boh": [18735, 17867, 17054, 16419, 16091], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000003CFZ", "cat": "RMT", "code": "RMT-0000003", "fac": "CFZ", "name": "Aligner roll, Flex Premium, 137mm", "desc": "FLEX Premium, 0.76mm/137mm", "unit": "Roll 150m", "fc": [33, 22, 32, 0, 10], "ac": [13, 10, 10, 10, 0], "boh": [70.55, 43.6, 33, 23, 13], "ro": [-15, 0, 0, 0]}, {"id": "RMT-0000004CFZ", "cat": "RMT", "code": "RMT-0000004", "fac": "CFZ", "name": "Template sheet, Max Standard, 0.4mm", "desc": "MAX Standard, 0.40mm/125mm", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 98], "ac": [0, 22, 7, 266, 0], "boh": [12400, 12400, 12378, 12371, 12090], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000006CFZ", "cat": "RMT", "code": "RMT-0000006", "fac": "CFZ", "name": "Template sheet, Erkolen, 0.7mm", "desc": "Erkolen 0.7mm, 125mm", "unit": "Unit(s)", "fc": [2200, 2200, 2200, 2200, 581], "ac": [491, 564, 563, 617, 0], "boh": [6568, 6072, 5523, 4960, 4343], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000047CFZ", "cat": "RMT", "code": "RMT-0000047", "fac": "CFZ", "name": "Template sheet, Coherz, 0.5mm", "desc": "Template E Disc, 0.5mm/125mm", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [0, 0, 0, 0, 7000], "ro": [0, 0, 0, 7000]}, {"id": "RMT-0000008CFZ", "cat": "RMP", "code": "RMT-0000008", "fac": "CFZ", "name": "Cleaning liquid", "desc": "Propylene Carbonate", "unit": "Kg", "fc": [253, 253, 253, 253, 25], "ac": [9, 16, 0, 25, 0], "boh": [950, 941, 925, 925, 1400], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000030CFZ", "cat": "RMT", "code": "RMT-0000030", "fac": "CFZ", "name": "Retainer sheet, Express, 125mm", "desc": "Express 125mm/1mm, with film", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 5, 81, 0], "boh": [36960, 36960, 36931, 36923, 36840], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000041CFZ", "cat": "RMT", "code": "RMT-0000041", "fac": "CFZ", "name": "Aligner roll, Pro S, 137mm", "desc": "Pro S, 137/0.76mm, with Film (50m)", "unit": "Roll 50m", "fc": [0, 19, 0, 95, 11], "ac": [0, 6, 4, 11, 0], "boh": [315, 315, 309, 305, 294], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000053CFZ", "cat": "RMT", "code": "RMT-0000053", "fac": "CFZ", "name": "Tristar, sheet", "desc": "Tristar Plastic Sheet T-Plus (1.8mm x 125mm)", "unit": "Unit(s)", "fc": [0, 0, 0, 200, 0], "ac": [0, 0, 0, 0, 0], "boh": [0, 0, 80, 80, 600], "ro": [0, 0, 0, 520]}, {"id": "RMP-0000004FL", "cat": "RMP", "code": "RMP-0000004", "fac": "FL", "name": "Resin, Form 4", "desc": "Fast Model Resin (Form 4) (5L)", "unit": "L", "fc": [100, 100, 100, 100, 100], "ac": [100, 73, 88, 150, 0], "boh": [375, 275, 385, 425, 275], "ro": [0, 225, 120, 0]}, {"id": "RMT-0000006FL", "cat": "RMT", "code": "RMT-0000006", "fac": "FL", "name": "Template sheet, Erkolen, 0.7mm", "desc": "Erkolen 0.7mm, 125mm", "unit": "Unit(s)", "fc": [300, 300, 300, 300, 300], "ac": [250, 250, 350, 330, 0], "boh": [2200, 1850, 1600, 1250, 420], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000047FL", "cat": "RMT", "code": "RMT-0000047", "fac": "FL", "name": "Template sheet, Coherz, 0.5mm", "desc": "Template E Disc, 0.5mm/125mm", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [0, 0, 0, 0, 1900], "ro": [0, 0, 0, 2000]}, {"id": "RMT-0000013FL", "cat": "RMT", "code": "RMT-0000013", "fac": "FL", "name": "Aligner roll, Zendura Flx, 101mm", "desc": "Zendura Flx 0.76x101mm (500ft)", "unit": "Roll 500ft", "fc": [4, 4, 4, 4, 4], "ac": [3, 0, 2, 6, 0], "boh": [30, 27, 27, 25, 19.5], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000023FL", "cat": "RMT", "code": "RMT-0000023", "fac": "FL", "name": "Retainer roll, Express, 101mm", "desc": "Express 101mm/1mm, with film (100m)", "unit": "Roll 100m", "fc": [1, 1, 1, 1, 1], "ac": [1, 0, 2, 2, 0], "boh": [9, 9, 9, 19.5, 18], "ro": [0, 0, 12, 0]}, {"id": "RMT-0000040FL", "cat": "RMT", "code": "RMT-0000040", "fac": "FL", "name": "Aligner roll, Pro S, 101mm", "desc": "Pro S, 101/0.76mm, with Film (150m)", "unit": "Roll 150m", "fc": [3, 3, 3, 3, 3], "ac": [2, 0, 3, 3, 0], "boh": [4, 2, 7, 14, 11.5], "ro": [0, 5, 10, 0]}, {"id": "RMP-0000001PT", "cat": "RMP", "code": "RMP-0000001", "fac": "PT", "name": "Resin, Yellow", "desc": "RP-405-TZ06Y, Yellow", "unit": "Kg", "fc": [1575, 1558, 2100, 2100, 2100], "ac": [1160, 1630, 2315, 1980, 0], "boh": [2800, 1640, 1060, 820, 2840], "ro": [0, 1000, 525, 3125]}, {"id": "RMP-0000005PT", "cat": "RMP", "code": "RMP-0000005", "fac": "PT", "name": "Resin, Wash Free", "desc": "MR-P1B-503-EN", "unit": "Kg", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [0, 0, 0, 0, 0], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000001PT", "cat": "RMT", "code": "RMT-0000001", "fac": "PT", "name": "Retainer sheet, Max Standard,125mm", "desc": "MAX Standard, 1mm/125mm", "unit": "Unit(s)", "fc": [7000, 6500, 7000, 7000, 7000], "ac": [0, 4580, 5180, 2240, 0], "boh": [14880, 12000, 7420, 2240, 0], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000002PT", "cat": "RMT", "code": "RMT-0000002", "fac": "PT", "name": "Aligner roll, Flex Premium, 102mm", "desc": "FLEX Premium, 0.76mm/102mm", "unit": "Roll 150m", "fc": [26, 9, 10, 10, 10], "ac": [5, 12, 10, 7, 0], "boh": [87, 82, 70, 60, 53], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000003PT", "cat": "RMT", "code": "RMT-0000003", "fac": "PT", "name": "Aligner roll, Flex Premium, 137mm", "desc": "FLEX Premium, 0.76mm/137mm", "unit": "Roll 150m", "fc": [1, 1, 1, 1, 1], "ac": [3, 1, 1, 2, 0], "boh": [0, 12, 11, 10, 8], "ro": [15, 0, 0, 0]}, {"id": "RMT-0000004PT", "cat": "RMT", "code": "RMT-0000004", "fac": "PT", "name": "Template sheet, Max Standard, 0.4mm", "desc": "MAX Standard, 0.40mm/125mm", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 0], "ac": [200, 760, 780, 760, 0], "boh": [9780, 9580, 8820, 8040, 7280], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000006PT", "cat": "RMT", "code": "RMT-0000006", "fac": "PT", "name": "Template sheet, Erkolen, 0.7mm", "desc": "Erkolen 0.7mm, 125mm", "unit": "Unit(s)", "fc": [4000, 2000, 0, 0, 0], "ac": [4000, 2000, 0, 0, 0], "boh": [6000, 3000, 0, 0, 0], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000047PT", "cat": "RMT", "code": "RMT-0000047", "fac": "PT", "name": "Template sheet, Coherz, 0.5mm", "desc": "Template E Disc, 0.5mm/125mm", "unit": "Unit(s)", "fc": [0, 2000, 6000, 6000, 6000], "ac": [10, 2000, 5000, 4000, 0], "boh": [1000, 990, 4000, 0, 18000], "ro": [1000, 6000, 0, 22000]}, {"id": "RMT-0000007PT", "cat": "RMT", "code": "RMT-0000007", "fac": "PT", "name": "Aligner roll, Zendura 137mm", "desc": "Zendura FLX 0.76mm x 137mm (500ft)", "unit": "Roll 500ft", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 1, 0], "boh": [15, 15, 15, 15, 13], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000008PT", "cat": "RMP", "code": "RMT-0000008", "fac": "PT", "name": "Cleaning liquid", "desc": "Propylene Carbonate", "unit": "Kg", "fc": [225, 225, 225, 225, 225], "ac": [200, 150, 350, 475, 0], "boh": [700, 550, 350, 500, 25], "ro": [0, 0, 500, 0]}, {"id": "RMT-0000030PT", "cat": "RMT", "code": "RMT-0000030", "fac": "PT", "name": "Retainer sheet, Express, 125mm", "desc": "Express 125mm/1mm, with film", "unit": "Unit(s)", "fc": [0, 500, 6200, 6200, 6200], "ac": [0, 0, 0, 1920, 0], "boh": [5760, 46080, 46080, 46080, 44160], "ro": [40320, 0, 0, 0]}, {"id": "RMT-0000034PT", "cat": "RMT", "code": "RMT-0000034", "fac": "PT", "name": "Aligner roll, Pro S, 101mm", "desc": "Pro S, 101/0.76mm, without film (150m)", "unit": "Roll 150m", "fc": [33, 50, 68, 68, 68], "ac": [26, 52, 70, 65, 0], "boh": [16, 438, 371, 301, 236], "ro": [448, 0, 0, 0]}, {"id": "RMT-0000032PT", "cat": "RMT", "code": "RMT-0000032", "fac": "PT", "name": "Aligner roll, Pro S, 137mm", "desc": "Pro S, 137/0.76mm, without film (150m)", "unit": "Roll 150m", "fc": [5, 5, 5, 5, 5], "ac": [4, 5, 13, 8, 0], "boh": [32, 28, 17, 10, 6], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000053PT", "cat": "RMT", "code": "RMT-0000053", "fac": "PT", "name": "Tristar, sheet", "desc": "Tristar Plastic Sheet T-Plus (1.8mm x 125mm)", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [0, 0, 0, 0, 800], "ro": [0, 0, 0, 600]}, {"id": "RMP-0000001TJ", "cat": "RMP", "code": "RMP-0000001", "fac": "TJ", "name": "Resin, Yellow", "desc": "RP-405-TZ06Y, Yellow", "unit": "Kg", "fc": [394, 598, 802, 802, 0], "ac": [234, 256, 248, 0, 0], "boh": [790, 420, 165, 1400, 940], "ro": [0, 625, 2000, 775]}, {"id": "RMP-0000005TJ", "cat": "RMP", "code": "RMP-0000005", "fac": "TJ", "name": "Resin, Wash Free", "desc": "MR-P1B-503-EN", "unit": "Kg", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [0, 0, 0, 0, 0], "ro": [0, 0, 0, 0]}, {"id": "RMP-0000002TJ", "cat": "RMP", "code": "RMP-0000002", "fac": "TJ", "name": "Resin, DPR10", "desc": "DPR10 Resin", "unit": "Kg", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [500, 28, 17, 0, 0], "ro": [0, 0, 0, 0]}, {"id": "RMP-0000003TJ", "cat": "RMP", "code": "RMP-0000003", "fac": "TJ", "name": "Resin, UMA 20", "desc": "UMA 20 Resin (Drum 200L)", "unit": "L", "fc": [0, 0, 0, 0, 2428], "ac": [0, 0, 27, 2428, 0], "boh": [2284, 2818, 2867, 3746, 3125], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000007TJ", "cat": "RMT", "code": "RMT-0000007", "fac": "TJ", "name": "Aligner roll, Zendura 137mm", "desc": "Zendura FLX 0.76mm x 137mm (500ft)", "unit": "Roll 500ft", "fc": [28, 28, 28, 28, 17], "ac": [16, 16, 18, 17, 0], "boh": [49, 130, 130, 184, 168], "ro": [60.222, 60.444, 63.786, 0]}, {"id": "RMT-0000010TJ", "cat": "RMT", "code": "RMT-0000010", "fac": "TJ", "name": "Release Film", "desc": "Release Film, L1 (pack=100 pcs)", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 0, 0, 0], "boh": [9000, 11800, 13200, 6000, 9700], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000049TJ", "cat": "RMT", "code": "RMT-0000049", "fac": "TJ", "name": "Retainer Roll, Zendura A", "desc": "Zendura A Roll 0.76mm x 137mm", "unit": "Roll 500ft", "fc": [1, 1, 1, 1, 3], "ac": [2, 2, 1, 3, 0], "boh": [20, 17, 1, 10, 7], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000011TJ", "cat": "RMT", "code": "RMT-0000011", "fac": "TJ", "name": "Retainer sheet, Zendura A", "desc": "Zendura A Sheets (Pouch of 10)", "unit": "Unit(s)", "fc": [0, 0, 0, 0, 0], "ac": [0, 0, 40, 0, 0], "boh": [500, 0, 0, 0, 0], "ro": [0, 0, 0, 0]}, {"id": "RMT-0000012TJ", "cat": "RMT", "code": "RMT-0000012", "fac": "TJ", "name": "Template sheet, Zendura AT", "desc": "Zendura AT 0.38x125 Round (20 sheets/bx)", "unit": "Unit(s)", "fc": [870, 870, 870, 870, 443], "ac": [410, 450, 463, 443, 0], "boh": [1600, 1700, 1250, 2920, 3700], "ro": [900, 0, 1200, 0]}];
+
+var invCurrentFac = 'ALL';
+var invCurrentCat = 'ALL';
+
+function filterInventory(fac, btn) {
+    invCurrentFac = fac;
+    document.querySelectorAll('.inv-tab').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderInventory();
+}
+
+function filterCategory(cat, btn) {
+    invCurrentCat = cat;
+    document.querySelectorAll('.inv-cat-tab').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    renderInventory();
+}
+
+function renderInventory() {
+    var filtered = mrpData.filter(function(item) {
+        if (invCurrentFac !== 'ALL' && item.fac !== invCurrentFac) return false;
+        if (invCurrentCat !== 'ALL' && item.cat !== invCurrentCat) return false;
+        return true;
+    });
+
+    // Summary cards
+    var totalItems = filtered.length;
+    var critical = 0, warning = 0, healthy = 0;
+    filtered.forEach(function(item) {
+        var ac = item.ac.slice(0,4);
+        var nonZero = ac.filter(function(v){ return v > 0; });
+        var avgUse = nonZero.length > 0 ? nonZero.reduce(function(a,b){ return a+b; },0) / nonZero.length : 0;
+        var currentBoh = item.boh[item.boh.length - 1];
+        var monthsLeft = avgUse > 0 ? currentBoh / avgUse : (currentBoh > 0 ? 99 : 0);
+        if (monthsLeft < 1) critical++;
+        else if (monthsLeft < 3) warning++;
+        else healthy++;
+    });
+
+    var summaryHtml = '<div class="inv-summary-card"><div class="inv-label">Total Items</div><div class="inv-value">' + totalItems + '</div><div class="inv-sub">' + (invCurrentFac === 'ALL' ? 'All facilities' : invCurrentFac) + '</div></div>';
+    summaryHtml += '<div class="inv-summary-card"><div class="inv-label">Critical (&lt;1 month)</div><div class="inv-value" style="color:#e53935;">' + critical + '</div><div class="inv-sub">Immediate attention</div></div>';
+    summaryHtml += '<div class="inv-summary-card"><div class="inv-label">Warning (1-3 months)</div><div class="inv-value" style="color:#f9a825;">' + warning + '</div><div class="inv-sub">Order soon</div></div>';
+    summaryHtml += '<div class="inv-summary-card"><div class="inv-label">Healthy (&gt;3 months)</div><div class="inv-value" style="color:#43a047;">' + healthy + '</div><div class="inv-sub">Adequate stock</div></div>';
+    document.getElementById('inv-summary').innerHTML = summaryHtml;
+
+    // Table
+    var facColors = { PT: '#2E75B6', CFZ: '#8e24aa', TJ: '#e65100', FL: '#2e7d32' };
+    var tbody = '';
+    filtered.forEach(function(item, idx) {
+        var ac = item.ac.slice(0,4);
+        var nonZero = ac.filter(function(v){ return v > 0; });
+        var avgUse = nonZero.length > 0 ? nonZero.reduce(function(a,b){ return a+b; },0) / nonZero.length : 0;
+        var currentBoh = item.boh[item.boh.length - 1];
+        var monthsLeft = avgUse > 0 ? currentBoh / avgUse : (currentBoh > 0 ? 99 : 0);
+        var status, statusColor, statusBg;
+        if (monthsLeft < 1) { status = 'CRITICAL'; statusColor = '#e53935'; statusBg = '#ffebee'; }
+        else if (monthsLeft < 3) { status = 'WARNING'; statusColor = '#f9a825'; statusBg = '#fff8e1'; }
+        else { status = 'OK'; statusColor = '#43a047'; statusBg = '#e8f5e9'; }
+        var bg = idx % 2 === 0 ? '#fff' : '#f8f9fb';
+        var facCol = facColors[item.fac] || '#666';
+        tbody += '<tr style="background:' + bg + ';">';
+        tbody += '<td style="padding:8px 12px; font-weight:600; white-space:nowrap; position:sticky; left:0; background:' + bg + '; z-index:1;"><span style="display:inline-block; padding:2px 8px; border-radius:4px; font-size:11px; color:white; background:' + facCol + ';">' + item.fac + '</span></td>';
+        tbody += '<td style="padding:8px 12px; white-space:nowrap;" title="' + item.desc + '">' + item.name + '</td>';
+        tbody += '<td style="padding:8px 12px; color:#888; font-size:11px;">' + item.unit + '</td>';
+        for (var i = 0; i < 4; i++) {
+            var val = item.ac[i];
+            tbody += '<td style="padding:8px 8px; text-align:right; font-size:11px;">' + (val > 0 ? val.toLocaleString() : '-') + '</td>';
+        }
+        for (var i = 0; i < 5; i++) {
+            var bv = item.boh[i];
+            tbody += '<td style="padding:8px 8px; text-align:right; font-size:11px; background:rgba(31,78,121,0.04);">' + (bv > 0 ? (Number.isInteger(bv) ? bv.toLocaleString() : bv.toLocaleString(undefined,{maximumFractionDigits:1})) : '-') + '</td>';
+        }
+        tbody += '<td style="padding:8px 8px; text-align:right; font-weight:600; font-size:11px;">' + (avgUse > 0 ? Math.round(avgUse).toLocaleString() : '-') + '</td>';
+        tbody += '<td style="padding:8px 8px; text-align:center; font-weight:600; font-size:11px; color:' + statusColor + ';">' + (monthsLeft >= 99 ? '∞' : monthsLeft.toFixed(1)) + '</td>';
+        tbody += '<td style="padding:8px 8px; text-align:center;"><span style="display:inline-block; padding:2px 10px; border-radius:10px; font-size:10px; font-weight:700; color:' + statusColor + '; background:' + statusBg + ';">' + status + '</span></td>';
+        tbody += '</tr>';
+    });
+    document.getElementById('inv-tbody').innerHTML = tbody;
+
+    // Trend charts - show key items per facility
+    var trendHtml = '';
+    var facilities = invCurrentFac === 'ALL' ? ['PT','CFZ','TJ','FL'] : [invCurrentFac];
+    facilities.forEach(function(fac) {
+        var facItems = mrpData.filter(function(it){ return it.fac === fac && (invCurrentCat === 'ALL' || it.cat === invCurrentCat); });
+        // Show items with actual consumption
+        var activeItems = facItems.filter(function(it){ return it.ac.slice(0,4).some(function(v){ return v > 0; }); });
+        if (activeItems.length === 0) return;
+        // Take top 5 by avg consumption
+        activeItems.sort(function(a,b) {
+            var aAvg = a.ac.slice(0,4).reduce(function(s,v){return s+v;},0);
+            var bAvg = b.ac.slice(0,4).reduce(function(s,v){return s+v;},0);
+            return bAvg - aAvg;
+        });
+        activeItems = activeItems.slice(0, 5);
+        var maxVal = 0;
+        activeItems.forEach(function(it){
+            for(var i=0;i<4;i++){
+                if(it.fc[i]>maxVal) maxVal=it.fc[i];
+                if(it.ac[i]>maxVal) maxVal=it.ac[i];
+            }
+        });
+        if(maxVal===0) maxVal=1;
+        var facCol = facColors[fac] || '#666';
+        trendHtml += '<div class="inv-trend-card">';
+        trendHtml += '<h4><span style="color:' + facCol + ';">■</span> ' + fac + ' &mdash; Top Items (Forecasted vs Actual)</h4>';
+        activeItems.forEach(function(it){
+            trendHtml += '<div style="margin-bottom:10px;"><div style="font-size:11px; font-weight:600; color:#444; margin-bottom:3px;">' + it.name + ' <span style="color:#aaa;">(' + it.unit + ')</span></div>';
+            var mths = ['Jan','Feb','Mar','Apr'];
+            for(var m=0;m<4;m++){
+                var fcW = Math.max(1, (it.fc[m]/maxVal)*100);
+                var acW = Math.max(1, (it.ac[m]/maxVal)*100);
+                trendHtml += '<div class="inv-bar-row">';
+                trendHtml += '<div class="inv-bar-label">' + mths[m] + '</div>';
+                trendHtml += '<div class="inv-bar-wrap">';
+                trendHtml += '<div class="inv-bar-fc" style="width:' + fcW + '%" title="Forecast: ' + it.fc[m].toLocaleString() + '"></div>';
+                trendHtml += '</div>';
+                trendHtml += '<div class="inv-bar-wrap">';
+                trendHtml += '<div class="inv-bar-ac" style="width:' + acW + '%" title="Actual: ' + it.ac[m].toLocaleString() + '"></div>';
+                trendHtml += '</div>';
+                trendHtml += '<div class="inv-bar-val">' + it.fc[m].toLocaleString() + ' / ' + it.ac[m].toLocaleString() + '</div>';
+                trendHtml += '</div>';
+            }
+            trendHtml += '</div>';
+        });
+        trendHtml += '<div style="display:flex; gap:12px; font-size:10px; color:#888; margin-top:4px;"><span><span style="display:inline-block;width:10px;height:10px;background:#dbeafe;border-radius:2px;"></span> Forecast</span><span><span style="display:inline-block;width:10px;height:10px;background:#2E75B6;border-radius:2px;"></span> Actual</span></div>';
+        trendHtml += '</div>';
+    });
+    document.getElementById('inv-trend-area').innerHTML = trendHtml;
+}
+
+// Render on page switch
+
+
+// ══════════════════════════════════════════════════
+// CLIENT SPECIFICATIONS
+// ══════════════════════════════════════════════════
+var clientSpecsData = [{"client": "32Co Lab", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": "Per case: Coherz OR Maxflex OR CA PRO+ / Maxflex & Coherz Template / Coherz Retainer & Zendura A"}, {"client": "32Co US", "pouches": "Standard Pouches", "box": "Client Own Box", "refBox": "Client Own Box", "case": "CLIENT OWN AC", "flyer": "NO", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "3D Predict", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "White Magnetic Box", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": "Per doctor: Coherz / Maxflex Template & Coherz Template / Coherz Retainer"}, {"client": "3DP", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "White Magnetic Box", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Abaden", "pouches": "Standard Pouches", "box": "Refinement Box", "refBox": "Refinement Box XS", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "AirSmile Artinorway", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "AirSmile ClearForward NL", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Airsmile BE", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Airsmile Germany", "pouches": "Premium Pouches (Manual)", "box": "Refinement Box XS", "refBox": "Refinement Box XS", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Airsmile NL", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "1-2mm", "specialNote": ""}, {"client": "AlignEX", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": "Per doctor: Coherz / Maxflex Template & Coherz Template / Coherz Retainer"}, {"client": "Alignar", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Aligner Services", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Aligner Specialist", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Angel Smile", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Archform", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Atlantic Aligners", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Audentic", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Aurra", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "B.Align", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Bailiff Bridge Dental", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Be & smile AG", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": ""}, {"client": "Bio Medica", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Blink", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "CHERUBINO - Malta", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "CLEAR X", "pouches": "ClearX Pouches (Autobag Roll)", "box": "ClearX Box", "refBox": "ClearX Refinement Box", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "CLIENT OWN ACCESSORIES", "iprs": "YES", "alignerMat": "Maxflex", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": ""}, {"client": "CLEARaline- Roe Dental", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "CODE Clinic", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Carla Andrade (Sales)", "pouches": "Henry Pouches (Autobag Roll)", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "CLIENT OWN ACCESSORIES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Carolina Alonso", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Clara Aligner", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Clear Aligner Plus", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Cl\u00ednica Dental Avil\u00e9s y Rom\u00e1n", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Crea-Tech", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "DENTAL TRADE", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Dandy", "pouches": "", "box": "", "refBox": "", "case": "", "flyer": "", "accessories": "", "iprs": "", "alignerMat": "Zendura FLX", "templateMat": "Zendura AT", "retainerMat": "Zendura A", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": "Zendura FLX / Zendura AT / Zendura A"}, {"client": "Deep Company", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "YES", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "CUSTOM TRIMLINE", "margin": "Client Own Trimline", "specialNote": ""}, {"client": "Dental Smile- Slovenia", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Dental Snobs", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Dentium", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Doctor Direct Smiles", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Dr BB Ortho", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Dudhat Dental Group", "pouches": "Standard Pouches", "box": "Black Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "EDG", "pouches": "Premium Pouches (Manual)", "box": "Client Own Box (Pocket S & L)", "refBox": "Refinement Box XS", "case": "CLIENT OWN AC", "flyer": "CLIENT OWN FLYER", "accessories": "CLIENT OWN ACCESSORIES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "EMS", "pouches": "Premium Pouches (Manual)", "box": "EMS Box", "refBox": "EMS Refinement Box", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "CLIENT OWN ACCESSORIES", "iprs": "NO", "alignerMat": "Maxflex", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": ""}, {"client": "ENSMILE V5", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template, Maxflex Template", "retainerMat": "Coherz Retainer", "trimline": "CUSTOM TRIMLINE", "margin": "Client Own Trimline", "specialNote": ""}, {"client": "EZCad Distributor", "pouches": "Premium Pouches (Manual)", "box": "White Pocket S/L Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "F4D+ by FACE", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Fernando de la Iglesia Beyme", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "FirstClass", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "GLEE", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Geniova", "pouches": "White Pouches (Autobag Roll)", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "GlamAlign", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Glo Smiles", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "GoOrtho", "pouches": "Standard Pouches", "box": "Refinement Box XS", "refBox": "Refinement Box XS", "case": "YES", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Happy Aligners", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": ""}, {"client": "Henry Aligner", "pouches": "Henry Pouches (Autobag Roll)", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "CLIENT OWN ACCESSORIES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Igor Gribalsky", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Juan Romero", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Just Smile", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": ""}, {"client": "Just Wright Dental (Dental snobs OEM client)", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "K Clear Direct doctors", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "K Line Lithuania", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "K Line Lithuania V2", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "K Line Philippines", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "K Smile", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "King Dental", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Kiwi Smile - New Zealand", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "KlearFX", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Le Labo du Sourire", "pouches": "Premium Pouches (Manual)", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Lumiwhite", "pouches": "Premium Pouches (Manual)", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "MEDIT", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": ""}, {"client": "MEDSCAN SAS", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "MSB Dental", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Magestic Aligners V5", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Matrix", "pouches": "Standard Pouches", "box": "White Pocket L Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Medord 3Ds", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Meridji Dentaire", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Movendi Labor", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "NO", "alignerMat": "Coherz PRO S, 3-rail System (Movendi)", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": "Duran 0.5/0.625/0.75 (3-rail) / Coherz Template / Coherz Retainer"}, {"client": "ODL - Orthodent Laboratory", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "CUSTOM TRIMLINE", "margin": "Scallop 3-3 Anterior / Straight Posterior", "specialNote": ""}, {"client": "OX Dental", "pouches": "Standard Pouches", "box": "Refinement Box S", "refBox": "Refinement Box S", "case": "YES", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "One Move Aligners", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "OptimalAligners", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Oral Aligners", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Orthoclear Jesse Bartels", "pouches": "White Pouches (Autobag Roll)", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Ortospecialized Spain SL", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Overnight Smile (V5)", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Perfect Finish Ortho Lab", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Perfect Smile Germany", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "PerfectFitOrtho", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Philippe Dahmen LetSmile", "pouches": "Standard Pouches", "box": "Client Own Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Plus Orthodontics", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Precision Aligners", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Premier Dental Club", "pouches": "Standard Pouches", "box": "Black Pocket Box S", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Pristine Dental Group", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Prosthodontics & Implant Surgery of Manhattan, P.C.", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "White Magnetic Box", "case": "YES", "flyer": "CLIENT OWN FLYER", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Pure Aligners", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Pyoor Smile", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Radiant Aligners USA (Medscan)", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Rafatoxx", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "NO", "accessories": "YES", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": "Maxflex / Coherz Template / Zendura A"}, {"client": "Roma Aligners", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "SMILE AID", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "SMILE NOW", "pouches": "Premium Pouches (Manual)", "box": "Client Own Box", "refBox": "Refinement Box XS", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Sachar Dental NYC", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Sant\u00e9 Smile", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Saving Faces", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Sense Aligners", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "YES", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Smart Medical Systems", "pouches": "Standard Pouches", "box": "KClear Phase1 Box", "refBox": "KClear Refinement Box", "case": "CLIENT OWN AC", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Smile ART (TP)", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Smile White UK", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "SCALLOP I+O", "margin": "0mm", "specialNote": ""}, {"client": "Smile2Impress", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "SmileBar", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Smileep", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Smileunion Smileunion", "pouches": "Standard Pouches", "box": "Smileunion Box", "refBox": "Refinement Box XS", "case": "CLIENT OWN AC", "flyer": "CLIENT OWN FLYER", "accessories": "YES", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Smileup", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "Scallop 3-3 Anterior / Straight Posterior", "specialNote": ""}, {"client": "Soft Smile Aligners", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Soonline Dental", "pouches": "Standard Pouches", "box": "Refinement Box XS", "refBox": "Refinement Box XS", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Sorridente", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "YES", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "Coherz Template", "retainerMat": "Coherz Retainer", "trimline": "STRAIGHT", "margin": "0mm", "specialNote": ""}, {"client": "Stars Aligners", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Straight Teeth Direct", "pouches": "Standard Pouches", "box": "Refinement Box XS + Client Own Box", "refBox": "Refinement Box XS", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Swift Dental Group", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "TOP Orthodontie", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "The Brace", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "YES", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Toothfairy Toothfairy", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Treasure Island srl (Pagnoni)", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Treeline Dental", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Trinity Aligners", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "UpSmiles", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Valor Dental (Dental Snobs)", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Vela Lasagabaster", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Vidaluc", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Wally", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Wave Dental", "pouches": "Standard Pouches", "box": "White Pocket S Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "XLUR", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "XLUR Doctors", "pouches": "Standard Pouches", "box": "Black Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "Your Aligners - Dr Boccio", "pouches": "Standard Pouches", "box": "Plastic Bag", "refBox": "Plastic Bag", "case": "NO", "flyer": "NO", "accessories": "NO", "iprs": "NO", "alignerMat": "Coherz PRO S", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}, {"client": "iForma", "pouches": "Standard Pouches", "box": "White Magnetic Box", "refBox": "Refinement Box XS", "case": "YES", "flyer": "YES", "accessories": "YES", "iprs": "YES", "alignerMat": "", "templateMat": "", "retainerMat": "", "trimline": "", "margin": "", "specialNote": ""}];
+
+function initCSFilters() {
+    var pouches = {}, boxes = {}, trimlines = {}, aligners = {};
+    clientSpecsData.forEach(function(c) {
+        if (c.pouches) pouches[c.pouches] = 1;
+        if (c.box) boxes[c.box] = 1;
+        if (c.trimline) trimlines[c.trimline] = 1;
+        if (c.alignerMat) aligners[c.alignerMat] = 1;
+    });
+    var sel;
+    sel = document.getElementById('cs-filter-pouch');
+    Object.keys(pouches).sort().forEach(function(v) { sel.innerHTML += '<option value="' + v + '">' + v + '</option>'; });
+    sel = document.getElementById('cs-filter-box');
+    Object.keys(boxes).sort().forEach(function(v) { sel.innerHTML += '<option value="' + v + '">' + v + '</option>'; });
+    sel = document.getElementById('cs-filter-trimline');
+    Object.keys(trimlines).sort().forEach(function(v) { sel.innerHTML += '<option value="' + v + '">' + v + '</option>'; });
+    sel = document.getElementById('cs-filter-aligner');
+    Object.keys(aligners).sort().forEach(function(v) { sel.innerHTML += '<option value="' + v + '">' + v + '</option>'; });
+}
+
+function renderClientSpecs() {
+    var search = (document.getElementById('cs-search').value || '').toLowerCase();
+    var fPouch = document.getElementById('cs-filter-pouch').value;
+    var fBox = document.getElementById('cs-filter-box').value;
+    var fTrim = document.getElementById('cs-filter-trimline').value;
+    var fAlign = document.getElementById('cs-filter-aligner').value;
+
+    var filtered = clientSpecsData.filter(function(c) {
+        if (search && c.client.toLowerCase().indexOf(search) === -1) return false;
+        if (fPouch && c.pouches !== fPouch) return false;
+        if (fBox && c.box !== fBox) return false;
+        if (fTrim && c.trimline !== fTrim) return false;
+        if (fAlign && c.alignerMat !== fAlign) return false;
+        return true;
+    });
+
+    document.getElementById('cs-count').textContent = filtered.length + ' of ' + clientSpecsData.length + ' clients';
+
+    function fmtYN(val) {
+        if (!val) return '<span class="cs-no">&mdash;</span>';
+        if (val === 'YES') return '<span class="cs-yes">YES</span>';
+        if (val === 'NO') return '<span class="cs-no">NO</span>';
+        return '<span class="cs-custom">' + val + '</span>';
+    }
+
+    // Table
+    var tbody = '';
+    filtered.forEach(function(c, idx) {
+        var bg = idx % 2 === 0 ? '#fff' : '#f8f9fb';
+        tbody += '<tr style="background:' + bg + ';">';
+        tbody += '<td style="padding:8px 12px; font-weight:600; color:#1F4E79; position:sticky; left:0; background:' + bg + '; z-index:1; white-space:nowrap;">' + c.client + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; white-space:nowrap;">' + (c.pouches || '<span class="cs-no">&mdash;</span>') + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; white-space:nowrap;">' + (c.box || '<span class="cs-no">&mdash;</span>') + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; white-space:nowrap;">' + (c.refBox || '<span class="cs-no">&mdash;</span>') + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center;">' + fmtYN(c.case) + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center;">' + fmtYN(c.flyer) + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center;">' + fmtYN(c.accessories) + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center;">' + fmtYN(c.iprs) + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; background:rgba(26,82,118,0.03); white-space:nowrap;">' + (c.alignerMat || '<span class="cs-no">&mdash;</span>') + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; background:rgba(26,82,118,0.03); white-space:nowrap;">' + (c.templateMat || '<span class="cs-no">&mdash;</span>') + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; background:rgba(26,82,118,0.03); white-space:nowrap;">' + (c.retainerMat || '<span class="cs-no">&mdash;</span>') + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; background:rgba(26,82,118,0.03);">' + (c.trimline || '<span class="cs-no">&mdash;</span>') + '</td>';
+        tbody += '<td style="padding:6px 6px; text-align:center; font-size:11px; background:rgba(26,82,118,0.03);">' + (c.margin || '<span class="cs-no">&mdash;</span>') + '</td>';
+        if (c.specialNote) {
+            tbody += '<td style="padding:6px 6px; text-align:center; font-size:10px; background:rgba(255,152,0,0.08); color:#e65100;" title="' + c.specialNote + '">⚠ Special</td>';
+        } else {
+            tbody += '<td style="padding:6px 6px; text-align:center; font-size:10px; color:#ccc;">&mdash;</td>';
+        }
+        tbody += '</tr>';
+    });
+    document.getElementById('cs-tbody').innerHTML = tbody;
+
+
+}
+
+function syncClientSpecs() {
+    var btn = document.getElementById('cs-sync-btn');
+    var icon = document.getElementById('cs-sync-icon');
+    var status = document.getElementById('cs-sync-status');
+    btn.disabled = true;
+    icon.classList.add('cs-spinning');
+    status.style.display = 'block';
+    status.style.background = '#e3f2fd';
+    status.style.color = '#1565c0';
+    status.textContent = 'Fetching latest data from Google Sheets...';
+
+    // Use Google Sheets published CSV export
+    var sheetId = '1441ZtJt0Zie7L5X3lRM3Xz-UODA1kj2KpHoGTFjMcJc';
+    var packingUrl = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:csv&sheet=PACKING%20-%20PACKAGING';
+    var specsUrl = 'https://docs.google.com/spreadsheets/d/' + sheetId + '/gviz/tq?tqx=out:csv&sheet=CLIENTS%20SPECIFICATIONS';
+
+    var packingDone = false, specsDone = false;
+    var newPacking = {}, newSpecs = {};
+
+    function parseCSV(text) {
+        var lines = [];
+        var current = '';
+        var inQuote = false;
+        for (var i = 0; i < text.length; i++) {
+            var ch = text[i];
+            if (ch === '"') { inQuote = !inQuote; continue; }
+            if (ch === '\n' && !inQuote) { lines.push(current); current = ''; continue; }
+            if (ch === '\r') continue;
+            current += ch;
+        }
+        if (current) lines.push(current);
+        return lines.map(function(line) {
+            var cols = [];
+            var cur = '';
+            var q = false;
+            for (var j = 0; j < line.length; j++) {
+                var c = line[j];
+                if (c === '"') { q = !q; continue; }
+                if (c === ',' && !q) { cols.push(cur.trim()); cur = ''; continue; }
+                cur += c;
+            }
+            cols.push(cur.trim());
+            return cols;
+        });
+    }
+
+    function checkDone() {
+        if (!packingDone || !specsDone) return;
+        // Merge
+        var allClients = {};
+        Object.keys(newPacking).forEach(function(c) { allClients[c] = 1; });
+        Object.keys(newSpecs).forEach(function(c) { allClients[c] = 1; });
+        var merged = [];
+        Object.keys(allClients).sort().forEach(function(c) {
+            var p = newPacking[c] || {};
+            var s = newSpecs[c] || {};
+            merged.push({
+                client: c,
+                pouches: p.pouches || '', box: p.box || '', refBox: p.refBox || '',
+                case: p.case || '', flyer: p.flyer || '', accessories: p.accessories || '', iprs: p.iprs || '',
+                alignerMat: s.alignerMat || '', templateMat: s.templateMat || '',
+                retainerMat: s.retainerMat || '', trimline: s.trimline || '', margin: s.margin || '',
+                specialNote: ''
+            });
+        });
+        icon.classList.remove('cs-spinning');
+        btn.disabled = false;
+        // Guard: if sync returned 0 clients, the sheet is likely not published — keep existing data
+        if (merged.length === 0) {
+            status.style.background = '#ffebee';
+            status.style.color = '#c62828';
+            status.textContent = 'Sync returned 0 clients. The Google Sheet may not be published to the web. Using embedded data instead.';
+            renderClientSpecs();
+            return;
+        }
+        // Also guard against very small results (likely HTML error page parsed as CSV)
+        if (merged.length < 10) {
+            status.style.background = '#fff3e0';
+            status.style.color = '#e65100';
+            status.textContent = 'Warning: Sync only found ' + merged.length + ' clients (expected 130+). Sheet may not be published. Using embedded data.';
+            renderClientSpecs();
+            return;
+        }
+        clientSpecsData = merged;
+        renderClientSpecs();
+        initCSFilters();
+        status.style.background = '#e8f5e9';
+        status.style.color = '#2e7d32';
+        var now = new Date();
+        var ts = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
+        status.textContent = 'Synced ' + merged.length + ' clients at ' + ts;
+        document.getElementById('cs-last-sync').textContent = ts;
+        // Save to localStorage
+        try { localStorage.setItem('kline_client_specs', JSON.stringify(merged)); localStorage.setItem('kline_client_specs_ts', ts); } catch(e) {}
+        setTimeout(function(){ status.style.display = 'none'; }, 5000);
+    }
+
+    fetch(packingUrl).then(function(r){ return r.text(); }).then(function(text){
+        var rows = parseCSV(text);
+        rows.forEach(function(row, i){
+            if (i === 0) return; // header
+            var client = (row[0] || '').trim();
+            if (!client) return;
+            newPacking[client] = {
+                pouches: row[1] || '', box: row[2] || '', refBox: row[3] || '',
+                case: row[4] || '', flyer: row[5] || '', accessories: row[6] || '', iprs: row[7] || ''
+            };
+        });
+        packingDone = true;
+        checkDone();
+    }).catch(function(e){
+        packingDone = true;
+        status.textContent = 'Error fetching packing data: ' + e.message;
+        status.style.background = '#ffebee'; status.style.color = '#c62828';
+        icon.classList.remove('cs-spinning'); btn.disabled = false;
+        checkDone();
+    });
+
+    fetch(specsUrl).then(function(r){ return r.text(); }).then(function(text){
+        var rows = parseCSV(text);
+        rows.forEach(function(row, i){
+            if (i === 0) return;
+            var client = (row[0] || '').trim();
+            if (!client) return;
+            newSpecs[client] = {
+                alignerMat: row[1] || '', templateMat: row[2] || '',
+                retainerMat: row[3] || '', trimline: row[4] || '', margin: row[5] || ''
+            };
+        });
+        specsDone = true;
+        checkDone();
+    }).catch(function(e){
+        specsDone = true;
+        status.textContent = 'Error fetching specs data: ' + e.message;
+        status.style.background = '#ffebee'; status.style.color = '#c62828';
+        icon.classList.remove('cs-spinning'); btn.disabled = false;
+        checkDone();
+    });
+}
+
+// Load from localStorage if available (only if valid and non-empty)
+(function() {
+    try {
+        var saved = localStorage.getItem('kline_client_specs');
+        var ts = localStorage.getItem('kline_client_specs_ts');
+        if (saved) {
+            var parsed = JSON.parse(saved);
+            // Only use localStorage data if it has actual client records
+            if (Array.isArray(parsed) && parsed.length > 10) {
+                clientSpecsData = parsed;
+                if (ts) document.getElementById('cs-last-sync').textContent = ts;
+            } else {
+                // Clear bad localStorage data
+                localStorage.removeItem('kline_client_specs');
+                localStorage.removeItem('kline_client_specs_ts');
+            }
+        }
+    } catch(e) {
+        // Clear corrupted data
+        try { localStorage.removeItem('kline_client_specs'); } catch(e2) {}
+    }
+    initCSFilters();
+    // Render the table immediately so data shows when page is first visited
+    renderClientSpecs();
+})();
+
 </script>
 </body>
 </html>
