@@ -8102,10 +8102,14 @@ function getMaterialKeywords(matName) {
     return base.split(' ').filter(function(w){ return w.length > 2; });
 }
 
-function getLatestBOH(bohArr) {
-    // boh arrays have 12 monthly slots; trailing months are 0. Return the latest non-zero value.
-    for (var i = bohArr.length - 1; i >= 0; i--) { if (bohArr[i] > 0) return bohArr[i]; }
-    return 0;
+function getLatestBOH(bohArr, roArr) {
+    // boh arrays have 12 monthly slots; trailing months are 0.
+    // Returns latest non-zero BOH + sum of pending receive orders (incoming).
+    var latestBoh = 0;
+    for (var i = bohArr.length - 1; i >= 0; i--) { if (bohArr[i] > 0) { latestBoh = bohArr[i]; break; } }
+    var pendingRO = 0;
+    if (roArr) { for (var j = 0; j < roArr.length; j++) { if (roArr[j] > 0) pendingRO += roArr[j]; } }
+    return {total: latestBoh + pendingRO, boh: latestBoh, incoming: pendingRO};
 }
 
 function scoreMaterialStock(pid, answers) {
@@ -8132,10 +8136,10 @@ function scoreMaterialStock(pid, answers) {
             return (n.indexOf('aligner') >= 0 || n.indexOf('aln') >= 0) && alnKeywords.some(function(kw) { return n.indexOf(kw) >= 0; });
         });
         if (alnItems.length > 0) {
-            var bestBoh = 0;
-            alnItems.forEach(function(it) { var b = getLatestBOH(it.boh); if (b > bestBoh) bestBoh = b; });
+            var bestBoh = 0, bestIncoming = 0;
+            alnItems.forEach(function(it) { var r = getLatestBOH(it.boh, it.ro); if (r.total > bestBoh) { bestBoh = r.total; bestIncoming = r.incoming; } });
             var alnScore = bestBoh > 20 ? 100 : bestBoh > 10 ? 80 : bestBoh > 5 ? 60 : bestBoh > 0 ? 40 : 0;
-            checks.push({name: 'Aligner (' + selectedAlnMat + ')', stock: bestBoh, score: alnScore});
+            checks.push({name: 'Aligner (' + selectedAlnMat + ')', stock: bestBoh, incoming: bestIncoming, score: alnScore});
             totalScore += alnScore; checkCount++;
         } else {
             // Also check rolls
@@ -8144,13 +8148,13 @@ function scoreMaterialStock(pid, answers) {
                 return n.indexOf('roll') >= 0 && alnKeywords.some(function(kw) { return n.indexOf(kw) >= 0; });
             });
             if (rollItems.length > 0) {
-                var bestBoh = 0;
-                rollItems.forEach(function(it) { var b = getLatestBOH(it.boh); if (b > bestBoh) bestBoh = b; });
+                var bestBoh = 0, bestIncoming = 0;
+                rollItems.forEach(function(it) { var r = getLatestBOH(it.boh, it.ro); if (r.total > bestBoh) { bestBoh = r.total; bestIncoming = r.incoming; } });
                 var alnScore = bestBoh > 10 ? 100 : bestBoh > 5 ? 80 : bestBoh > 2 ? 60 : bestBoh > 0 ? 40 : 0;
-                checks.push({name: 'Aligner (' + selectedAlnMat + ')', stock: bestBoh, score: alnScore});
+                checks.push({name: 'Aligner (' + selectedAlnMat + ')', stock: bestBoh, incoming: bestIncoming, score: alnScore});
                 totalScore += alnScore; checkCount++;
             } else {
-                checks.push({name: 'Aligner (' + selectedAlnMat + ')', stock: 0, score: 0});
+                checks.push({name: 'Aligner (' + selectedAlnMat + ')', stock: 0, incoming: 0, score: 0});
                 totalScore += 0; checkCount++;
             }
         }
@@ -8164,10 +8168,10 @@ function scoreMaterialStock(pid, answers) {
             return n.indexOf('retainer') >= 0 && retKeywords.some(function(kw) { return n.indexOf(kw) >= 0; });
         });
         if (retItems.length > 0) {
-            var bestBoh = 0;
-            retItems.forEach(function(it) { var b = getLatestBOH(it.boh); if (b > bestBoh) bestBoh = b; });
+            var bestBoh = 0, bestIncoming = 0;
+            retItems.forEach(function(it) { var r = getLatestBOH(it.boh, it.ro); if (r.total > bestBoh) { bestBoh = r.total; bestIncoming = r.incoming; } });
             var retScore = bestBoh > 500 ? 100 : bestBoh > 100 ? 80 : bestBoh > 20 ? 60 : bestBoh > 0 ? 40 : 0;
-            checks.push({name: 'Retainer', stock: bestBoh, score: retScore});
+            checks.push({name: 'Retainer', stock: bestBoh, incoming: bestIncoming, score: retScore});
             totalScore += retScore; checkCount++;
         }
     }
@@ -8180,10 +8184,10 @@ function scoreMaterialStock(pid, answers) {
             return n.indexOf('template') >= 0 && tmplKeywords.some(function(kw) { return n.indexOf(kw) >= 0; });
         });
         if (tmplItems.length > 0) {
-            var bestBoh = 0;
-            tmplItems.forEach(function(it) { var b = getLatestBOH(it.boh); if (b > bestBoh) bestBoh = b; });
+            var bestBoh = 0, bestIncoming = 0;
+            tmplItems.forEach(function(it) { var r = getLatestBOH(it.boh, it.ro); if (r.total > bestBoh) { bestBoh = r.total; bestIncoming = r.incoming; } });
             var tmplScore = bestBoh > 2000 ? 100 : bestBoh > 500 ? 80 : bestBoh > 100 ? 60 : bestBoh > 0 ? 40 : 0;
-            checks.push({name: 'Template', stock: bestBoh, score: tmplScore});
+            checks.push({name: 'Template', stock: bestBoh, incoming: bestIncoming, score: tmplScore});
             totalScore += tmplScore; checkCount++;
         }
     }
@@ -8191,17 +8195,17 @@ function scoreMaterialStock(pid, answers) {
     // Also check resin (general readiness)
     var resinItems = facItems.filter(function(item) { return item.cat === 'RMP' && item.name.toLowerCase().indexOf('resin') >= 0; });
     if (resinItems.length > 0) {
-        var totalResin = 0;
-        resinItems.forEach(function(it) { totalResin += getLatestBOH(it.boh); });
+        var totalResin = 0, totalResinIncoming = 0;
+        resinItems.forEach(function(it) { var r = getLatestBOH(it.boh, it.ro); totalResin += r.total; totalResinIncoming += r.incoming; });
         var resinScore = totalResin > 1000 ? 100 : totalResin > 500 ? 80 : totalResin > 100 ? 60 : totalResin > 0 ? 40 : 0;
-        checks.push({name: 'Resin', stock: totalResin, score: resinScore});
+        checks.push({name: 'Resin', stock: totalResin, incoming: totalResinIncoming, score: resinScore});
         totalScore += resinScore; checkCount++;
     }
     
     if (checkCount === 0) return {score: 50, detail: 'No specific materials to check', checks: []};
     
     var avgScore = Math.round(totalScore / checkCount);
-    var detailParts = checks.map(function(c) { return c.name + ': ' + (c.stock > 0 ? c.stock.toLocaleString() + ' in stock' : 'OUT OF STOCK'); });
+    var detailParts = checks.map(function(c) { return c.name + ': ' + (c.stock > 0 ? c.stock.toLocaleString() + ' available' + (c.incoming > 0 ? ' (incl. ' + c.incoming.toLocaleString() + ' incoming)' : '') : 'OUT OF STOCK'); });
     return {score: avgScore, detail: detailParts.join(' | '), checks: checks};
 }
 
@@ -9028,7 +9032,6 @@ var COUNTRY_SPECIFIC_COMPLIANCE = {
         notes: ['Swiss Authorized Representative required', 'MRA with EU covers medical devices', 'New Swiss MedDO (Medical Devices Ordinance) aligned with EU MDR']
     },
     'Russia': {
-        market: 'Europe (EU/UK/DACH)',
         flag: true,
         certs: ['Roszdravnadzor', 'ISO'],
         recommended: ['GOST-R'],
