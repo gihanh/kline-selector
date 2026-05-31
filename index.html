@@ -6709,21 +6709,29 @@ function recalcUtilizationFromMES() {
     };
 
     MES_DIST_RAW.forEach(function(row) {
-        // row: [name, primaryFacility, totalCases, facilityBreakdown]
-        var totalCases = parseInt(row[2]) || 0;
-        var breakdown = row[3]; // object like {Portugal: 5, Tijuana: 3}
+        // Support both old array format and new object format
+        var totalCases, breakdown, mainFac;
+        if (Array.isArray(row)) {
+            totalCases = parseInt(row[2]) || 0;
+            breakdown = row[3];
+            mainFac = row[1];
+        } else {
+            totalCases = row.cases || 0;
+            breakdown = row.facs || null;
+            mainFac = '';
+            if (breakdown) { for (var f in breakdown) { if (!mainFac || breakdown[f].c > (breakdown[mainFac]||{c:0}).c) mainFac = f; } }
+        }
 
         if (breakdown && typeof breakdown === 'object' && Object.keys(breakdown).length > 0) {
-            // Multi-facility: use breakdown
             Object.keys(breakdown).forEach(function(facName) {
-                var key = FACILITY_MAP[(facName || '').toLowerCase().trim()];
+                var facCases = typeof breakdown[facName] === 'object' ? (breakdown[facName].c || 0) : (parseInt(breakdown[facName]) || 0);
+                var key = FACILITY_MAP[(facName || '').toLowerCase().trim()] || facName;
                 if (key && facTotals.hasOwnProperty(key)) {
-                    facTotals[key] += parseInt(breakdown[facName]) || 0;
+                    facTotals[key] += facCases;
                 }
             });
         } else {
-            // Single facility
-            var key = FACILITY_MAP[(row[1] || '').toLowerCase().trim()];
+            var key = FACILITY_MAP[(mainFac || '').toLowerCase().trim()];
             if (key && facTotals.hasOwnProperty(key)) {
                 facTotals[key] += totalCases;
             }
@@ -10276,13 +10284,27 @@ var AVG_ALIGNERS_PER_CASE = 18;
 function loadEmbeddedMESData() {
     reallocLiveData = [];
     MES_DIST_RAW.forEach(function(row) {
-        var breakdown = row.length > 3 ? row[3] : null;
+        // Support both old array format and new object format
+        var name, cases, totalAligners, breakdown, mainFac;
+        if (Array.isArray(row)) {
+            name = row[0]; mainFac = row[1]; cases = row[2];
+            breakdown = row.length > 3 ? row[3] : null;
+            totalAligners = Math.round(cases * AVG_ALIGNERS_PER_CASE);
+        } else {
+            name = row.n; cases = row.cases; totalAligners = row.aln || Math.round(cases * AVG_ALIGNERS_PER_CASE);
+            breakdown = row.facs || null;
+            // Determine main facility (most cases)
+            mainFac = '';
+            if (breakdown) {
+                var maxC = 0;
+                for (var f in breakdown) { if (breakdown[f].c > maxC) { maxC = breakdown[f].c; mainFac = f; } }
+            }
+        }
         var facCount = breakdown ? Object.keys(breakdown).length : 1;
-        var totalAligners = Math.round(row[2] * AVG_ALIGNERS_PER_CASE);
         reallocLiveData.push({
-            name: row[0],
-            facility: row[1],
-            cases: row[2],
+            name: name,
+            facility: mainFac,
+            cases: cases,
             aligners: totalAligners,
             volume: Math.round(totalAligners / MES_DIST_WORK_DAYS),
             breakdown: breakdown,
