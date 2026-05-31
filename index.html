@@ -594,6 +594,35 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
 .realloc-transfer-box { padding: 12px; border-radius: 8px; text-align: center; }
 .realloc-transfer-box.from { background: #fff3e0; border: 1px solid #ffcc80; }
 .realloc-transfer-box.to { background: #e8f5e9; border: 1px solid #a5d6a7; }
+
+/* ── Facility Profile Section Groups ── */
+.fp-section { margin-bottom: 18px; border-radius: 10px; overflow: hidden; border: 1px solid #e0e7ef; border-left: 4px solid #1F4E79; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+.fp-section-header { padding: 10px 16px; font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid rgba(0,0,0,0.08); }
+.fp-section-header .fp-sec-icon { font-size: 16px; width: 22px; text-align: center; }
+.fp-section-body { padding: 14px 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 12px 20px; }
+.fp-section-body .profile-field.full-width { grid-column: 1 / -1; }
+/* Category colors */
+.fp-section.cat-general { border-left-color: #1565C0; }
+.fp-section.cat-general .fp-section-header { background: #E3F2FD; color: #0D47A1; }
+.fp-section.cat-general .fp-section-body { background: #FAFCFF; }
+.fp-section.cat-compliance { border-left-color: #2E7D32; }
+.fp-section.cat-compliance .fp-section-header { background: #E8F5E9; color: #1B5E20; }
+.fp-section.cat-compliance .fp-section-body { background: #FAFDF9; }
+.fp-section.cat-manufacturing { border-left-color: #E65100; }
+.fp-section.cat-manufacturing .fp-section-header { background: #FFF3E0; color: #BF360C; }
+.fp-section.cat-manufacturing .fp-section-body { background: #FFFCF7; }
+.fp-section.cat-materials { border-left-color: #6A1B9A; }
+.fp-section.cat-materials .fp-section-header { background: #F3E5F5; color: #4A148C; }
+.fp-section.cat-materials .fp-section-body { background: #FDFAFF; }
+.fp-section.cat-finance { border-left-color: #00695C; }
+.fp-section.cat-finance .fp-section-header { background: #E0F2F1; color: #004D40; }
+.fp-section.cat-finance .fp-section-body { background: #F7FDFC; }
+.fp-section.cat-sla { border-left-color: #283593; }
+.fp-section.cat-sla .fp-section-header { background: #E8EAF6; color: #1A237E; }
+.fp-section.cat-sla .fp-section-body { background: #FAFAFF; }
+.fp-section.cat-packaging { border-left-color: #4E342E; }
+.fp-section.cat-packaging .fp-section-header { background: #EFEBE9; color: #3E2723; }
+.fp-section.cat-packaging .fp-section-body { background: #FDFBFA; }
 </style>
 </head>
 <body>
@@ -623,6 +652,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
         <div class="nav-item" onclick="switchPage('clientspecs', this);">Client Specifications</div>
         <div class="nav-item" onclick="switchPage('logistics', this);">Logistics Costs</div>
         <div class="nav-item" onclick="switchPage('upslookup', this);">Shipping Rates</div>
+        <div class="nav-item" onclick="switchPage('clientshipping', this);">Client Shipping</div>
     </nav>
 </div>
 
@@ -698,15 +728,7 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
 
 
-    <!-- Regulatory Compliance Check -->
-    <div class="section" id="sec-compliance-check">
-        <div class="section-header" onclick="toggleSection(this)" style="background: linear-gradient(135deg, #37474F, #607D8B);">
-            REGULATORY COMPLIANCE CHECK <span class="arrow">&#9660;</span>
-        </div>
-        <div class="section-body">
-            <div id="complianceCheckContainer"></div>
-        </div>
-    </div>
+
 
     <!-- Approval -->
     <div class="section" id="sec-signoff">
@@ -1148,7 +1170,62 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     <div class="profile-card">
         <div class="profile-card-header"><span>Portugal (PT)</span><span class="badge">Production + Fulfillment + CAD</span></div>
         <div class="profile-grid">
+<div class="fp-section cat-general">
+<div class="fp-section-header"><span class="fp-sec-icon">&#127759;</span> General</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>Location</label><input type="text" id="fp_pt_location" value="Chaves, Portugal"></div>
+<div class="profile-field">
+  <label>Services</label>
+  <div class="ms-wrap" id="fp_pt_services_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_services')">
+      <span class="ms-tags" id="fp_pt_services_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_pt_services_dd">
+      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_pt_services')" checked> Production</label>
+      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_pt_services')" checked> Fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_pt_services')" checked> CAD</label>
+      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_pt_services')"> QC</label>
+      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_pt_services')"> Final-mile fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_pt_services')"> Distribution</label>
+      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_pt_services')"> Hub</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_services')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_pt_services_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_pt_services')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Markets Served</label>
+  <div class="ms-wrap" id="fp_pt_markets_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_markets')">
+      <span class="ms-tags" id="fp_pt_markets_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_pt_markets_dd">
+      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_pt_markets')" checked> USA</label>
+      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_pt_markets')" checked> Europe</label>
+      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_pt_markets')"> Middle East</label>
+      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_pt_markets')"> Israel</label>
+      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_pt_markets')" checked> Australia</label>
+      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_pt_markets')"> LATAM</label>
+      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_pt_markets')"> Africa</label>
+      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_pt_markets')"> Asia-Pacific</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_markets')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_pt_markets_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_pt_markets')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-compliance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128274;</span> Compliance</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>Certifications</label>
   <div class="ms-wrap" id="fp_pt_certifications_wrap">
@@ -1174,89 +1251,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
   </div>
 </div>
 <div class="profile-field"><label>UDI Compliance</label><select id="fp_pt_udi"><option value="Yes" selected>Yes</option><option value="No">No</option><option value="N/A">N/A</option></select></div>
-<div class="profile-field">
-  <label>Services</label>
-  <div class="ms-wrap" id="fp_pt_services_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_services')">
-      <span class="ms-tags" id="fp_pt_services_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_pt_services_dd">
-      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_pt_services')" checked> Production</label>
-      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_pt_services')" checked> Fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_pt_services')" checked> CAD</label>
-      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_pt_services')"> QC</label>
-      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_pt_services')"> Final-mile fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_pt_services')"> Distribution</label>
-      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_pt_services')"> Hub</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_services')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_pt_services_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_pt_services')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Printing / Paging</label>
-  <div class="ms-wrap" id="fp_pt_printing_paging_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_printing_paging')">
-      <span class="ms-tags" id="fp_pt_printing_paging_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_pt_printing_paging_dd">
-      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_pt_printing_paging')" checked> Automated auto-paging</label>
-      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_pt_printing_paging')" checked> Automated printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_pt_printing_paging')"> Manual printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_pt_printing_paging')"> Manual Sticker</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_printing_paging')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_pt_printing_paging_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_pt_printing_paging')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Aligner Materials</label>
-  <div class="ms-wrap" id="fp_pt_aligner_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_aligner_materials')">
-      <span class="ms-tags" id="fp_pt_aligner_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_pt_aligner_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_pt_aligner_materials')" checked> Coherz</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_pt_aligner_materials')" checked> Maxflex</label>
-      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_pt_aligner_materials')" checked> CA PRO</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_pt_aligner_materials')" checked> Zendura</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_pt_aligner_materials')"> Zendura FLX</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_aligner_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_pt_aligner_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_pt_aligner_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="profile-field">
-  <label>Retainer Materials</label>
-  <div class="ms-wrap" id="fp_pt_retainer_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_retainer_materials')">
-      <span class="ms-tags" id="fp_pt_retainer_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_pt_retainer_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_pt_retainer_materials')" checked> Coherz 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_pt_retainer_materials')" checked> Maxflex 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_pt_retainer_materials')"> Zendura A 0.76mm</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_retainer_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_pt_retainer_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_pt_retainer_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="fp-section cat-manufacturing">
+<div class="fp-section-header"><span class="fp-sec-icon">&#9881;</span> Manufacturing</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>3D Printing</label>
   <div class="ms-wrap" id="fp_pt_printing_3d_wrap">
@@ -1355,10 +1354,95 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_pt_daily_capacity" value="6000" step="any"></div>
-<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_pt_scallop_mix" value="50" step="any"></div>
-<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_pt_ots" value="4" step="any"></div>
-<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_pt_otd" value="5" step="any"></div>
+<div class="profile-field">
+  <label>Printing / Paging</label>
+  <div class="ms-wrap" id="fp_pt_printing_paging_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_printing_paging')">
+      <span class="ms-tags" id="fp_pt_printing_paging_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_pt_printing_paging_dd">
+      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_pt_printing_paging')" checked> Automated auto-paging</label>
+      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_pt_printing_paging')" checked> Automated printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_pt_printing_paging')"> Manual printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_pt_printing_paging')"> Manual Sticker</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_printing_paging')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_pt_printing_paging_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_pt_printing_paging')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-materials">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Materials</div>
+<div class="fp-section-body">
+<div class="profile-field">
+  <label>Aligner Materials</label>
+  <div class="ms-wrap" id="fp_pt_aligner_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_aligner_materials')">
+      <span class="ms-tags" id="fp_pt_aligner_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_pt_aligner_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_pt_aligner_materials')" checked> Coherz</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_pt_aligner_materials')" checked> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_pt_aligner_materials')" checked> CA PRO</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_pt_aligner_materials')" checked> Zendura</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_pt_aligner_materials')"> Zendura FLX</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_aligner_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_pt_aligner_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_pt_aligner_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Retainer Materials</label>
+  <div class="ms-wrap" id="fp_pt_retainer_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_retainer_materials')">
+      <span class="ms-tags" id="fp_pt_retainer_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_pt_retainer_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_pt_retainer_materials')" checked> Coherz 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_pt_retainer_materials')" checked> Maxflex 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_pt_retainer_materials')"> Zendura A 0.76mm</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_retainer_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_pt_retainer_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_pt_retainer_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Template Materials</label>
+  <div class="ms-wrap" id="fp_pt_template_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_template_materials')">
+      <span class="ms-tags" id="fp_pt_template_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_pt_template_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_pt_template_materials')" checked> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="Erkodent" onchange="updateMsTags('fp_pt_template_materials')" checked> Erkodent</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura AT" onchange="updateMsTags('fp_pt_template_materials')"> Zendura AT</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_template_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_pt_template_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_pt_template_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-finance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128178;</span> Finance</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>COGS / Aln Coherz</label><input type="number" id="fp_pt_cogs_aln_coherz" value="1.75" step="any"></div>
 <div class="profile-field"><label>COGS / Aln Maxflex</label><input type="number" id="fp_pt_cogs_aln_maxflex" value="1.75" step="any"></div>
 <div class="profile-field"><label>COGS / Aln CA PRO</label><input type="number" id="fp_pt_cogs_aln_ca_pro" value="1.75" step="any"></div>
@@ -1370,6 +1454,20 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
 <div class="profile-field"><label>COGS Currency</label><select id="fp_pt_cogs_currency"><option value="EUR" selected>EUR</option><option value="USD">USD</option></select></div>
 <div class="profile-field"><label>ASP</label><input type="number" id="fp_pt_asp" value="3.5" step="any"></div>
 <div class="profile-field"><label>Margin %</label><input type="number" id="fp_pt_margin" value="60" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-sla">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128200;</span> SLA</div>
+<div class="fp-section-body">
+<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_pt_daily_capacity" value="6000" step="any"></div>
+<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_pt_scallop_mix" value="50" step="any"></div>
+<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_pt_ots" value="4" step="any"></div>
+<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_pt_otd" value="5" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-packaging">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Packaging</div>
+<div class="fp-section-body">
 <div class="profile-field full-width">
   <label>Packaging</label>
   <div class="ms-wrap" id="fp_pt_packaging_wrap">
@@ -1396,31 +1494,10 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field">
-  <label>Markets Served</label>
-  <div class="ms-wrap" id="fp_pt_markets_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_pt_markets')">
-      <span class="ms-tags" id="fp_pt_markets_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_pt_markets_dd">
-      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_pt_markets')" checked> USA</label>
-      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_pt_markets')" checked> Europe</label>
-      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_pt_markets')"> Middle East</label>
-      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_pt_markets')"> Israel</label>
-      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_pt_markets')" checked> Australia</label>
-      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_pt_markets')"> LATAM</label>
-      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_pt_markets')"> Africa</label>
-      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_pt_markets')"> Asia-Pacific</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_pt_markets')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_pt_markets_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_pt_markets')">+</button>
-      </div>
-    </div>
-  </div>
+</div>
 </div>
 <div class="profile-field full-width"><label>Notes</label><textarea id="fp_pt_notes" rows="2"></textarea></div>
+
         </div>
     </div>
 </div>
@@ -1428,7 +1505,62 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     <div class="profile-card">
         <div class="profile-card-header"><span>CFZ — Cairo, Egypt</span><span class="badge">Production + Fulfillment</span></div>
         <div class="profile-grid">
+<div class="fp-section cat-general">
+<div class="fp-section-header"><span class="fp-sec-icon">&#127759;</span> General</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>Location</label><input type="text" id="fp_cfz_location" value="Cairo Free Zone, Egypt"></div>
+<div class="profile-field">
+  <label>Services</label>
+  <div class="ms-wrap" id="fp_cfz_services_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_services')">
+      <span class="ms-tags" id="fp_cfz_services_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_cfz_services_dd">
+      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_cfz_services')" checked> Production</label>
+      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_cfz_services')" checked> Fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_cfz_services')"> CAD</label>
+      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_cfz_services')"> QC</label>
+      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_cfz_services')"> Final-mile fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_cfz_services')"> Distribution</label>
+      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_cfz_services')"> Hub</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_services')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_cfz_services_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_services')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Markets Served</label>
+  <div class="ms-wrap" id="fp_cfz_markets_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_markets')">
+      <span class="ms-tags" id="fp_cfz_markets_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_cfz_markets_dd">
+      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_cfz_markets')" checked> USA</label>
+      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_cfz_markets')" checked> Europe</label>
+      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_cfz_markets')" checked> Middle East</label>
+      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_cfz_markets')" checked> Israel</label>
+      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_cfz_markets')"> Australia</label>
+      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_cfz_markets')"> LATAM</label>
+      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_cfz_markets')"> Africa</label>
+      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_cfz_markets')"> Asia-Pacific</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_markets')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_cfz_markets_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_markets')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-compliance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128274;</span> Compliance</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>Certifications</label>
   <div class="ms-wrap" id="fp_cfz_certifications_wrap">
@@ -1454,89 +1586,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
   </div>
 </div>
 <div class="profile-field"><label>UDI Compliance</label><select id="fp_cfz_udi"><option value="Yes" selected>Yes</option><option value="No">No</option><option value="N/A">N/A</option></select></div>
-<div class="profile-field">
-  <label>Services</label>
-  <div class="ms-wrap" id="fp_cfz_services_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_services')">
-      <span class="ms-tags" id="fp_cfz_services_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_cfz_services_dd">
-      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_cfz_services')" checked> Production</label>
-      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_cfz_services')" checked> Fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_cfz_services')"> CAD</label>
-      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_cfz_services')"> QC</label>
-      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_cfz_services')"> Final-mile fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_cfz_services')"> Distribution</label>
-      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_cfz_services')"> Hub</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_services')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_cfz_services_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_services')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Printing / Paging</label>
-  <div class="ms-wrap" id="fp_cfz_printing_paging_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_printing_paging')">
-      <span class="ms-tags" id="fp_cfz_printing_paging_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_cfz_printing_paging_dd">
-      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_cfz_printing_paging')" checked> Automated auto-paging</label>
-      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_cfz_printing_paging')" checked> Automated printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_cfz_printing_paging')"> Manual printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_cfz_printing_paging')"> Manual Sticker</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_printing_paging')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_cfz_printing_paging_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_printing_paging')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Aligner Materials</label>
-  <div class="ms-wrap" id="fp_cfz_aligner_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_aligner_materials')">
-      <span class="ms-tags" id="fp_cfz_aligner_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_cfz_aligner_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_cfz_aligner_materials')" checked> Coherz</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_cfz_aligner_materials')" checked> Maxflex</label>
-      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_cfz_aligner_materials')"> CA PRO</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_cfz_aligner_materials')" checked> Zendura</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_cfz_aligner_materials')"> Zendura FLX</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_aligner_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_cfz_aligner_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_aligner_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="profile-field">
-  <label>Retainer Materials</label>
-  <div class="ms-wrap" id="fp_cfz_retainer_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_retainer_materials')">
-      <span class="ms-tags" id="fp_cfz_retainer_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_cfz_retainer_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_cfz_retainer_materials')" checked> Coherz 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_cfz_retainer_materials')" checked> Maxflex 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_cfz_retainer_materials')"> Zendura A 0.76mm</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_retainer_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_cfz_retainer_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_retainer_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="fp-section cat-manufacturing">
+<div class="fp-section-header"><span class="fp-sec-icon">&#9881;</span> Manufacturing</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>3D Printing</label>
   <div class="ms-wrap" id="fp_cfz_printing_3d_wrap">
@@ -1635,10 +1689,95 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_cfz_daily_capacity" value="3900" step="any"></div>
-<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_cfz_scallop_mix" value="20" step="any"></div>
-<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_cfz_ots" value="3" step="any"></div>
-<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_cfz_otd" value="6" step="any"></div>
+<div class="profile-field">
+  <label>Printing / Paging</label>
+  <div class="ms-wrap" id="fp_cfz_printing_paging_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_printing_paging')">
+      <span class="ms-tags" id="fp_cfz_printing_paging_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_cfz_printing_paging_dd">
+      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_cfz_printing_paging')" checked> Automated auto-paging</label>
+      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_cfz_printing_paging')" checked> Automated printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_cfz_printing_paging')"> Manual printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_cfz_printing_paging')"> Manual Sticker</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_printing_paging')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_cfz_printing_paging_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_printing_paging')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-materials">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Materials</div>
+<div class="fp-section-body">
+<div class="profile-field">
+  <label>Aligner Materials</label>
+  <div class="ms-wrap" id="fp_cfz_aligner_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_aligner_materials')">
+      <span class="ms-tags" id="fp_cfz_aligner_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_cfz_aligner_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_cfz_aligner_materials')" checked> Coherz</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_cfz_aligner_materials')" checked> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_cfz_aligner_materials')"> CA PRO</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_cfz_aligner_materials')" checked> Zendura</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_cfz_aligner_materials')"> Zendura FLX</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_aligner_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_cfz_aligner_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_aligner_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Retainer Materials</label>
+  <div class="ms-wrap" id="fp_cfz_retainer_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_retainer_materials')">
+      <span class="ms-tags" id="fp_cfz_retainer_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_cfz_retainer_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_cfz_retainer_materials')" checked> Coherz 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_cfz_retainer_materials')" checked> Maxflex 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_cfz_retainer_materials')"> Zendura A 0.76mm</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_retainer_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_cfz_retainer_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_retainer_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Template Materials</label>
+  <div class="ms-wrap" id="fp_cfz_template_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_template_materials')">
+      <span class="ms-tags" id="fp_cfz_template_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_cfz_template_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_cfz_template_materials')" checked> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="Erkodent" onchange="updateMsTags('fp_cfz_template_materials')"> Erkodent</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura AT" onchange="updateMsTags('fp_cfz_template_materials')"> Zendura AT</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_template_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_cfz_template_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_template_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-finance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128178;</span> Finance</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>COGS / Aln Coherz</label><input type="number" id="fp_cfz_cogs_aln_coherz" value="1.4" step="any"></div>
 <div class="profile-field"><label>COGS / Aln Maxflex</label><input type="number" id="fp_cfz_cogs_aln_maxflex" value="1.4" step="any"></div>
 <div class="profile-field"><label>COGS / Aln Zendura</label><input type="number" id="fp_cfz_cogs_aln_zendura" value="1.4" step="any"></div>
@@ -1649,6 +1788,20 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
 <div class="profile-field"><label>COGS Currency</label><select id="fp_cfz_cogs_currency"><option value="EUR" selected>EUR</option><option value="USD">USD</option></select></div>
 <div class="profile-field"><label>ASP</label><input type="number" id="fp_cfz_asp" value="3.5" step="any"></div>
 <div class="profile-field"><label>Margin %</label><input type="number" id="fp_cfz_margin" value="70" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-sla">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128200;</span> SLA</div>
+<div class="fp-section-body">
+<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_cfz_daily_capacity" value="3900" step="any"></div>
+<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_cfz_scallop_mix" value="20" step="any"></div>
+<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_cfz_ots" value="3" step="any"></div>
+<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_cfz_otd" value="6" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-packaging">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Packaging</div>
+<div class="fp-section-body">
 <div class="profile-field full-width">
   <label>Packaging</label>
   <div class="ms-wrap" id="fp_cfz_packaging_wrap">
@@ -1675,31 +1828,10 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field">
-  <label>Markets Served</label>
-  <div class="ms-wrap" id="fp_cfz_markets_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_cfz_markets')">
-      <span class="ms-tags" id="fp_cfz_markets_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_cfz_markets_dd">
-      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_cfz_markets')" checked> USA</label>
-      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_cfz_markets')" checked> Europe</label>
-      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_cfz_markets')" checked> Middle East</label>
-      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_cfz_markets')" checked> Israel</label>
-      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_cfz_markets')"> Australia</label>
-      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_cfz_markets')"> LATAM</label>
-      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_cfz_markets')"> Africa</label>
-      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_cfz_markets')"> Asia-Pacific</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_cfz_markets')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_cfz_markets_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_cfz_markets')">+</button>
-      </div>
-    </div>
-  </div>
+</div>
 </div>
 <div class="profile-field full-width"><label>Notes</label><textarea id="fp_cfz_notes" rows="2">Avoid drop-shipping — consolidate shipments. Significant headroom at 50% utilization.</textarea></div>
+
         </div>
     </div>
 </div>
@@ -1707,7 +1839,62 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     <div class="profile-card">
         <div class="profile-card-header"><span>Tijuana — Mexico (TJ)</span><span class="badge">Production + Fulfillment</span></div>
         <div class="profile-grid">
+<div class="fp-section cat-general">
+<div class="fp-section-header"><span class="fp-sec-icon">&#127759;</span> General</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>Location</label><input type="text" id="fp_tj_location" value="Tijuana, Mexico"></div>
+<div class="profile-field">
+  <label>Services</label>
+  <div class="ms-wrap" id="fp_tj_services_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_services')">
+      <span class="ms-tags" id="fp_tj_services_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_tj_services_dd">
+      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_tj_services')" checked> Production</label>
+      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_tj_services')" checked> Fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_tj_services')"> CAD</label>
+      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_tj_services')"> QC</label>
+      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_tj_services')"> Final-mile fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_tj_services')"> Distribution</label>
+      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_tj_services')"> Hub</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_services')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_tj_services_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_tj_services')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Markets Served</label>
+  <div class="ms-wrap" id="fp_tj_markets_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_markets')">
+      <span class="ms-tags" id="fp_tj_markets_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_tj_markets_dd">
+      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_tj_markets')" checked> USA</label>
+      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_tj_markets')"> Europe</label>
+      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_tj_markets')"> Middle East</label>
+      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_tj_markets')"> Israel</label>
+      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_tj_markets')"> Australia</label>
+      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_tj_markets')"> LATAM</label>
+      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_tj_markets')"> Africa</label>
+      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_tj_markets')"> Asia-Pacific</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_markets')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_tj_markets_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_tj_markets')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-compliance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128274;</span> Compliance</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>Certifications</label>
   <div class="ms-wrap" id="fp_tj_certifications_wrap">
@@ -1733,89 +1920,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
   </div>
 </div>
 <div class="profile-field"><label>UDI Compliance</label><select id="fp_tj_udi"><option value="Yes" selected>Yes</option><option value="No">No</option><option value="N/A">N/A</option></select></div>
-<div class="profile-field">
-  <label>Services</label>
-  <div class="ms-wrap" id="fp_tj_services_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_services')">
-      <span class="ms-tags" id="fp_tj_services_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_tj_services_dd">
-      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_tj_services')" checked> Production</label>
-      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_tj_services')" checked> Fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_tj_services')"> CAD</label>
-      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_tj_services')"> QC</label>
-      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_tj_services')"> Final-mile fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_tj_services')"> Distribution</label>
-      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_tj_services')"> Hub</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_services')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_tj_services_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_tj_services')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Printing / Paging</label>
-  <div class="ms-wrap" id="fp_tj_printing_paging_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_printing_paging')">
-      <span class="ms-tags" id="fp_tj_printing_paging_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_tj_printing_paging_dd">
-      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_tj_printing_paging')" checked> Automated auto-paging</label>
-      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_tj_printing_paging')" checked> Automated printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_tj_printing_paging')"> Manual printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_tj_printing_paging')"> Manual Sticker</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_printing_paging')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_tj_printing_paging_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_tj_printing_paging')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Aligner Materials</label>
-  <div class="ms-wrap" id="fp_tj_aligner_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_aligner_materials')">
-      <span class="ms-tags" id="fp_tj_aligner_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_tj_aligner_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_tj_aligner_materials')"> Coherz</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_tj_aligner_materials')"> Maxflex</label>
-      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_tj_aligner_materials')"> CA PRO</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_tj_aligner_materials')"> Zendura</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_tj_aligner_materials')" checked> Zendura FLX</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_aligner_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_tj_aligner_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_tj_aligner_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="profile-field">
-  <label>Retainer Materials</label>
-  <div class="ms-wrap" id="fp_tj_retainer_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_retainer_materials')">
-      <span class="ms-tags" id="fp_tj_retainer_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_tj_retainer_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_tj_retainer_materials')" checked> Coherz 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_tj_retainer_materials')"> Maxflex 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_tj_retainer_materials')" checked> Zendura A 0.76mm</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_retainer_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_tj_retainer_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_tj_retainer_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="fp-section cat-manufacturing">
+<div class="fp-section-header"><span class="fp-sec-icon">&#9881;</span> Manufacturing</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>3D Printing</label>
   <div class="ms-wrap" id="fp_tj_printing_3d_wrap">
@@ -1914,18 +2023,116 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_tj_daily_capacity" value="10000" step="any"></div>
-<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_tj_scallop_mix" value="0" step="any"></div>
-<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_tj_ots" value="5" step="any"></div>
-<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_tj_otd" value="8" step="any"></div>
+<div class="profile-field">
+  <label>Printing / Paging</label>
+  <div class="ms-wrap" id="fp_tj_printing_paging_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_printing_paging')">
+      <span class="ms-tags" id="fp_tj_printing_paging_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_tj_printing_paging_dd">
+      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_tj_printing_paging')" checked> Automated auto-paging</label>
+      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_tj_printing_paging')" checked> Automated printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_tj_printing_paging')"> Manual printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_tj_printing_paging')"> Manual Sticker</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_printing_paging')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_tj_printing_paging_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_tj_printing_paging')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-materials">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Materials</div>
+<div class="fp-section-body">
+<div class="profile-field">
+  <label>Aligner Materials</label>
+  <div class="ms-wrap" id="fp_tj_aligner_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_aligner_materials')">
+      <span class="ms-tags" id="fp_tj_aligner_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_tj_aligner_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_tj_aligner_materials')"> Coherz</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_tj_aligner_materials')"> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_tj_aligner_materials')"> CA PRO</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_tj_aligner_materials')"> Zendura</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_tj_aligner_materials')" checked> Zendura FLX</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_aligner_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_tj_aligner_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_tj_aligner_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Retainer Materials</label>
+  <div class="ms-wrap" id="fp_tj_retainer_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_retainer_materials')">
+      <span class="ms-tags" id="fp_tj_retainer_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_tj_retainer_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_tj_retainer_materials')" checked> Coherz 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_tj_retainer_materials')"> Maxflex 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_tj_retainer_materials')" checked> Zendura A 0.76mm</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_retainer_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_tj_retainer_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_tj_retainer_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Template Materials</label>
+  <div class="ms-wrap" id="fp_tj_template_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_template_materials')">
+      <span class="ms-tags" id="fp_tj_template_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_tj_template_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_tj_template_materials')"> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="Erkodent" onchange="updateMsTags('fp_tj_template_materials')"> Erkodent</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura AT" onchange="updateMsTags('fp_tj_template_materials')" checked> Zendura AT</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_template_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_tj_template_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_tj_template_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-finance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128178;</span> Finance</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>COGS / Aln Zendura FLX</label><input type="number" id="fp_tj_cogs_aln_zendura_flx" value="4.9" step="any"></div>
-<div class="profile-field"><label>COGS / Ret Zendura A 0.76mm</label><input type="number" id="fp_tj_cogs_ret_zendura_a_076mm" value="5.1" step="any"></div>
 <div class="profile-field"><label>COGS / Ret Coherz 1mm</label><input type="number" id="fp_tj_cogs_ret_coherz_1mm" value="5.1" step="any"></div>
 <div class="profile-field"><label>COGS / Tmpl Maxflex</label><input type="number" id="fp_tj_cogs_tmpl_maxflex" value="4.7" step="any"></div>
 <div class="profile-field"><label>COGS / Tmpl Erkodent</label><input type="number" id="fp_tj_cogs_tmpl_erkodent" value="4.7" step="any"></div>
 <div class="profile-field"><label>COGS Currency</label><select id="fp_tj_cogs_currency"><option value="EUR">EUR</option><option value="USD" selected>USD</option></select></div>
 <div class="profile-field"><label>ASP</label><input type="number" id="fp_tj_asp" value="5.5" step="any"></div>
 <div class="profile-field"><label>Margin %</label><input type="number" id="fp_tj_margin" value="15" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-sla">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128200;</span> SLA</div>
+<div class="fp-section-body">
+<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_tj_daily_capacity" value="10000" step="any"></div>
+<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_tj_scallop_mix" value="0" step="any"></div>
+<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_tj_ots" value="5" step="any"></div>
+<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_tj_otd" value="8" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-packaging">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Packaging</div>
+<div class="fp-section-body">
 <div class="profile-field full-width">
   <label>Packaging</label>
   <div class="ms-wrap" id="fp_tj_packaging_wrap">
@@ -1952,31 +2159,10 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field">
-  <label>Markets Served</label>
-  <div class="ms-wrap" id="fp_tj_markets_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_tj_markets')">
-      <span class="ms-tags" id="fp_tj_markets_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_tj_markets_dd">
-      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_tj_markets')" checked> USA</label>
-      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_tj_markets')"> Europe</label>
-      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_tj_markets')"> Middle East</label>
-      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_tj_markets')"> Israel</label>
-      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_tj_markets')"> Australia</label>
-      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_tj_markets')"> LATAM</label>
-      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_tj_markets')"> Africa</label>
-      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_tj_markets')"> Asia-Pacific</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_tj_markets')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_tj_markets_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_tj_markets')">+</button>
-      </div>
-    </div>
-  </div>
+</div>
 </div>
 <div class="profile-field full-width"><label>Notes</label><textarea id="fp_tj_notes" rows="2">Highest capacity. Approaching ceiling at 90% — monitor closely. Low margin at 15%.</textarea></div>
+
         </div>
     </div>
 </div>
@@ -1984,7 +2170,62 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     <div class="profile-card">
         <div class="profile-card-header"><span>Florida — USA (FL)</span><span class="badge">Production + Fulfillment</span></div>
         <div class="profile-grid">
+<div class="fp-section cat-general">
+<div class="fp-section-header"><span class="fp-sec-icon">&#127759;</span> General</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>Location</label><input type="text" id="fp_fl_location" value="Florida, USA"></div>
+<div class="profile-field">
+  <label>Services</label>
+  <div class="ms-wrap" id="fp_fl_services_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_services')">
+      <span class="ms-tags" id="fp_fl_services_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_fl_services_dd">
+      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_fl_services')" checked> Production</label>
+      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_fl_services')" checked> Fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_fl_services')"> CAD</label>
+      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_fl_services')"> QC</label>
+      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_fl_services')"> Final-mile fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_fl_services')"> Distribution</label>
+      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_fl_services')"> Hub</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_services')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_fl_services_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_fl_services')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Markets Served</label>
+  <div class="ms-wrap" id="fp_fl_markets_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_markets')">
+      <span class="ms-tags" id="fp_fl_markets_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_fl_markets_dd">
+      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_fl_markets')" checked> USA</label>
+      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_fl_markets')"> Europe</label>
+      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_fl_markets')"> Middle East</label>
+      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_fl_markets')"> Israel</label>
+      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_fl_markets')"> Australia</label>
+      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_fl_markets')"> LATAM</label>
+      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_fl_markets')"> Africa</label>
+      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_fl_markets')"> Asia-Pacific</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_markets')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_fl_markets_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_fl_markets')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-compliance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128274;</span> Compliance</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>Certifications</label>
   <div class="ms-wrap" id="fp_fl_certifications_wrap">
@@ -2010,89 +2251,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
   </div>
 </div>
 <div class="profile-field"><label>UDI Compliance</label><select id="fp_fl_udi"><option value="Yes">Yes</option><option value="No" selected>No</option><option value="N/A">N/A</option></select></div>
-<div class="profile-field">
-  <label>Services</label>
-  <div class="ms-wrap" id="fp_fl_services_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_services')">
-      <span class="ms-tags" id="fp_fl_services_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_fl_services_dd">
-      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_fl_services')" checked> Production</label>
-      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_fl_services')" checked> Fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_fl_services')"> CAD</label>
-      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_fl_services')"> QC</label>
-      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_fl_services')"> Final-mile fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_fl_services')"> Distribution</label>
-      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_fl_services')"> Hub</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_services')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_fl_services_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_fl_services')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Printing / Paging</label>
-  <div class="ms-wrap" id="fp_fl_printing_paging_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_printing_paging')">
-      <span class="ms-tags" id="fp_fl_printing_paging_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_fl_printing_paging_dd">
-      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_fl_printing_paging')"> Automated auto-paging</label>
-      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_fl_printing_paging')"> Automated printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_fl_printing_paging')"> Manual printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_fl_printing_paging')" checked> Manual Sticker</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_printing_paging')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_fl_printing_paging_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_fl_printing_paging')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Aligner Materials</label>
-  <div class="ms-wrap" id="fp_fl_aligner_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_aligner_materials')">
-      <span class="ms-tags" id="fp_fl_aligner_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_fl_aligner_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_fl_aligner_materials')"> Coherz</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_fl_aligner_materials')"> Maxflex</label>
-      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_fl_aligner_materials')"> CA PRO</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_fl_aligner_materials')"> Zendura</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_fl_aligner_materials')" checked> Zendura FLX</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_aligner_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_fl_aligner_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_fl_aligner_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="profile-field">
-  <label>Retainer Materials</label>
-  <div class="ms-wrap" id="fp_fl_retainer_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_retainer_materials')">
-      <span class="ms-tags" id="fp_fl_retainer_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_fl_retainer_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_fl_retainer_materials')" checked> Coherz 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_fl_retainer_materials')"> Maxflex 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_fl_retainer_materials')" checked> Zendura A 0.76mm</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_retainer_materials')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_fl_retainer_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_fl_retainer_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="fp-section cat-manufacturing">
+<div class="fp-section-header"><span class="fp-sec-icon">&#9881;</span> Manufacturing</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>3D Printing</label>
   <div class="ms-wrap" id="fp_fl_printing_3d_wrap">
@@ -2191,18 +2354,116 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_fl_daily_capacity" value="12000" step="any"></div>
-<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_fl_scallop_mix" value="0" step="any"></div>
-<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_fl_ots" value="2" step="any"></div>
-<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_fl_otd" value="5" step="any"></div>
+<div class="profile-field">
+  <label>Printing / Paging</label>
+  <div class="ms-wrap" id="fp_fl_printing_paging_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_printing_paging')">
+      <span class="ms-tags" id="fp_fl_printing_paging_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_fl_printing_paging_dd">
+      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_fl_printing_paging')"> Automated auto-paging</label>
+      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_fl_printing_paging')"> Automated printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_fl_printing_paging')"> Manual printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_fl_printing_paging')" checked> Manual Sticker</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_printing_paging')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_fl_printing_paging_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_fl_printing_paging')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-materials">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Materials</div>
+<div class="fp-section-body">
+<div class="profile-field">
+  <label>Aligner Materials</label>
+  <div class="ms-wrap" id="fp_fl_aligner_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_aligner_materials')">
+      <span class="ms-tags" id="fp_fl_aligner_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_fl_aligner_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_fl_aligner_materials')"> Coherz</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_fl_aligner_materials')"> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_fl_aligner_materials')"> CA PRO</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_fl_aligner_materials')"> Zendura</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_fl_aligner_materials')" checked> Zendura FLX</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_aligner_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_fl_aligner_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_fl_aligner_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Retainer Materials</label>
+  <div class="ms-wrap" id="fp_fl_retainer_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_retainer_materials')">
+      <span class="ms-tags" id="fp_fl_retainer_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_fl_retainer_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_fl_retainer_materials')" checked> Coherz 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_fl_retainer_materials')"> Maxflex 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_fl_retainer_materials')" checked> Zendura A 0.76mm</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_retainer_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_fl_retainer_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_fl_retainer_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Template Materials</label>
+  <div class="ms-wrap" id="fp_fl_template_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_template_materials')">
+      <span class="ms-tags" id="fp_fl_template_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_fl_template_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_fl_template_materials')"> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="Erkodent" onchange="updateMsTags('fp_fl_template_materials')"> Erkodent</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura AT" onchange="updateMsTags('fp_fl_template_materials')" checked> Zendura AT</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_template_materials')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_fl_template_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_fl_template_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-finance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128178;</span> Finance</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>COGS / Aln Zendura FLX</label><input type="number" id="fp_fl_cogs_aln_zendura_flx" value="4.0" step="any"></div>
-<div class="profile-field"><label>COGS / Ret Zendura A 0.76mm</label><input type="number" id="fp_fl_cogs_ret_zendura_a_076mm" value="4.2" step="any"></div>
 <div class="profile-field"><label>COGS / Ret Coherz 1mm</label><input type="number" id="fp_fl_cogs_ret_coherz_1mm" value="4.2" step="any"></div>
 <div class="profile-field"><label>COGS / Tmpl Maxflex</label><input type="number" id="fp_fl_cogs_tmpl_maxflex" value="3.8" step="any"></div>
 <div class="profile-field"><label>COGS / Tmpl Erkodent</label><input type="number" id="fp_fl_cogs_tmpl_erkodent" value="3.8" step="any"></div>
 <div class="profile-field"><label>COGS Currency</label><select id="fp_fl_cogs_currency"><option value="EUR">EUR</option><option value="USD" selected>USD</option></select></div>
 <div class="profile-field"><label>ASP</label><input type="number" id="fp_fl_asp" value="5.5" step="any"></div>
 <div class="profile-field"><label>Margin %</label><input type="number" id="fp_fl_margin" value="25" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-sla">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128200;</span> SLA</div>
+<div class="fp-section-body">
+<div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_fl_daily_capacity" value="12000" step="any"></div>
+<div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_fl_scallop_mix" value="0" step="any"></div>
+<div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_fl_ots" value="2" step="any"></div>
+<div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_fl_otd" value="5" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-packaging">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Packaging</div>
+<div class="fp-section-body">
 <div class="profile-field full-width">
   <label>Packaging</label>
   <div class="ms-wrap" id="fp_fl_packaging_wrap">
@@ -2229,31 +2490,10 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field">
-  <label>Markets Served</label>
-  <div class="ms-wrap" id="fp_fl_markets_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_fl_markets')">
-      <span class="ms-tags" id="fp_fl_markets_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_fl_markets_dd">
-      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_fl_markets')" checked> USA</label>
-      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_fl_markets')"> Europe</label>
-      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_fl_markets')"> Middle East</label>
-      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_fl_markets')"> Israel</label>
-      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_fl_markets')"> Australia</label>
-      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_fl_markets')"> LATAM</label>
-      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_fl_markets')"> Africa</label>
-      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_fl_markets')"> Asia-Pacific</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_fl_markets')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_fl_markets_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_fl_markets')">+</button>
-      </div>
-    </div>
-  </div>
+</div>
 </div>
 <div class="profile-field full-width"><label>Notes</label><textarea id="fp_fl_notes" rows="2">Ramp phase — target 10,000/month to break even. Fastest OTS. Unique laser cut.</textarea></div>
+
         </div>
     </div>
 </div>
@@ -2261,7 +2501,62 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     <div class="profile-card">
         <div class="profile-card-header"><span>Memphis — USA (Hub)</span><span class="badge">Fulfillment Hub Only</span></div>
         <div class="profile-grid">
+<div class="fp-section cat-general">
+<div class="fp-section-header"><span class="fp-sec-icon">&#127759;</span> General</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>Location</label><input type="text" id="fp_mem_location" value="Memphis, Tennessee, USA"></div>
+<div class="profile-field">
+  <label>Services</label>
+  <div class="ms-wrap" id="fp_mem_services_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_services')">
+      <span class="ms-tags" id="fp_mem_services_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_mem_services_dd">
+      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_mem_services')"> Production</label>
+      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_mem_services')"> Fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_mem_services')"> CAD</label>
+      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_mem_services')"> QC</label>
+      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_mem_services')" checked> Final-mile fulfillment</label>
+      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_mem_services')"> Distribution</label>
+      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_mem_services')" checked> Hub</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_services')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_mem_services_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_mem_services')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Markets Served</label>
+  <div class="ms-wrap" id="fp_mem_markets_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_markets')">
+      <span class="ms-tags" id="fp_mem_markets_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_mem_markets_dd">
+      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_mem_markets')" checked> USA</label>
+      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_mem_markets')"> Europe</label>
+      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_mem_markets')"> Middle East</label>
+      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_mem_markets')"> Israel</label>
+      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_mem_markets')"> Australia</label>
+      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_mem_markets')" checked> LATAM</label>
+      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_mem_markets')"> Africa</label>
+      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_mem_markets')"> Asia-Pacific</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_markets')"> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_mem_markets_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_mem_markets')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-compliance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128274;</span> Compliance</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>Certifications</label>
   <div class="ms-wrap" id="fp_mem_certifications_wrap">
@@ -2287,89 +2582,11 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
   </div>
 </div>
 <div class="profile-field"><label>UDI Compliance</label><select id="fp_mem_udi"><option value="Yes">Yes</option><option value="No">No</option><option value="N/A" selected>N/A</option></select></div>
-<div class="profile-field">
-  <label>Services</label>
-  <div class="ms-wrap" id="fp_mem_services_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_services')">
-      <span class="ms-tags" id="fp_mem_services_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_mem_services_dd">
-      <label class="ms-option"><input type="checkbox" value="Production" onchange="updateMsTags('fp_mem_services')"> Production</label>
-      <label class="ms-option"><input type="checkbox" value="Fulfillment" onchange="updateMsTags('fp_mem_services')"> Fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="CAD" onchange="updateMsTags('fp_mem_services')"> CAD</label>
-      <label class="ms-option"><input type="checkbox" value="QC" onchange="updateMsTags('fp_mem_services')"> QC</label>
-      <label class="ms-option"><input type="checkbox" value="Final-mile fulfillment" onchange="updateMsTags('fp_mem_services')" checked> Final-mile fulfillment</label>
-      <label class="ms-option"><input type="checkbox" value="Distribution" onchange="updateMsTags('fp_mem_services')"> Distribution</label>
-      <label class="ms-option"><input type="checkbox" value="Hub" onchange="updateMsTags('fp_mem_services')" checked> Hub</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_services')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_mem_services_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_mem_services')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Printing / Paging</label>
-  <div class="ms-wrap" id="fp_mem_printing_paging_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_printing_paging')">
-      <span class="ms-tags" id="fp_mem_printing_paging_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_mem_printing_paging_dd">
-      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_mem_printing_paging')"> Automated auto-paging</label>
-      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_mem_printing_paging')"> Automated printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_mem_printing_paging')"> Manual printing</label>
-      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_mem_printing_paging')"> Manual Sticker</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_printing_paging')" checked> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_mem_printing_paging_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_mem_printing_paging')">+</button>
-      </div>
-    </div>
-  </div>
 </div>
-<div class="profile-field">
-  <label>Aligner Materials</label>
-  <div class="ms-wrap" id="fp_mem_aligner_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_aligner_materials')">
-      <span class="ms-tags" id="fp_mem_aligner_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_mem_aligner_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_mem_aligner_materials')"> Coherz</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_mem_aligner_materials')"> Maxflex</label>
-      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_mem_aligner_materials')"> CA PRO</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_mem_aligner_materials')"> Zendura</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_mem_aligner_materials')"> Zendura FLX</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_aligner_materials')" checked> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_mem_aligner_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_mem_aligner_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
-<div class="profile-field">
-  <label>Retainer Materials</label>
-  <div class="ms-wrap" id="fp_mem_retainer_materials_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_retainer_materials')">
-      <span class="ms-tags" id="fp_mem_retainer_materials_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_mem_retainer_materials_dd">
-      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_mem_retainer_materials')"> Coherz 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_mem_retainer_materials')"> Maxflex 1mm</label>
-      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_mem_retainer_materials')"> Zendura A 0.76mm</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_retainer_materials')" checked> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_mem_retainer_materials_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_mem_retainer_materials')">+</button>
-      </div>
-    </div>
-  </div>
-</div>
+<div class="fp-section cat-manufacturing">
+<div class="fp-section-header"><span class="fp-sec-icon">&#9881;</span> Manufacturing</div>
+<div class="fp-section-body">
 <div class="profile-field">
   <label>3D Printing</label>
   <div class="ms-wrap" id="fp_mem_printing_3d_wrap">
@@ -2468,16 +2685,112 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
+<div class="profile-field">
+  <label>Printing / Paging</label>
+  <div class="ms-wrap" id="fp_mem_printing_paging_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_printing_paging')">
+      <span class="ms-tags" id="fp_mem_printing_paging_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_mem_printing_paging_dd">
+      <label class="ms-option"><input type="checkbox" value="Automated auto-paging" onchange="updateMsTags('fp_mem_printing_paging')"> Automated auto-paging</label>
+      <label class="ms-option"><input type="checkbox" value="Automated printing" onchange="updateMsTags('fp_mem_printing_paging')"> Automated printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual printing" onchange="updateMsTags('fp_mem_printing_paging')"> Manual printing</label>
+      <label class="ms-option"><input type="checkbox" value="Manual Sticker" onchange="updateMsTags('fp_mem_printing_paging')"> Manual Sticker</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_printing_paging')" checked> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_mem_printing_paging_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_mem_printing_paging')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-materials">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Materials</div>
+<div class="fp-section-body">
+<div class="profile-field">
+  <label>Aligner Materials</label>
+  <div class="ms-wrap" id="fp_mem_aligner_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_aligner_materials')">
+      <span class="ms-tags" id="fp_mem_aligner_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_mem_aligner_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz" onchange="updateMsTags('fp_mem_aligner_materials')"> Coherz</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_mem_aligner_materials')"> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="CA PRO" onchange="updateMsTags('fp_mem_aligner_materials')"> CA PRO</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura" onchange="updateMsTags('fp_mem_aligner_materials')"> Zendura</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura FLX" onchange="updateMsTags('fp_mem_aligner_materials')"> Zendura FLX</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_aligner_materials')" checked> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_mem_aligner_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_mem_aligner_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Retainer Materials</label>
+  <div class="ms-wrap" id="fp_mem_retainer_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_retainer_materials')">
+      <span class="ms-tags" id="fp_mem_retainer_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_mem_retainer_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Coherz 1mm" onchange="updateMsTags('fp_mem_retainer_materials')"> Coherz 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Maxflex 1mm" onchange="updateMsTags('fp_mem_retainer_materials')"> Maxflex 1mm</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura A 0.76mm" onchange="updateMsTags('fp_mem_retainer_materials')"> Zendura A 0.76mm</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_retainer_materials')" checked> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_mem_retainer_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_mem_retainer_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="profile-field">
+  <label>Template Materials</label>
+  <div class="ms-wrap" id="fp_mem_template_materials_wrap">
+    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_template_materials')">
+      <span class="ms-tags" id="fp_mem_template_materials_tags"></span>
+      <span class="ms-arrow">&#9662;</span>
+    </div>
+    <div class="ms-dropdown" id="fp_mem_template_materials_dd">
+      <label class="ms-option"><input type="checkbox" value="Maxflex" onchange="updateMsTags('fp_mem_template_materials')"> Maxflex</label>
+      <label class="ms-option"><input type="checkbox" value="Erkodent" onchange="updateMsTags('fp_mem_template_materials')"> Erkodent</label>
+      <label class="ms-option"><input type="checkbox" value="Zendura AT" onchange="updateMsTags('fp_mem_template_materials')"> Zendura AT</label>
+      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_template_materials')" checked> N/A</label>
+      <div class="ms-add-row">
+        <input type="text" class="ms-add-input" id="fp_mem_template_materials_newinput" placeholder="Add new...">
+        <button class="ms-add-btn" onclick="addMsOption('fp_mem_template_materials')">+</button>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+</div>
+<div class="fp-section cat-finance">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128178;</span> Finance</div>
+<div class="fp-section-body">
+<div class="profile-field"><label>COGS Currency</label><select id="fp_mem_cogs_currency"><option value="EUR">EUR</option><option value="USD" selected>USD</option></select></div>
+<div class="profile-field"><label>ASP</label><input type="number" id="fp_mem_asp" value="0" step="any"></div>
+<div class="profile-field"><label>Margin %</label><input type="number" id="fp_mem_margin" value="0" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-sla">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128200;</span> SLA</div>
+<div class="fp-section-body">
 <div class="profile-field"><label>Daily Capacity</label><input type="number" id="fp_mem_daily_capacity" value="0" step="any"></div>
 <div class="profile-field"><label>Scallop Mix %</label><input type="number" id="fp_mem_scallop_mix" value="0" step="any"></div>
 <div class="profile-field"><label>OTS @ 95% (days)</label><input type="number" id="fp_mem_ots" value="0" step="any"></div>
 <div class="profile-field"><label>OTD @ 95% (days)</label><input type="number" id="fp_mem_otd" value="0" step="any"></div>
-
-
-
-<div class="profile-field"><label>COGS Currency</label><select id="fp_mem_cogs_currency"><option value="EUR">EUR</option><option value="USD" selected>USD</option></select></div>
-<div class="profile-field"><label>ASP</label><input type="number" id="fp_mem_asp" value="0" step="any"></div>
-<div class="profile-field"><label>Margin %</label><input type="number" id="fp_mem_margin" value="0" step="any"></div>
+</div>
+</div>
+<div class="fp-section cat-packaging">
+<div class="fp-section-header"><span class="fp-sec-icon">&#128230;</span> Packaging</div>
+<div class="fp-section-body">
 <div class="profile-field full-width">
   <label>Packaging</label>
   <div class="ms-wrap" id="fp_mem_packaging_wrap">
@@ -2504,31 +2817,10 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
     </div>
   </div>
 </div>
-<div class="profile-field">
-  <label>Markets Served</label>
-  <div class="ms-wrap" id="fp_mem_markets_wrap">
-    <div class="ms-display" onclick="toggleMsDropdown('fp_mem_markets')">
-      <span class="ms-tags" id="fp_mem_markets_tags"></span>
-      <span class="ms-arrow">&#9662;</span>
-    </div>
-    <div class="ms-dropdown" id="fp_mem_markets_dd">
-      <label class="ms-option"><input type="checkbox" value="USA" onchange="updateMsTags('fp_mem_markets')" checked> USA</label>
-      <label class="ms-option"><input type="checkbox" value="Europe" onchange="updateMsTags('fp_mem_markets')"> Europe</label>
-      <label class="ms-option"><input type="checkbox" value="Middle East" onchange="updateMsTags('fp_mem_markets')"> Middle East</label>
-      <label class="ms-option"><input type="checkbox" value="Israel" onchange="updateMsTags('fp_mem_markets')"> Israel</label>
-      <label class="ms-option"><input type="checkbox" value="Australia" onchange="updateMsTags('fp_mem_markets')"> Australia</label>
-      <label class="ms-option"><input type="checkbox" value="LATAM" onchange="updateMsTags('fp_mem_markets')" checked> LATAM</label>
-      <label class="ms-option"><input type="checkbox" value="Africa" onchange="updateMsTags('fp_mem_markets')"> Africa</label>
-      <label class="ms-option"><input type="checkbox" value="Asia-Pacific" onchange="updateMsTags('fp_mem_markets')"> Asia-Pacific</label>
-      <label class="ms-option"><input type="checkbox" value="N/A" onchange="updateMsTags('fp_mem_markets')"> N/A</label>
-      <div class="ms-add-row">
-        <input type="text" class="ms-add-input" id="fp_mem_markets_newinput" placeholder="Add new...">
-        <button class="ms-add-btn" onclick="addMsOption('fp_mem_markets')">+</button>
-      </div>
-    </div>
-  </div>
+</div>
 </div>
 <div class="profile-field full-width"><label>Notes</label><textarea id="fp_mem_notes" rows="2">Never allocate as standalone. Always paired with a production facility (PT, CFZ, TJ, FL). Reduces US/LATAM delivery time.</textarea></div>
+
         </div>
     </div>
 </div>
@@ -3157,7 +3449,23 @@ body { font-family: 'Segoe UI', Arial, sans-serif; background: #f0f2f5; color: #
         </div>
         
     </div>
+
 </div><!-- end page-allocation -->
+
+<div id="page-clientshipping" class="page">
+    <div style="padding:24px;">
+    <h1 style="color:#1F4E79; margin:0 0 4px 0; font-size:24px;">Client Shipping Destinations</h1>
+    <p style="color:#555; font-size:12px; margin:0 0 16px 0;">Shipping countries per distributor from MES data (May 2026). Used for logistics cost estimation.</p>
+    <div style="margin-bottom:12px; display:flex; gap:10px; align-items:center;">
+        <input type="text" id="shipClientSearch" placeholder="Search client..." oninput="filterShipClients()" style="padding:8px 14px; border:1px solid #ddd; border-radius:6px; font-size:12px; width:300px;">
+        <select id="shipCountryFilter" onchange="filterShipClients()" style="padding:8px 10px; border:1px solid #ddd; border-radius:6px; font-size:12px;">
+            <option value="">All Countries</option>
+        </select>
+        <span id="shipClientCount" style="font-size:11px; color:#888;"></span>
+    </div>
+    <div id="shipClientTable" style="max-height:600px; overflow-y:auto; border:1px solid #e0e7ef; border-radius:8px;"></div>
+    </div>
+</div><!-- end page-clientshipping -->
 
 
 
@@ -3631,7 +3939,6 @@ function submitQuestions() {
         updateResults();
         buildKnowledgeBase();
         buildRecommendation();
-        buildComplianceCheck();
         var eligDiv = document.getElementById('eligibilityResults');
         if (eligDiv) {
             eligDiv.style.display = 'block';
@@ -3833,6 +4140,7 @@ function switchPage(pageId, navEl) {
     if (pageId === 'clientspecs') renderClientSpecs();
     if (pageId === 'logistics') initLogisticsPage();
         if (pageId === 'upslookup') initUPSLookupPage();
+    if (pageId === 'clientshipping') { setTimeout(renderShipClients, 100); }
 }
 
 // ══════════════════════════════════════════════════
@@ -6147,11 +6455,11 @@ function buildKnowledgeBase() {
     
     // Shipped data totals per facility (approx from utilization data)
     var utilData = {
-        pt: {cases: 5027, units: 122379, aligners: 114242, retainers: 3213, templates: 4924},
-        cfz: {cases: 1233, units: 31429, aligners: 29238, retainers: 615, templates: 1576},
-        tj: {cases: 1176, units: 11802, aligners: 10001, retainers: 1506, templates: 295},
-        fl: {cases: 383, units: 7534, aligners: 7020, retainers: 302, templates: 212}
-    };
+    pt: {cases: 5218, units: 113209, aligners: 118171, retainers: 3338, templates: 5080},
+    cfz: {cases: 1233, units: 29151, aligners: 29238, retainers: 615, templates: 1576},
+    tj: {cases: 1222, units: 10236, aligners: 10257, retainers: 1592, templates: 303},
+    fl: {cases: 383, units: 7003, aligners: 7020, retainers: 302, templates: 212},
+};
     
     // Shipped data totals
     var totalMarCases = 0, totalMarAligners = 0, totalAprCases = 0, totalAprAligners = 0;
@@ -8028,6 +8336,26 @@ function scoreCompliance(pid, answers, facObj) {
 
     // Check each eligibility rule (skip cad_service — not a blocker)
     var SKIP_KEYS = {cad_service: true};
+    
+    // Build facility evidence map from profile data
+    var EVIDENCE_MAP = {
+        market: function() { var m = data.markets || []; return m.length > 0 ? 'Serves: ' + m.join(', ') : 'No markets defined'; },
+        udi: function() { return 'UDI: ' + (data.udi || 'N/A'); },
+        certs: function() { var c = data.certifications || []; return c.length > 0 ? 'Holds: ' + c.join(', ') : 'No certs'; },
+        aligner_mat: function() { var m = data.aligner_materials || []; return m.length > 0 ? 'Available: ' + m.join(', ') : 'None listed'; },
+        retainer_mat: function() { var m = data.retainer_materials || []; return m.length > 0 ? 'Available: ' + m.join(', ') : 'None listed'; },
+        template_type: function() { var m = data.template_materials || []; return m.length > 0 ? 'Available: ' + m.join(', ') : 'None listed'; },
+        printer: function() { var p = data.printing_3d || []; return p.length > 0 ? 'Has: ' + p.join(', ') : 'None'; },
+        thermoforming: function() { var t = data.thermoforming || []; return t.length > 0 ? 'Offers: ' + t.join(', ') : 'None'; },
+        cut: function() { var c = data.cut_types || []; return c.length > 0 ? 'Supports: ' + c.join(', ') : 'None'; },
+        paging: function() { var p = data.printing_paging || []; return p.length > 0 ? 'Has: ' + p.join(', ') : 'None'; },
+        laser: function() { var l = data.laser_marking || []; return l.length > 0 ? 'Colors: ' + l.join(', ') : 'None'; },
+        packaging: function() { var p = data.packaging || []; return p.length > 0 ? 'Offers: ' + p.join(', ') : 'None'; },
+        shipping: function() { return ''; },
+        ots: function() { return 'OTS: ' + (data.ots || 'N/A') + ' days @ 95%'; },
+        otd: function() { return 'OTD: ' + (data.otd || 'N/A') + ' days @ 95%'; }
+    };
+    
     if (facObj && facObj.checks) {
         for (var key in facObj.checks) {
             if (SKIP_KEYS[key]) continue;
@@ -8038,11 +8366,12 @@ function scoreCompliance(pid, answers, facObj) {
 
             var pass = facObj.checks[key](val);
             var label = (typeof criterionLabels !== 'undefined' && criterionLabels[key]) ? criterionLabels[key] : key;
-            if (pass) passes.push(label);
+            var evidence = EVIDENCE_MAP[key] ? EVIDENCE_MAP[key]() : '';
+            if (pass) passes.push({label: label, evidence: evidence, clientNeeds: val});
             else {
                 issues.push(label);
                 var reason = REASON_MAP[key] ? REASON_MAP[key](val, fName) : (label + ': client selected "' + val + '" — not supported by ' + fName);
-                issueDetails.push({label: label, reason: reason});
+                issueDetails.push({label: label, reason: reason, evidence: evidence, clientNeeds: val});
                 score -= 20;
             }
         }
@@ -8052,7 +8381,37 @@ function scoreCompliance(pid, answers, facObj) {
     var detailText = issues.length
         ? passes.length + ' passed, ' + issues.length + ' failed: ' + issues.join(', ')
         : 'All ' + passes.length + ' checks passed';
-    return {score: score, detail: detailText, blockers: issues, blockerDetails: issueDetails, passes: passes};
+    // Extract pass labels for backward compat
+    var passLabels = passes.map(function(p) { return typeof p === 'string' ? p : p.label; });
+    
+    // Categorize each check into proper groups
+    var CAT_MAP = {
+        'Market': 'compliance', 'UDI Compliance': 'compliance', 'Certifications': 'compliance',
+        'Aligner Material': 'materials', 'Retainer Material': 'materials', 'Template Type': 'materials',
+        '3D Printer': 'manufacturing', 'Thermoforming': 'manufacturing', 'Cut Type': 'manufacturing',
+        'Laser Marking': 'manufacturing', 'Auto-Paging': 'manufacturing', 'CAD Service': 'manufacturing',
+        'Packaging': 'packaging', 'Shipping': 'packaging',
+        'OTS': 'sla', 'OTD': 'sla'
+    };
+    var categorized = {compliance:[], manufacturing:[], materials:[], packaging:[], sla:[]};
+    passes.forEach(function(p) {
+        var lbl = typeof p === 'string' ? p : p.label;
+        var ev = typeof p === 'string' ? '' : (p.evidence || '');
+        var cn = typeof p === 'string' ? '' : (p.clientNeeds || '');
+        var cat = CAT_MAP[lbl] || 'compliance';
+        var detail = ev;
+        if (cn && ev) detail = 'Client: ' + cn + ' → ' + ev;
+        else if (cn) detail = 'Client: ' + cn;
+        categorized[cat].push({pass: true, label: lbl, detail: detail});
+    });
+    issueDetails.forEach(function(id) {
+        var cat = CAT_MAP[id.label] || 'compliance';
+        var detail = id.reason;
+        if (id.evidence) detail += ' (' + id.evidence + ')';
+        categorized[cat].push({pass: false, label: id.label, detail: detail});
+    });
+    
+    return {score: score, detail: detailText, blockers: issues, blockerDetails: issueDetails, passes: passLabels, categorized: categorized};
 }
 
 function scoreProximity(pid, answers) {
@@ -8345,7 +8704,11 @@ function scoreLogistics(pid, answers) {
     
     return {
         score: score,
-        detail: 'Best avg: <strong>' + scoreCurrency + ' ' + avgCost.toFixed(2) + '/shipment</strong> to ' + market + '<br>' + detailParts.join('<br>')
+        detail: 'Best avg: <strong>' + scoreCurrency + ' ' + avgCost.toFixed(2) + '/shipment</strong> to ' + market + '<br>' + detailParts.join('<br>'),
+        publishedRoutes: publishedRoutes,
+        actualRoutes: actualRoutes,
+        avgCost: avgCost,
+        scoreCurrency: scoreCurrency
     };
 }
 
@@ -8407,6 +8770,41 @@ function buildRecommendation() {
             logistics: lScore,
             hasBlockers: compScore.blockers && compScore.blockers.length > 0
         });
+        // Attach sub-checks for checklist rendering
+        var lastR = results[results.length - 1];
+        lastR._marginChecks = [];
+        if (mScore.margin !== null && mScore.margin !== undefined) {
+            var margData = getFullProfileData(pid);
+            var margCurr = margData.cogs_currency || 'EUR';
+            lastR._marginChecks.push({pass: mScore.score >= 30, label: 'Margin: ' + mScore.margin + '%', detail: 'COGS: ' + margCurr + ' ' + mScore.cogs.toFixed(2) + '/unit → ASP: ' + margCurr + ' ' + (margData.asp || '?') + '/unit'});
+        } else {
+            lastR._marginChecks.push({pass: false, label: 'Margin data', detail: mScore.detail});
+        }
+        lastR._capacityChecks = [];
+        if (cScore.util !== undefined) {
+            var capData = getFullProfileData(pid);
+            var capMax = capData.daily_capacity || '?';
+            lastR._capacityChecks.push({pass: cScore.util < 95, label: 'Utilization: ' + cScore.util + '%', detail: 'Capacity: ' + Number(capMax).toLocaleString() + ' units/day — ' + (cScore.util >= 95 ? 'OVER CAPACITY' : 'within limits')});
+            lastR._capacityChecks.push({pass: !cScore.dailyNeed || cScore.avail >= cScore.dailyNeed, label: 'Available: ' + cScore.avail.toLocaleString() + '/day', detail: cScore.dailyNeed ? 'Client needs ' + cScore.dailyNeed.toLocaleString() + '/day → ' + (cScore.avail >= cScore.dailyNeed ? 'sufficient' : 'INSUFFICIENT') : 'No volume specified'});
+        } else {
+            lastR._capacityChecks.push({pass: false, label: 'Capacity data', detail: cScore.detail});
+        }
+        lastR._proximityChecks = [];
+        if (pScore.dist !== undefined) {
+            var proxData = getFullProfileData(pid);
+            lastR._proximityChecks.push({pass: true, label: 'Distance: ' + Math.round(pScore.dist).toLocaleString() + ' km', detail: (proxData.location || pid.toUpperCase()) + ' → ' + (answers.market || '?') + (pScore.regionMatch ? ' (same region)' : ' (different region)')});
+        } else {
+            lastR._proximityChecks.push({pass: true, label: 'Proximity', detail: pScore.detail});
+        }
+        lastR._stockChecks = (sScore.checks || []).map(function(c) {
+            var stockDetail = '';
+            if (c.stock > 0) {
+                stockDetail = 'BOH: ' + (c.stock - (c.incoming||0)).toLocaleString();
+                if (c.incoming > 0) stockDetail += ' + ' + c.incoming.toLocaleString() + ' on order = ' + c.stock.toLocaleString() + ' total';
+            }
+            return {pass: c.score >= 30, label: c.name + ': ' + (c.stock > 0 ? c.stock.toLocaleString() + ' available' : 'OUT OF STOCK'), detail: stockDetail};
+        });
+        if (lastR._stockChecks.length === 0) lastR._stockChecks.push({pass: sScore.score >= 30, label: 'Stock', detail: sScore.detail});
     });
     
     // Sort by total score descending
@@ -8423,13 +8821,10 @@ function buildRecommendation() {
             compliance: { pass: r.compliance.score >= PASS_THRESHOLDS.compliance, score: r.compliance.score, detail: r.compliance.detail, blockerDetails: r.compliance.blockerDetails, passes: r.compliance.passes },
             proximity:  { pass: true, score: r.proximity.score, detail: r.proximity.detail },
             stock:      { pass: r.stock.score >= PASS_THRESHOLDS.stock, score: r.stock.score, detail: r.stock.detail },
-            logistics:  { pass: true, score: r.logistics.score, detail: r.logistics.detail }
+            logistics:  { pass: r.logistics.score >= 30, score: r.logistics.score, detail: r.logistics.detail }
         };
         r.allPass = r.factorResults.margin.pass && r.factorResults.capacity.pass && r.factorResults.compliance.pass && r.factorResults.proximity.pass && r.factorResults.stock.pass;
-        // Count pass/fail
-        var fKeys = ['margin','capacity','compliance','proximity','stock','logistics'];
-        r.passCount = 0; r.failCount = 0;
-        fKeys.forEach(function(k) { if (r.factorResults[k].pass) r.passCount++; else r.failCount++; });
+        // passCount/failCount will be recalculated from rendered cells below
     });
     
     // Sort: all-pass first, then by total score
@@ -8443,136 +8838,171 @@ function buildRecommendation() {
     var html = '';
     
     // Thinking header
-    html += '<div class="rec-thinking">';
-    html += '<div class="rec-thinking-title"><div class="ai-icon">AI</div> Facility Recommendation Engine</div>';
-    html += '<div style="font-size:12px;color:#555;margin-bottom:10px;">Analyzing ' + results.length + ' production facilities — each factor is evaluated as <strong style="color:#2e7d32;">PASS</strong> or <strong style="color:#c62828;">NOT PASS</strong></div>';
-    html += '<div class="rec-factors">';
-    html += '<span class="rec-factor-chip">COGS & Margin</span>';
-    html += '<span class="rec-factor-chip">Capacity</span>';
-    html += '<span class="rec-factor-chip">Compliance</span>';
-    html += '<span class="rec-factor-chip">Proximity</span>';
-    html += '<span class="rec-factor-chip">Material Stock</span>';
-    html += '<span class="rec-factor-chip">Logistics Cost</span>';
-    html += '</div>';
+    html += '<div style="padding:14px 18px; background:#f8f9fb; border-radius:10px; border:1px solid #e0e7ef; margin-bottom:16px;">';
+    html += '<div style="display:flex; align-items:center; gap:8px; margin-bottom:6px;"><div class="ai-icon">AI</div><span style="font-size:14px; font-weight:700; color:#1F4E79;">Facility Eligibility Checklist</span></div>';
+    html += '<div style="font-size:11px; color:#666;">Evaluating ' + results.length + ' facilities across 6 criteria. Each item is checked (✓) or unchecked (✗).</div>';
     html += '</div>';
     
-    // Facility cards
+    // Facility cards — checklist format
     results.forEach(function(r) {
-        var overallClass = r.allPass ? 'pnp-pass' : 'pnp-fail';
-        var overallLabel = r.allPass ? 'PASS' : 'NOT PASS';
+        var scoreColor = r.total >= 60 ? '#2e7d32' : r.total >= 40 ? '#e65100' : '#c62828';
         
-        html += '<div class="pnp-card ' + overallClass + '">';
+        // Build cells first to get accurate pass/fail counts (header comes after)
+        var _cellsHtml = '';
         
-        // Header
-        html += '<div class="pnp-card-header">';
-        html += '<div class="pnp-fac-info"><div><div class="pnp-fac-name">' + r.name + '</div><div class="pnp-fac-loc">' + (r.location || '') + '</div></div></div>';
-        html += '<div style="display:flex;align-items:center;gap:12px;">';
-        html += '<div style="text-align:center;"><div style="font-size:22px;font-weight:700;color:' + (r.total >= 60 ? '#2e7d32' : r.total >= 40 ? '#e65100' : '#c62828') + ';">' + r.total + '%</div><div style="font-size:9px;color:#888;text-transform:uppercase;letter-spacing:0.5px;">Score</div></div>';
-        html += '<div style="text-align:center;padding:6px 12px;border-radius:8px;background:' + (r.allPass ? '#e8f5e9' : '#ffebee') + ';"><div style="font-size:12px;font-weight:600;"><span style="color:#2e7d32;">' + r.passCount + ' Pass</span> / <span style="color:#c62828;">' + r.failCount + ' Not Pass</span></div></div>';
-        html += '<div class="pnp-status-badge">' + overallLabel + '</div>';
-        html += '</div>';
-        html += '</div>';
-        
-        // Body with factor rows
-        html += '<div class="pnp-body">';
-        
-        // Summary chips
-        html += '<div class="pnp-summary">';
-        var facLabels = [
-            {key:'margin', label:'Margin'}, {key:'capacity', label:'Capacity'},
-            {key:'compliance', label:'Compliance'}, {key:'proximity', label:'Proximity'},
-            {key:'stock', label:'Stock'},
-            {key:'logistics', label:'Logistics'}
+        // Checklist body — compact 2-column grid
+        var checkItems = [
+            {key:'compliance', icon:'📋', label:'Compliance'},
+            {key:'manufacturing', icon:'⚙️', label:'Manufacturing'},
+            {key:'materials_elig', icon:'🧪', label:'Materials'},
+            {key:'capacity', icon:'🏭', label:'Capacity'},
+            {key:'margin', icon:'💰', label:'Finance'},
+            {key:'stock', icon:'📦', label:'Inventory'},
+            {key:'packaging_elig', icon:'📦', label:'Packaging'},
+            {key:'sla_elig', icon:'⏱️', label:'SLA'},
+            {key:'proximity', icon:'📍', label:'Proximity'},
+            {key:'logistics', icon:'🚚', label:'Logistics'}
         ];
-        facLabels.forEach(function(fl) {
-            var fr = r.factorResults[fl.key];
-            var cls = fr.pass ? 'pass' : 'fail';
-            var txt = fr.pass ? 'PASS' : 'NOT PASS';
-            html += '<span class="pnp-summary-chip ' + cls + '">' + fl.label + ': ' + txt + ' (' + fr.score + ')</span>';
+        
+        var compCat = r.compliance.categorized || {};
+        r._complianceChecks = compCat.compliance || [];
+        r._manufacturingChecks = compCat.manufacturing || [];
+        r._materialsEligChecks = compCat.materials || [];
+        r._packagingEligChecks = compCat.packaging || [];
+        r._slaEligChecks = compCat.sla || [];
+        
+        // Build all category cells first, skip empties
+        var cells = [];
+        checkItems.forEach(function(ci) {
+            var fr = r.factorResults[ci.key];
+            if (!fr && ci.key === 'manufacturing') { var ch = r._manufacturingChecks||[]; var f = ch.filter(function(c){return !c.pass;}).length; fr = {pass:f===0, score:ch.length>0?Math.round(100*(ch.length-f)/ch.length):100}; }
+            if (!fr && ci.key === 'materials_elig') { var ch = r._materialsEligChecks||[]; var f = ch.filter(function(c){return !c.pass;}).length; fr = {pass:f===0, score:ch.length>0?Math.round(100*(ch.length-f)/ch.length):100}; }
+            if (!fr && ci.key === 'packaging_elig') { var ch = r._packagingEligChecks||[]; var f = ch.filter(function(c){return !c.pass;}).length; fr = {pass:f===0, score:ch.length>0?Math.round(100*(ch.length-f)/ch.length):100}; }
+            if (!fr && ci.key === 'sla_elig') { var ch = r._slaEligChecks||[]; var f = ch.filter(function(c){return !c.pass;}).length; fr = {pass:f===0, score:ch.length>0?Math.round(100*(ch.length-f)/ch.length):100}; }
+            if (!fr) fr = {pass:true, score:100, detail:''};
+            
+            var subChecks = [];
+            if (ci.key === 'margin') subChecks = r._marginChecks || [];
+            else if (ci.key === 'capacity') subChecks = r._capacityChecks || [];
+            else if (ci.key === 'proximity') subChecks = r._proximityChecks || [];
+            else if (ci.key === 'stock') subChecks = r._stockChecks || [];
+            else if (ci.key === 'compliance') {
+                subChecks = r._complianceChecks || [];
+                // Override fr to only reflect compliance-specific checks
+                var ccFail = subChecks.filter(function(c){return !c.pass;}).length;
+                fr = {pass: ccFail === 0, score: subChecks.length > 0 ? Math.round(100 * (subChecks.length - ccFail) / subChecks.length) : 100, detail: ''};
+            }
+            else if (ci.key === 'manufacturing') subChecks = r._manufacturingChecks || [];
+            else if (ci.key === 'materials_elig') subChecks = r._materialsEligChecks || [];
+            else if (ci.key === 'packaging_elig') subChecks = r._packagingEligChecks || [];
+            else if (ci.key === 'sla_elig') subChecks = r._slaEligChecks || [];
+            else if (ci.key === 'logistics') {
+                // Build per-route sub-checks with both Kline actual + published rates
+                var lData = r.logistics;
+                var pubRoutes = lData.publishedRoutes || [];
+                var actRoutes = lData.actualRoutes || [];
+                
+                // Merge routes by country
+                var routeMap = {};
+                pubRoutes.forEach(function(pr) {
+                    if (!routeMap[pr.country]) routeMap[pr.country] = {};
+                    routeMap[pr.country].published = pr.currency + ' ' + pr.rate.toFixed(2) + ' (' + pr.carrier + ' ' + pr.service + ')';
+                });
+                actRoutes.forEach(function(ar) {
+                    if (!routeMap[ar.country]) routeMap[ar.country] = {};
+                    routeMap[ar.country].kline = ar.currency + ' ' + ar.avg.toFixed(2) + ' avg (' + ar.shipments + ' shipments)';
+                });
+                
+                var countries = Object.keys(routeMap);
+                if (countries.length > 0) {
+                    countries.forEach(function(c) {
+                        var r = routeMap[c];
+                        var parts = [];
+                        if (r.published) parts.push('General: ' + r.published);
+                        if (r.kline) parts.push('Kline: ' + r.kline);
+                        subChecks.push({pass: true, label: c, detail: parts.join(' | ')});
+                    });
+                }
+                if (lData.avgCost) {
+                    subChecks.unshift({pass: fr.score >= 30, label: 'Avg cost: ' + (lData.scoreCurrency||'') + ' ' + lData.avgCost.toFixed(2) + '/shipment', detail: ''});
+                }
+                if (subChecks.length === 0) {
+                    subChecks.push({pass: fr.score >= 30, label: 'Shipping Cost', detail: fr.detail ? fr.detail.replace(/<[^>]+>/g,'') : ''});
+                }
+            }
+            
+            if (subChecks.length === 0 && ['manufacturing','materials_elig','packaging_elig','sla_elig'].indexOf(ci.key) >= 0) return;
+            
+            cells.push({ci:ci, fr:fr, subChecks:subChecks});
         });
+        
+        // Calculate pass/fail from actual rendered cells
+        r.passCount = 0; r.failCount = 0;
+        cells.forEach(function(c) { if (c.fr.pass) r.passCount++; else r.failCount++; });
+        var borderColor = r.passCount === cells.length ? '#2e7d32' : '#c62828';
+        r.allPass = r.passCount === cells.length;
+        
+        // Now build the actual card with correct counts
+        var borderColor = r.allPass ? '#2e7d32' : '#c62828';
+        
+        html += '<div style="margin-bottom:16px; border:1px solid #e0e7ef; border-left:5px solid ' + borderColor + '; border-radius:10px; overflow:hidden; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.06);">';
+        
+        // Header row
+        html += '<div style="padding:12px 16px; background:' + (r.allPass ? '#f0faf0' : '#fff8f8') + '; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee;">';
+        html += '<div><div style="font-size:16px; font-weight:700; color:#1a1a2e;">' + r.name + '</div>';
+        if (r.location) html += '<div style="font-size:10px; color:#888;">' + r.location + '</div>';
+        html += '</div>';
+        html += '<div style="display:flex; align-items:center; gap:14px;">';
+        html += '<div style="text-align:center;"><span style="font-size:24px; font-weight:800; color:' + scoreColor + ';">' + r.total + '</span><span style="font-size:11px; color:#888;">%</span></div>';
+        html += '<div style="padding:5px 14px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.5px; color:#fff; background:' + borderColor + ';">' + r.passCount + '/' + cells.length + ' PASS</div>';
+        html += '</div></div>';
+        
+        html += '<div style="padding:8px 12px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">';
+        
+        cells.forEach(function(cell) {
+            var ci = cell.ci, fr = cell.fr, subChecks = cell.subChecks;
+            var ok = fr.pass;
+            var border = ok ? '#c8e6c9' : '#ffcdd2';
+            var bg = ok ? '#fafdf9' : '#fff8f8';
+            var ico = ok ? '<span style="color:#2e7d32;font-size:14px;">✅</span>' : '<span style="color:#c62828;font-size:14px;">❌</span>';
+            
+            html += '<div style="padding:8px 10px; border:1px solid ' + border + '; border-radius:8px; background:' + bg + ';">';
+            html += '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
+            html += ico;
+            html += '<span style="font-size:11px; font-weight:700; color:' + (ok?'#1a1a2e':'#c62828') + ';">' + ci.label + '</span>';
+            html += '</div>';
+            
+            // Sub-items as chips with evidence details
+            subChecks.forEach(function(sc) {
+                if (sc.pass) {
+                    html += '<div style="font-size:9px; color:#2e7d32; padding:2px 0; line-height:1.4;">☑ <strong>' + sc.label + '</strong>';
+                    if (sc.detail) html += ' <span style="color:#888;">— ' + sc.detail + '</span>';
+                    html += '</div>';
+                } else {
+                    html += '<div style="font-size:9px; color:#c62828; padding:2px 0; line-height:1.4;">☐ <strong>' + sc.label + '</strong>';
+                    if (sc.detail) html += '</div><div style="font-size:8px; color:#c62828; padding:0 0 2px 14px; line-height:1.3;">→ ' + sc.detail + '</div>';
+                    else html += '</div>';
+                }
+            });
+            
+            html += '</div>';
+        });
+        
         html += '</div>';
         
-        // Detailed factor rows
-        html += '<div class="pnp-factors" style="margin-top:12px;">';
-        
-        // Margin
-        var mf = r.factorResults.margin;
-        html += '<div class="pnp-factor-row">';
-        html += '<div class="pnp-factor-badge ' + (mf.pass ? 'pass' : 'fail') + '">' + (mf.pass ? 'PASS' : 'NOT PASS') + '</div>';
-        html += '<div class="pnp-factor-content"><div class="pnp-factor-name">COGS & Margin</div>';
-        html += '<div class="pnp-factor-detail">' + mf.detail + '</div>';
-        html += '</div></div>';
-        
-        // Capacity
-        var cf = r.factorResults.capacity;
-        html += '<div class="pnp-factor-row">';
-        html += '<div class="pnp-factor-badge ' + (cf.pass ? 'pass' : 'fail') + '">' + (cf.pass ? 'PASS' : 'NOT PASS') + '</div>';
-        html += '<div class="pnp-factor-content"><div class="pnp-factor-name">Capacity & Utilization</div>';
-        html += '<div class="pnp-factor-detail">' + cf.detail + '</div>';
-        html += '</div></div>';
-        
-        // Compliance — show each check individually
-        var compf = r.factorResults.compliance;
-        html += '<div class="pnp-factor-row">';
-        html += '<div class="pnp-factor-badge ' + (compf.pass ? 'pass' : 'fail') + '">' + (compf.pass ? 'PASS' : 'NOT PASS') + '</div>';
-        html += '<div class="pnp-factor-content"><div class="pnp-factor-name">Regulatory Compliance</div>';
-        html += '<div class="pnp-factor-detail">' + compf.detail + '</div>';
-        // Show each passed check with green checkmark
-        if (compf.passes && compf.passes.length > 0) {
-            html += '<div style="margin-top:4px; display:flex; flex-wrap:wrap; gap:4px 10px;">';
-            compf.passes.forEach(function(p) {
-                html += '<span style="font-size:10px; color:#2E7D32;"><span style="font-weight:700;">&#10004;</span> ' + p + '</span>';
-            });
-            html += '</div>';
-        }
-        // Show each failed check with red cross and reason
-        if (compf.blockerDetails && compf.blockerDetails.length > 0) {
-            compf.blockerDetails.forEach(function(bd) {
-                html += '<div class="pnp-blocker-item">&#10008; ' + bd.reason + '</div>';
-            });
-        }
-        html += '</div></div>';
-        
-        // Proximity
-        var pf = r.factorResults.proximity;
-        html += '<div class="pnp-factor-row">';
-        html += '<div class="pnp-factor-badge ' + (pf.pass ? 'pass' : 'fail') + '">' + (pf.pass ? 'PASS' : 'NOT PASS') + '</div>';
-        html += '<div class="pnp-factor-content"><div class="pnp-factor-name">Geographic Proximity</div>';
-        html += '<div class="pnp-factor-detail">' + pf.detail + '</div>';
-        html += '</div></div>';
-        
-        // Stock
-        var sf = r.factorResults.stock;
-        html += '<div class="pnp-factor-row">';
-        html += '<div class="pnp-factor-badge ' + (sf.pass ? 'pass' : 'fail') + '">' + (sf.pass ? 'PASS' : 'NOT PASS') + '</div>';
-        html += '<div class="pnp-factor-content"><div class="pnp-factor-name">Material Stock</div>';
-        html += '<div class="pnp-factor-detail">' + sf.detail + '</div>';
-        html += '</div></div>';
-        
-        // Logistics
-        var lf = r.factorResults.logistics;
-        html += '<div class="pnp-factor-row">';
-        html += '<div class="pnp-factor-badge ' + (lf.pass ? 'pass' : 'fail') + '">' + (lf.pass ? 'PASS' : 'NOT PASS') + '</div>';
-        html += '<div class="pnp-factor-content"><div class="pnp-factor-name">&#128666; Logistics / Shipping Cost</div>';
-        html += '<div class="pnp-factor-detail">' + lf.detail + '</div>';
-        html += '</div></div>';
-        
-        html += '</div>'; // end pnp-factors
-        html += '</div>'; // end pnp-body
-        
-        // Confirm button for passing facilities
+        // Confirm row
         if (r.allPass) {
-            html += '<div class="pnp-confirm-row">';
-            html += '<span style="font-size:11px;color:#888;">Allocate client to this facility</span>';
+            html += '<div style="padding:10px 16px; background:#f0faf0; border-top:1px solid #c8e6c9; display:flex; justify-content:space-between; align-items:center;">';
+            html += '<span style="font-size:11px; color:#2e7d32; font-weight:600;">✓ All checks passed — ready to allocate</span>';
             html += '<button class="pnp-confirm-btn" onclick="confirmRecommendation(\'' + r.pid + '\', ' + r.total + ')">Confirm → ' + r.name + ' (' + r.total + '%)</button>';
             html += '</div>';
         } else {
-            html += '<div class="pnp-confirm-row" style="background:#fff5f5;">';
-            html += '<span style="font-size:11px;color:#c62828;">Cannot allocate — one or more factors did not pass</span>';
+            html += '<div style="padding:10px 16px; background:#fff5f5; border-top:1px solid #ffcdd2; display:flex; align-items:center; gap:8px;">';
+            html += '<span style="font-size:11px; color:#c62828;">✗ ' + r.failCount + ' check(s) failed — cannot allocate</span>';
             html += '</div>';
         }
         
-        html += '</div>'; // end pnp-card
+        html += '</div>';
     });
     
     // Memphis overlay note
@@ -9421,8 +9851,425 @@ function initReallocPage() {
 // Format: [name, primaryFacility, totalCases, {facilityBreakdown}]
 // 186 distributors, 28 multi-facility
 // ══════════════════════════════════════════════════
-var MES_DIST_RAW = [["Dandy","tj",1223,{"pt":47,"tj":1176}],["Geniova","pt",710],["32co Lab","cfz",484,{"cfz":328,"pt":156}],["Smile White UK","pt",431,{"cfz":32,"pt":399}],["ENSMILE V5","pt",423],["Deep Company","pt",324],["Smileunion Smileunion","cfz",240,{"cfz":190,"pt":50}],["Toothfairy Toothfairy","cfz",235,{"cfz":203,"pt":32}],["Henry Aligner","pt",222],["Le Labo du Sourire","pt",195],["Smile Shapers 1.0","fl",193],["Straight Teeth Direct","pt",161],["XLUR","pt",156,{"fl":58,"pt":98}],["AirSmile ClearForward NL","pt",148],["Orthoclear Jesse Bartels","pt",106],["Your Aligners - Dr Boccio","pt",100],["Pyoor Smile","cfz",97,{"cfz":82,"pt":15}],["Soonline Dental","cfz",89,{"cfz":57,"pt":32}],["F4D+ by FACE","pt",74],["Just Smile","pt",72],["OX Dental","cfz",72,{"cfz":57,"pt":15}],["Wave Dental","pt",62],["MEDIT","pt",61],["Retainer Club","fl",61],["Abaden","pt",57],["Glo Smiles","pt",56],["TOP Orthodontie","pt",52],["Smile ART (TP)","pt",51],["3D Predict","pt",50],["K Clear Direct doctors","cfz",48,{"cfz":28,"pt":20}],["Overnight Smile (V5)","cfz",46,{"cfz":39,"pt":7}],["SMILE NOW","cfz",46,{"cfz":31,"pt":15}],["Arcora","pt",44],["ProOrtho","pt",43],["Soft Smile Aligners","fl",42,{"fl":26,"pt":16}],["Wally","pt",40],["Precision Aligners","pt",40],["GLEE","pt",38],["ODL - Orthodent Laboratory","pt",36],["Lumiwhite","pt",35],["Aligner Specialist ","pt",32],["KlearFX","pt",31],["Kalina Petkova Smart Medical Systems","pt",31],["K Line Philippines","cfz",28,{"cfz":18,"pt":10}],["KLine Lithuania ClearX","pt",28],["Smile Shapers 2.0","fl",27],["ArchForm","pt",26],["Medord 3Ds","pt",25],["XLUR Doctors","pt",25,{"fl":7,"pt":18}],["Miguel Distribution","pt",24],["Ortospecialized Italy (Clearx)","pt",24],["EDG","pt",21,{"cfz":1,"pt":20}],["Smile2Impress","pt",19,{"fl":3,"pt":16}],["stepsdental","cfz",19],["EZCad Distributor","pt",19],["","pt",18,{"cfz":1,"fl":3,"pt":14}],["B.Align","pt",17],["Dentium","cfz",17,{"cfz":12,"pt":5}],["Swift Dental Group","pt",16],["Sorridente","pt",16],["Happy Aligners ClearX","pt",16],["Paula Souto Distributor","pt",16],["SMILE AID","pt",15],["Doctor Direct Smiles","pt",15],["Igor Gribalsky","pt",14],["PerfectFitOrtho","pt",13],["Aurra","pt",13],["OrthoSystem Roma","cfz",13,{"cfz":12,"pt":1}],["Treasure Island srl (Pagnoni)","pt",13],["Be & smile AG","pt",13],["FirstClass","pt",12],["OptimalAligners","pt",12],["Sense Aligners","pt",12],["Hardimann","pt",12],["Nevident","cfz",12],["Marko Florjancic Distributor","pt",12],["Digital Aligner","cfz",11,{"cfz":10,"pt":1}],["Plus Orthodontics","pt",11],["Helga Lang Ortodoncia","pt",11],["Juan Romero","pt",10],["Magestic Aligners V5","pt",10],["Smilepharm","cfz",10],["K Line Production (alignersteps)","cfz",9],["Aligner Services","pt",9],["AirSmile ClearForward BE","pt",9],["Roma Aligners","pt",9],["Clara Aligner","pt",9],["Movendi Labor","pt",9],["TSmile Israel","cfz",8],["Monteiro Consulting ClearX","pt",8],["Angel Smile","pt",8],["Pristine Dental Group","pt",8],["Smart Medical Systems","cfz",7],["K Line Lithuania V2","cfz",7,{"cfz":6,"pt":1}],["Perfect Smile Germany","pt",7],["Pure Aligners","pt",7],["ProOrtho ","pt",7],["Atlantic Aligners","pt",7],["Balbriggan Braces","cfz",7],["iForma","pt",6],["CLEARaline- Roe Dental","pt",6],["K Line Lithuania","pt",6,{"cfz":3,"pt":3}],["Vela Lasagabaster","pt",5],["SmileBar","pt",5,{"cfz":1,"pt":4}],["ToothPillow","fl",5],["Sachar Dental NYC","pt",5],["Life Dental Spa","cfz",5],["Vidaluc","pt",5],["Digital Smile Design (DSD) - ClearX","pt",5],["Radiant Aligners USA (Medscan)","pt",5,{"cfz":1,"pt":4}],["Clear Aligner Plus","pt",5],["Dentium ClearX","pt",5],["Smileup","pt",5],["3DP","pt",5],["AlignEX","pt",5],["Orthero Aligners","cfz",5],["Advanced Dental & Medical Clinic","pt",5],["Santé Smile","pt",5],["Rafatoxx","pt",4],["GlamAlign","pt",4],["Dental Snobs","pt",4],["Audentic","pt",4],["Oral Aligners","pt",4],["CHERUBINO - Malta","cfz",4],["Kiwi Smile - New Zealand","pt",4],["KLine Philippines Clearx","pt",4],["Blink","pt",4],["Alignar","pt",4],["MEDSCAN SAS","pt",4],["Centro Dental Doctores Jiménez","pt",4],["ClearMe","pt",4],["ARC","cfz",4,{"cfz":3,"pt":1}],[" TSmile Rotterdam","cfz",3],["Dr BB Ortho","pt",3],["Carolina Alonso","pt",3],["AirSmile Germany","pt",3],["Pavel Cihar","cfz",3,{"cfz":2,"pt":1}],["CODE Clinic","pt",3],["Modento","cfz",3],["Ethoss Medical SRL","pt",3],["Fernando de la Iglesia Beyme","pt",3],["The Brace","cfz",3],["Clínica Dr. Acedo","pt",3],["Aligner club UK","pt",3],["Rasja Lataabi","pt",2,{"cfz":1,"pt":1}],["Advanced Dental Care Palm Beach Gardens","pt",2],["K-line 4d Case K-line 4d Case","cfz",2],["Clínica Dental Avilés y Román","pt",2],["Smileep","pt",2],["Ortospecialized Italy","cfz",2],["Research cases Egy","cfz",2],["Just Wright Dental (Dental snobs OEM client)","pt",2],["ESTTA DENTAL STUDIO","cfz",2],["Bailiff Bridge Dental","pt",2],["PerfectSmile Stockholm","cfz",2,{"cfz":1,"pt":1}],["Perfect Finish Ortho Lab","pt",2],["East Cobb Family Dentistry","pt",2],["Stars Aligners","pt",2],["Saving Faces","pt",2],["Francesca Borg","cfz",2],["King Dental","pt",2],["Smartork Israel","cfz",2],["Fountainbridge Dental","pt",2],["Sales Janos","cfz",2,{"cfz":1,"pt":1}],["Philippe Dahmen LetSmile","cfz",2,{"cfz":1,"pt":1}],["Ortospecialized Spain SL","cfz",2],["Barksdale Dental Lab","pt",2],["Digital Ortho Lab","pt",2],["K Smile","pt",2],["Dentali_Sweden","pt",2],["Mondzorg Sarphaat","pt",2],["MSB Dental","pt",2],["Premier Dental Club","pt",2],["PureLife Aligners","pt",1],["Dudhat Dental Group","pt",1],["DENTAL TRADE","pt",1],["Makeda","cfz",1],["Treeline Dental","pt",1],["ORTOPAN","pt",1],["Prosthodontics & Implant Surgery of Manhattan, P.C.","pt",1],["The Smile Guru","pt",1],["Duva Dental","pt",1],["Simba dent","cfz",1],["Avantgarde Dentaltechnik Fräszentrum","pt",1],["GoOrtho","pt",1],["Bio Medica","pt",1],["Kalina Petkova","pt",1],["Aurea Medical Design","pt",1],["Oyster Dental Clinic","pt",1],["Happy Aligners","pt",1],["Carla Andrade (Sales)","pt",1],["AXIALIGN","pt",1],["Monteiro Portugal","cfz",1],["Love to Smile","pt",1],["DOVAL DENTAL SUMINISTROS, SLU","pt",1],["Denteuropa","pt",1],["Clínica Dental Asensio","pt",1],["Cardio Dental","pt",1],["Nebojsa Popovic Distributor","pt",1],["JE Smiling by Orthodontika","pt",1],["Matrix","pt",1],["Living Hope Dental Lab","pt",1],["Infinia Dental Lab (Dental Snobs)","pt",1],["AirSmile Artinorway","pt",1],["One Move Aligners","pt",1],["Anne Dental clear","pt",1],["Oxford Smile Clinics","pt",1]];
-var MES_DIST_FETCH_DATE = '2026-05-29';
+var MES_DIST_RAW = [
+{n:'Dandy',cases:1269,aln:10700,facs:{pt:{c:47,a:443},tj:{c:1222,a:10257}}},
+{n:'Geniova',cases:731,aln:27131,facs:{pt:{c:731,a:27131}}},
+{n:'32co Lab',cases:497,aln:15393,facs:{cfz:{c:328,a:13511},pt:{c:169,a:1882}}},
+{n:'Smile White UK',cases:458,aln:14727,facs:{cfz:{c:32,a:1254},pt:{c:426,a:13473}}},
+{n:'ENSMILE V5',cases:444,aln:13280,facs:{pt:{c:444,a:13280}}},
+{n:'Deep Company',cases:335,aln:3300,facs:{pt:{c:335,a:3300}}},
+{n:'Toothfairy Toothfairy',cases:271,aln:2438,facs:{cfz:{c:203,a:1911},pt:{c:68,a:527}}},
+{n:'Smileunion Smileunion',cases:243,aln:3589,facs:{cfz:{c:190,a:3243},pt:{c:53,a:346}}},
+{n:'Henry Aligner',cases:225,aln:7844,facs:{pt:{c:225,a:7844}}},
+{n:'Le Labo du Sourire',cases:195,aln:3649,facs:{pt:{c:195,a:3649}}},
+{n:'Smile Shapers 1.0',cases:193,aln:3549,facs:{fl:{c:193,a:3549}}},
+{n:'Straight Teeth Direct',cases:177,aln:891,facs:{pt:{c:177,a:891}}},
+{n:'XLUR',cases:156,aln:2699,facs:{fl:{c:58,a:1043},pt:{c:98,a:1656}}},
+{n:'AirSmile ClearForward NL',cases:149,aln:2619,facs:{pt:{c:149,a:2619}}},
+{n:'Your Aligners - Dr Boccio',cases:108,aln:1186,facs:{pt:{c:108,a:1186}}},
+{n:'Orthoclear Jesse Bartels',cases:106,aln:797,facs:{pt:{c:106,a:797}}},
+{n:'Pyoor Smile',cases:97,aln:1611,facs:{cfz:{c:82,a:1499},pt:{c:15,a:112}}},
+{n:'Soonline Dental',cases:89,aln:620,facs:{cfz:{c:57,a:551},pt:{c:32,a:69}}},
+{n:'F4D+ by FACE',cases:78,aln:2602,facs:{pt:{c:78,a:2602}}},
+{n:'Just Smile',cases:72,aln:1250,facs:{pt:{c:72,a:1250}}},
+{n:'OX Dental',cases:72,aln:1218,facs:{cfz:{c:57,a:1191},pt:{c:15,a:27}}},
+{n:'Wave Dental',cases:63,aln:1479,facs:{pt:{c:63,a:1479}}},
+{n:'MEDIT',cases:62,aln:1293,facs:{pt:{c:62,a:1293}}},
+{n:'Retainer Club',cases:61,aln:123,facs:{fl:{c:61,a:123}}},
+{n:'Abaden',cases:58,aln:91,facs:{pt:{c:58,a:91}}},
+{n:'Glo Smiles',cases:58,aln:2275,facs:{pt:{c:58,a:2275}}},
+{n:'TOP Orthodontie',cases:58,aln:718,facs:{pt:{c:58,a:718}}},
+{n:'Smile ART (TP)',cases:53,aln:1549,facs:{pt:{c:53,a:1549}}},
+{n:'3D Predict',cases:51,aln:1550,facs:{pt:{c:51,a:1550}}},
+{n:'ProOrtho',cases:50,aln:821,facs:{pt:{c:50,a:821}}},
+{n:'K Clear Direct doctors',cases:48,aln:740,facs:{cfz:{c:28,a:603},pt:{c:20,a:137}}},
+{n:'SMILE NOW',cases:47,aln:721,facs:{cfz:{c:31,a:696},pt:{c:16,a:25}}},
+{n:'Overnight Smile (V5)',cases:46,aln:996,facs:{cfz:{c:39,a:890},pt:{c:7,a:106}}},
+{n:'Arcora',cases:44,aln:1478,facs:{pt:{c:44,a:1478}}},
+{n:'Soft Smile Aligners',cases:42,aln:1154,facs:{fl:{c:26,a:605},pt:{c:16,a:549}}},
+{n:'Wally',cases:42,aln:1275,facs:{pt:{c:42,a:1275}}},
+{n:'Precision Aligners',cases:40,aln:1473,facs:{pt:{c:40,a:1473}}},
+{n:'GLEE',cases:38,aln:558,facs:{pt:{c:38,a:558}}},
+{n:'ODL - Orthodent Laboratory',cases:37,aln:617,facs:{pt:{c:37,a:617}}},
+{n:'Lumiwhite',cases:35,aln:802,facs:{pt:{c:35,a:802}}},
+{n:'KlearFX',cases:32,aln:304,facs:{pt:{c:32,a:304}}},
+{n:'Aligner Specialist',cases:32,aln:498,facs:{pt:{c:32,a:498}}},
+{n:'Kalina Petkova Smart Medical Systems',cases:31,aln:648,facs:{pt:{c:31,a:648}}},
+{n:'K Line Philippines',cases:28,aln:481,facs:{cfz:{c:18,a:357},pt:{c:10,a:124}}},
+{n:'KLine Lithuania ClearX',cases:28,aln:555,facs:{pt:{c:28,a:555}}},
+{n:'Smile Shapers 2.0',cases:27,aln:1056,facs:{fl:{c:27,a:1056}}},
+{n:'ArchForm',cases:26,aln:464,facs:{pt:{c:26,a:464}}},
+{n:'Miguel Distribution',cases:25,aln:608,facs:{pt:{c:25,a:608}}},
+{n:'Medord 3Ds',cases:25,aln:638,facs:{pt:{c:25,a:638}}},
+{n:'XLUR Doctors',cases:25,aln:726,facs:{fl:{c:7,a:164},pt:{c:18,a:562}}},
+{n:'Ortospecialized Italy (Clearx)',cases:24,aln:587,facs:{pt:{c:24,a:587}}},
+{n:'EDG',cases:21,aln:484,facs:{cfz:{c:1,a:12},pt:{c:20,a:472}}},
+{n:'Smile2Impress',cases:19,aln:66,facs:{fl:{c:3,a:14},pt:{c:16,a:52}}},
+{n:'stepsdental',cases:19,aln:343,facs:{cfz:{c:19,a:343}}},
+{n:'EZCad Distributor',cases:19,aln:249,facs:{pt:{c:19,a:249}}},
+{n:'B.Align',cases:17,aln:256,facs:{pt:{c:17,a:256}}},
+{n:'Dentium',cases:17,aln:207,facs:{cfz:{c:12,a:200},pt:{c:5,a:7}}},
+{n:'Swift Dental Group',cases:17,aln:442,facs:{pt:{c:17,a:442}}},
+{n:'PerfectFitOrtho',cases:16,aln:425,facs:{pt:{c:16,a:425}}},
+{n:'Sorridente',cases:16,aln:472,facs:{pt:{c:16,a:472}}},
+{n:'Happy Aligners ClearX',cases:16,aln:253,facs:{pt:{c:16,a:253}}},
+{n:'Paula Souto Distributor',cases:16,aln:385,facs:{pt:{c:16,a:385}}},
+{n:'SMILE AID',cases:15,aln:278,facs:{pt:{c:15,a:278}}},
+{n:'Doctor Direct Smiles',cases:15,aln:120,facs:{pt:{c:15,a:120}}},
+{n:'Igor Gribalsky',cases:14,aln:173,facs:{pt:{c:14,a:173}}},
+{n:'Aurra',cases:13,aln:304,facs:{pt:{c:13,a:304}}},
+{n:'OrthoSystem Roma',cases:13,aln:254,facs:{cfz:{c:12,a:243},pt:{c:1,a:11}}},
+{n:'Treasure Island srl (Pagnoni)',cases:13,aln:130,facs:{pt:{c:13,a:130}}},
+{n:'Be & smile AG',cases:13,aln:196,facs:{pt:{c:13,a:196}}},
+{n:'Marko Florjancic Distributor',cases:13,aln:226,facs:{pt:{c:13,a:226}}},
+{n:'FirstClass',cases:12,aln:135,facs:{pt:{c:12,a:135}}},
+{n:'OptimalAligners',cases:12,aln:484,facs:{pt:{c:12,a:484}}},
+{n:'Sense Aligners',cases:12,aln:313,facs:{pt:{c:12,a:313}}},
+{n:'Hardimann',cases:12,aln:226,facs:{pt:{c:12,a:226}}},
+{n:'Nevident',cases:12,aln:250,facs:{cfz:{c:12,a:250}}},
+{n:'Digital Aligner',cases:11,aln:355,facs:{cfz:{c:10,a:297},pt:{c:1,a:58}}},
+{n:'Plus Orthodontics',cases:11,aln:147,facs:{pt:{c:11,a:147}}},
+{n:'Helga Lang Ortodoncia',cases:11,aln:316,facs:{pt:{c:11,a:316}}},
+{n:'Juan Romero',cases:10,aln:45,facs:{pt:{c:10,a:45}}},
+{n:'Magestic Aligners V5',cases:10,aln:93,facs:{pt:{c:10,a:93}}},
+{n:'Smilepharm',cases:10,aln:113,facs:{cfz:{c:10,a:113}}},
+{n:'K Line Production (alignersteps)',cases:9,aln:175,facs:{cfz:{c:9,a:175}}},
+{n:'Aligner Services',cases:9,aln:146,facs:{pt:{c:9,a:146}}},
+{n:'AirSmile ClearForward BE',cases:9,aln:144,facs:{pt:{c:9,a:144}}},
+{n:'Roma Aligners',cases:9,aln:247,facs:{pt:{c:9,a:247}}},
+{n:'Clara Aligner',cases:9,aln:371,facs:{pt:{c:9,a:371}}},
+{n:'Movendi Labor',cases:9,aln:149,facs:{pt:{c:9,a:149}}},
+{n:'TSmile Israel',cases:8,aln:119,facs:{cfz:{c:8,a:119}}},
+{n:'Monteiro Consulting ClearX',cases:8,aln:267,facs:{pt:{c:8,a:267}}},
+{n:'Angel Smile',cases:8,aln:100,facs:{pt:{c:8,a:100}}},
+{n:'Pristine Dental Group',cases:8,aln:256,facs:{pt:{c:8,a:256}}},
+{n:'Smart Medical Systems',cases:7,aln:149,facs:{cfz:{c:7,a:149}}},
+{n:'K Line Lithuania V2',cases:7,aln:84,facs:{cfz:{c:6,a:82},pt:{c:1,a:2}}},
+{n:'Perfect Smile Germany',cases:7,aln:156,facs:{pt:{c:7,a:156}}},
+{n:'Pure Aligners',cases:7,aln:213,facs:{pt:{c:7,a:213}}},
+{n:'Atlantic Aligners',cases:7,aln:20,facs:{pt:{c:7,a:20}}},
+{n:'Balbriggan Braces',cases:7,aln:72,facs:{cfz:{c:7,a:72}}},
+{n:'iForma',cases:6,aln:89,facs:{pt:{c:6,a:89}}},
+{n:'CLEARaline- Roe Dental',cases:6,aln:158,facs:{pt:{c:6,a:158}}},
+{n:'K Line Lithuania',cases:6,aln:34,facs:{cfz:{c:3,a:28},pt:{c:3,a:6}}},
+{n:'Vela Lasagabaster',cases:5,aln:93,facs:{pt:{c:5,a:93}}},
+{n:'SmileBar',cases:5,aln:47,facs:{cfz:{c:1,a:30},pt:{c:4,a:17}}},
+{n:'ToothPillow',cases:5,aln:178,facs:{fl:{c:5,a:178}}},
+{n:'Sachar Dental NYC',cases:5,aln:83,facs:{pt:{c:5,a:83}}},
+{n:'Life Dental Spa',cases:5,aln:119,facs:{cfz:{c:5,a:119}}},
+{n:'Vidaluc',cases:5,aln:185,facs:{pt:{c:5,a:185}}},
+{n:'Digital Smile Design (DSD) - ClearX',cases:5,aln:140,facs:{pt:{c:5,a:140}}},
+{n:'Radiant Aligners USA (Medscan)',cases:5,aln:111,facs:{cfz:{c:1,a:14},pt:{c:4,a:97}}},
+{n:'Clear Aligner Plus',cases:5,aln:78,facs:{pt:{c:5,a:78}}},
+{n:'Dentium ClearX',cases:5,aln:117,facs:{pt:{c:5,a:117}}},
+{n:'Smileup',cases:5,aln:111,facs:{pt:{c:5,a:111}}},
+{n:'3DP',cases:5,aln:109,facs:{pt:{c:5,a:109}}},
+{n:'AlignEX',cases:5,aln:31,facs:{pt:{c:5,a:31}}},
+{n:'Orthero Aligners',cases:5,aln:143,facs:{cfz:{c:5,a:143}}},
+{n:'Advanced Dental & Medical Clinic',cases:5,aln:63,facs:{pt:{c:5,a:63}}},
+{n:'Santé Smile',cases:5,aln:88,facs:{pt:{c:5,a:88}}},
+{n:'Rafatoxx',cases:4,aln:61,facs:{pt:{c:4,a:61}}},
+{n:'GlamAlign',cases:4,aln:70,facs:{pt:{c:4,a:70}}},
+{n:'Dental Snobs',cases:4,aln:111,facs:{pt:{c:4,a:111}}},
+{n:'Audentic',cases:4,aln:80,facs:{pt:{c:4,a:80}}},
+{n:'Oral Aligners',cases:4,aln:151,facs:{pt:{c:4,a:151}}},
+{n:'CHERUBINO - Malta',cases:4,aln:130,facs:{cfz:{c:4,a:130}}},
+{n:'Kiwi Smile - New Zealand',cases:4,aln:43,facs:{pt:{c:4,a:43}}},
+{n:'Pavel Cihar',cases:4,aln:60,facs:{cfz:{c:2,a:34},pt:{c:2,a:26}}},
+{n:'KLine Philippines Clearx',cases:4,aln:102,facs:{pt:{c:4,a:102}}},
+{n:'Blink',cases:4,aln:104,facs:{pt:{c:4,a:104}}},
+{n:'Alignar',cases:4,aln:85,facs:{pt:{c:4,a:85}}},
+{n:'MEDSCAN SAS',cases:4,aln:75,facs:{pt:{c:4,a:75}}},
+{n:'Centro Dental Doctores Jiménez',cases:4,aln:164,facs:{pt:{c:4,a:164}}},
+{n:'ClearMe',cases:4,aln:147,facs:{pt:{c:4,a:147}}},
+{n:'ARC',cases:4,aln:182,facs:{cfz:{c:3,a:136},pt:{c:1,a:46}}},
+{n:'TSmile Rotterdam',cases:3,aln:29,facs:{cfz:{c:3,a:29}}},
+{n:'Dr BB Ortho',cases:3,aln:18,facs:{pt:{c:3,a:18}}},
+{n:'Carolina Alonso',cases:3,aln:25,facs:{pt:{c:3,a:25}}},
+{n:'AirSmile Germany',cases:3,aln:28,facs:{pt:{c:3,a:28}}},
+{n:'CODE Clinic',cases:3,aln:78,facs:{pt:{c:3,a:78}}},
+{n:'Modento',cases:3,aln:90,facs:{cfz:{c:3,a:90}}},
+{n:'Ethoss Medical SRL',cases:3,aln:6,facs:{pt:{c:3,a:6}}},
+{n:'Fernando de la Iglesia Beyme',cases:3,aln:28,facs:{pt:{c:3,a:28}}},
+{n:'The Brace',cases:3,aln:198,facs:{cfz:{c:3,a:198}}},
+{n:'Clínica Dr. Acedo',cases:3,aln:66,facs:{pt:{c:3,a:66}}},
+{n:'Aligner club UK',cases:3,aln:142,facs:{pt:{c:3,a:142}}},
+{n:'Rasja Lataabi',cases:2,aln:27,facs:{cfz:{c:1,a:8},pt:{c:1,a:19}}},
+{n:'Advanced Dental Care Palm Beach Gardens',cases:2,aln:19,facs:{pt:{c:2,a:19}}},
+{n:'K-line 4d Case K-line 4d Case',cases:2,aln:24,facs:{cfz:{c:2,a:24}}},
+{n:'Clínica Dental Avilés y Román',cases:2,aln:4,facs:{pt:{c:2,a:4}}},
+{n:'Smileep',cases:2,aln:8,facs:{pt:{c:2,a:8}}},
+{n:'Ortospecialized Italy',cases:2,aln:34,facs:{cfz:{c:2,a:34}}},
+{n:'Research cases Egy',cases:2,aln:60,facs:{cfz:{c:2,a:60}}},
+{n:'Just Wright Dental (Dental snobs OEM client)',cases:2,aln:36,facs:{pt:{c:2,a:36}}},
+{n:'ESTTA DENTAL STUDIO',cases:2,aln:45,facs:{cfz:{c:2,a:45}}},
+{n:'Bailiff Bridge Dental',cases:2,aln:92,facs:{pt:{c:2,a:92}}},
+{n:'PerfectSmile Stockholm',cases:2,aln:39,facs:{cfz:{c:1,a:38},pt:{c:1,a:1}}},
+{n:'Perfect Finish Ortho Lab',cases:2,aln:25,facs:{pt:{c:2,a:25}}},
+{n:'East Cobb Family Dentistry',cases:2,aln:105,facs:{pt:{c:2,a:105}}},
+{n:'Stars Aligners',cases:2,aln:44,facs:{pt:{c:2,a:44}}},
+{n:'Saving Faces',cases:2,aln:42,facs:{pt:{c:2,a:42}}},
+{n:'Francesca Borg',cases:2,aln:68,facs:{cfz:{c:2,a:68}}},
+{n:'King Dental',cases:2,aln:52,facs:{pt:{c:2,a:52}}},
+{n:'Smartork Israel',cases:2,aln:90,facs:{cfz:{c:2,a:90}}},
+{n:'Fountainbridge Dental',cases:2,aln:110,facs:{pt:{c:2,a:110}}},
+{n:'Sales Janos',cases:2,aln:39,facs:{cfz:{c:1,a:38},pt:{c:1,a:1}}},
+{n:'Philippe Dahmen LetSmile',cases:2,aln:22,facs:{cfz:{c:1,a:18},pt:{c:1,a:4}}},
+{n:'Ortospecialized Spain SL',cases:2,aln:13,facs:{cfz:{c:2,a:13}}},
+{n:'Barksdale Dental Lab',cases:2,aln:39,facs:{pt:{c:2,a:39}}},
+{n:'Digital Ortho Lab',cases:2,aln:52,facs:{pt:{c:2,a:52}}},
+{n:'K Smile',cases:2,aln:71,facs:{pt:{c:2,a:71}}},
+{n:'Dentali_Sweden',cases:2,aln:57,facs:{pt:{c:2,a:57}}},
+{n:'Mondzorg Sarphaat',cases:2,aln:4,facs:{pt:{c:2,a:4}}},
+{n:'MSB Dental',cases:2,aln:37,facs:{pt:{c:2,a:37}}},
+{n:'Premier Dental Club',cases:2,aln:76,facs:{pt:{c:2,a:76}}},
+{n:'PureLife Aligners',cases:1,aln:48,facs:{pt:{c:1,a:48}}},
+{n:'Dudhat Dental Group',cases:1,aln:10,facs:{pt:{c:1,a:10}}},
+{n:'DENTAL TRADE',cases:1,aln:24,facs:{pt:{c:1,a:24}}},
+{n:'Makeda',cases:1,aln:4,facs:{cfz:{c:1,a:4}}},
+{n:'Treeline Dental',cases:1,aln:15,facs:{pt:{c:1,a:15}}},
+{n:'ORTOPAN',cases:1,aln:36,facs:{pt:{c:1,a:36}}},
+{n:'Prosthodontics & Implant Surgery of Manhattan, P.C.',cases:1,aln:50,facs:{pt:{c:1,a:50}}},
+{n:'The Smile Guru',cases:1,aln:8,facs:{pt:{c:1,a:8}}},
+{n:'Duva Dental',cases:1,aln:13,facs:{pt:{c:1,a:13}}},
+{n:'Simba dent',cases:1,aln:10,facs:{cfz:{c:1,a:10}}},
+{n:'Avantgarde Dentaltechnik Fräszentrum',cases:1,aln:6,facs:{pt:{c:1,a:6}}},
+{n:'GoOrtho',cases:1,aln:2,facs:{pt:{c:1,a:2}}},
+{n:'Bio Medica',cases:1,aln:50,facs:{pt:{c:1,a:50}}},
+{n:'Kalina Petkova',cases:1,aln:2,facs:{pt:{c:1,a:2}}},
+{n:'Aurea Medical Design',cases:1,aln:20,facs:{pt:{c:1,a:20}}},
+{n:'Oyster Dental Clinic',cases:1,aln:42,facs:{pt:{c:1,a:42}}},
+{n:'Happy Aligners',cases:1,aln:10,facs:{pt:{c:1,a:10}}},
+{n:'Carla Andrade (Sales)',cases:1,aln:44,facs:{pt:{c:1,a:44}}},
+{n:'AXIALIGN',cases:1,aln:4,facs:{pt:{c:1,a:4}}},
+{n:'Monteiro Portugal',cases:1,aln:48,facs:{cfz:{c:1,a:48}}},
+{n:'Love to Smile',cases:1,aln:1,facs:{pt:{c:1,a:1}}},
+{n:'DOVAL DENTAL SUMINISTROS, SLU',cases:1,aln:32,facs:{pt:{c:1,a:32}}},
+{n:'Denteuropa',cases:1,aln:32,facs:{pt:{c:1,a:32}}},
+{n:'Clínica Dental Asensio',cases:1,aln:4,facs:{pt:{c:1,a:4}}},
+{n:'Cardio Dental',cases:1,aln:2,facs:{pt:{c:1,a:2}}},
+{n:'Nebojsa Popovic Distributor',cases:1,aln:2,facs:{pt:{c:1,a:2}}},
+{n:'JE Smiling by Orthodontika',cases:1,aln:4,facs:{pt:{c:1,a:4}}},
+{n:'Matrix',cases:1,aln:9,facs:{pt:{c:1,a:9}}},
+{n:'Living Hope Dental Lab',cases:1,aln:50,facs:{pt:{c:1,a:50}}},
+{n:'Infinia Dental Lab (Dental Snobs)',cases:1,aln:32,facs:{pt:{c:1,a:32}}},
+{n:'AirSmile Artinorway',cases:1,aln:7,facs:{pt:{c:1,a:7}}},
+{n:'James dental studio',cases:1,aln:22,facs:{pt:{c:1,a:22}}},
+{n:'One Move Aligners',cases:1,aln:40,facs:{pt:{c:1,a:40}}},
+{n:'Anne Dental clear',cases:1,aln:20,facs:{pt:{c:1,a:20}}},
+{n:'Oxford Smile Clinics',cases:1,aln:40,facs:{pt:{c:1,a:40}}}
+];
+var MES_DIST_FETCH_DATE = '2026-05-31';
+
+var CLIENT_SHIPPING_DATA = {
+'32co Lab':{'United Kingdom':15245,'United States':148},
+'3D Predict':{'United States':1550},
+'3DP':{'United States':109},
+'ARC':{'Israel':182},
+'AXIALIGN':{'Spain':4},
+'Abaden':{'Spain':91},
+'Advanced Dental & Medical Clinic':{'Spain':63},
+'Advanced Dental Care Palm Beach Gardens':{'United States':19},
+'AirSmile Artinorway':{'Netherlands':7},
+'AirSmile ClearForward BE':{'Belgium':144},
+'AirSmile ClearForward NL':{'Netherlands':2619},
+'AirSmile Germany':{'Germany':28},
+'AlignEX':{'Spain':29,'Italy':2},
+'Alignar':{'United Kingdom':85},
+'Aligner Services':{'Germany':108,'Spain':38},
+'Aligner Specialist':{'Netherlands':498},
+'Aligner club UK':{'United Kingdom':142},
+'Angel Smile':{'Malaysia':100},
+'Anne Dental clear':{'Portugal':20},
+'ArchForm':{'United States':464},
+'Arcora':{'Spain':1478},
+'Atlantic Aligners':{'Ireland':20},
+'Audentic':{'Germany':80},
+'Aurea Medical Design':{'Spain':20},
+'Aurra':{'Canada':304},
+'Avantgarde Dentaltechnik Fräszentrum':{'Germany':6},
+'B.Align':{'United States':256},
+'Bailiff Bridge Dental':{'United Kingdom':92},
+'Balbriggan Braces':{'Ireland':72},
+'Barksdale Dental Lab':{'United States':39},
+'Be & smile AG':{'Switzerland':196},
+'Bio Medica':{'Slovenia':50},
+'Blink':{'France':104},
+'CHERUBINO - Malta':{'Malta':130},
+'CLEARaline- Roe Dental':{'United States':158},
+'CODE Clinic':{'Uganda':78},
+'Cardio Dental':{'Greece':2},
+'Carla Andrade (Sales)':{'Portugal':44},
+'Carolina Alonso':{'Spain':25},
+'Centro Dental Doctores Jiménez':{'Spain':164},
+'Clara Aligner':{'Spain':341,'Portugal':30},
+'Clear Aligner Plus':{'Sweden':78},
+'ClearMe':{'Israel':147},
+'Clínica Dental Asensio':{'Spain':4},
+'Clínica Dental Avilés y Román':{'Spain':4},
+'Clínica Dr. Acedo':{'Spain':66},
+'DENTAL TRADE':{'Germany':24},
+'DOVAL DENTAL SUMINISTROS, SLU':{'Spain':32},
+'Dandy':{'United States':10700},
+'Deep Company':{'France':3300},
+'Dental Snobs':{'United States':111},
+'Dentali_Sweden':{'Sweden':57},
+'Denteuropa':{'United Kingdom':32},
+'Dentium':{'Hungary':207},
+'Dentium ClearX':{'Hungary':97,'Austria':20},
+'Digital Aligner':{'Portugal':355},
+'Digital Ortho Lab':{'Portugal':52},
+'Digital Smile Design (DSD) - ClearX':{'Spain':140},
+'Doctor Direct Smiles':{'United States':120},
+'Dr BB Ortho':{'Ireland':18},
+'Dudhat Dental Group':{'United States':10},
+'Duva Dental':{'Albania':13},
+'EDG':{'Germany':484},
+'ENSMILE V5':{'Portugal':13280},
+'ESTTA DENTAL STUDIO':{'Netherlands':45},
+'EZCad Distributor':{'Puerto Rico':249},
+'East Cobb Family Dentistry':{'United States':105},
+'Ethoss Medical SRL':{'Romania':6},
+'F4D+ by FACE':{'Romania':2602},
+'Fernando de la Iglesia Beyme':{'Spain':28},
+'FirstClass':{'United States':135},
+'Fountainbridge Dental':{'United Kingdom':110},
+'Francesca Borg':{'Malta':68},
+'GLEE':{'United Kingdom':558},
+'Geniova':{'Spain':27131},
+'GlamAlign':{'United States':70},
+'Glo Smiles':{'United Kingdom':2275},
+'GoOrtho':{'United Kingdom':2},
+'Happy Aligners':{'Israel':10},
+'Happy Aligners ClearX':{'Israel':253},
+'Hardimann':{'United Arab Emirates':226},
+'Helga Lang Ortodoncia':{'Spain':316},
+'Henry Aligner':{'Spain':4047,'Portugal':3797},
+'Igor Gribalsky':{'Latvia':173},
+'Infinia Dental Lab (Dental Snobs)':{'United States':32},
+'JE Smiling by Orthodontika':{'Spain':4},
+'James dental studio':{'United States':22},
+'Juan Romero':{'Spain':45},
+'Just Smile':{'Hungary':1250},
+'Just Wright Dental (Dental snobs OEM client)':{'United States':36},
+'K Clear Direct doctors':{'Germany':591,'Netherlands':130,'Switzerland':19},
+'K Line Lithuania':{'Lithuania':34},
+'K Line Lithuania V2':{'Lithuania':84},
+'K Line Philippines':{'Philippines':455},
+'K Line Production (alignersteps)':{'Jordan':175},
+'K Smile':{'Italy':71},
+'K-line 4d Case K-line 4d Case':{'Egypt':24},
+'KLine Lithuania ClearX':{'Latvia':301,'Lithuania':254},
+'KLine Philippines Clearx':{'Philippines':102},
+'Kalina Petkova':{'Bulgaria':2},
+'Kalina Petkova Smart Medical Systems':{'Bulgaria':648},
+'King Dental':{'United States':52},
+'Kiwi Smile - New Zealand':{'New Zealand':43},
+'KlearFX':{'United States':304},
+'Le Labo du Sourire':{'France':3649},
+'Life Dental Spa':{'Romania':119},
+'Living Hope Dental Lab':{'United States':50},
+'Love to Smile':{'Ireland':1},
+'Lumiwhite':{'United Kingdom':802},
+'MEDIT':{'Korea, Republic of':1293},
+'MEDSCAN SAS':{'Belgium':75},
+'MSB Dental':{'Puerto Rico':37},
+'Magestic Aligners V5':{'Germany':93},
+'Makeda':{'Spain':4},
+'Marko Florjancic Distributor':{'Slovenia':226},
+'Matrix':{'Italy':9},
+'Medord 3Ds':{'Israel':638},
+'Miguel Distribution':{'Portugal':608},
+'Modento':{'Germany':90},
+'Mondzorg Sarphaat':{'Netherlands':4},
+'Monteiro Consulting ClearX':{'Spain':267},
+'Monteiro Portugal':{'Portugal':48},
+'Movendi Labor':{'Germany':149},
+'Nebojsa Popovic Distributor':{'Slovenia':2},
+'Nevident':{'Slovakia':250},
+'ODL - Orthodent Laboratory':{'United States':605,'Trinidad and Tobago':12},
+'ORTOPAN':{'Croatia':36},
+'OX Dental':{'Germany':1218},
+'One Move Aligners':{'Greece':40},
+'OptimalAligners':{'Belgium':185,'United States':156,'Netherlands':143},
+'Oral Aligners':{'Italy':151},
+'Orthero Aligners':{'Israel':143},
+'OrthoSystem Roma':{'Italy':254},
+'Orthoclear Jesse Bartels':{'Netherlands':797},
+'Ortospecialized Italy':{'Italy':34},
+'Ortospecialized Italy (Clearx)':{'Italy':587},
+'Ortospecialized Spain SL':{'Italy':13},
+'Overnight Smile (V5)':{'United Kingdom':996},
+'Oxford Smile Clinics':{'United Kingdom':40},
+'Oyster Dental Clinic':{'United States':42},
+'Paula Souto Distributor':{'Portugal':385},
+'Pavel Cihar':{'Czech Republic':60},
+'Perfect Finish Ortho Lab':{'United States':25},
+'Perfect Smile Germany':{'Germany':156},
+'PerfectFitOrtho':{'United States':425},
+'PerfectSmile Stockholm':{'Estonia':39},
+'Philippe Dahmen LetSmile':{'Netherlands':22},
+'Plus Orthodontics':{'United States':147},
+'Precision Aligners':{'Italy':1473},
+'Premier Dental Club':{'United States':76},
+'Pristine Dental Group':{'United Kingdom':256},
+'ProOrtho':{'Estonia':795,'Latvia':26},
+'Prosthodontics & Implant Surgery of Manhattan, P.C.':{'United States':50},
+'Pure Aligners':{'Spain':213},
+'PureLife Aligners':{'United States':48},
+'Pyoor Smile':{'Israel':1611},
+'Radiant Aligners USA (Medscan)':{'United States':111},
+'Rafatoxx':{'United States':61},
+'Rasja Lataabi':{'Netherlands':27},
+'Research cases Egy':{'Egypt':60},
+'Retainer Club':{'United States':123},
+'Roma Aligners':{'Italy':247},
+'SMILE AID':{'Puerto Rico':278},
+'SMILE NOW':{'Poland':721},
+'Sachar Dental NYC':{'United States':83},
+'Sales Janos':{'Hungary':39},
+'Santé Smile':{'France':88},
+'Saving Faces':{'United Kingdom':42},
+'Sense Aligners':{'Netherlands':313},
+'Simba dent':{'Kenya':10},
+'Smart Medical Systems':{'Bulgaria':149},
+'Smartork Israel':{'Israel':90},
+'Smile ART (TP)':{'Netherlands':1549},
+'Smile Shapers 1.0':{'United States':3549},
+'Smile Shapers 2.0':{'United States':1056},
+'Smile White UK':{'United Kingdom':14727},
+'Smile2Impress':{'United States':66},
+'SmileBar':{'New Zealand':47},
+'Smileep':{'Spain':8},
+'Smilepharm':{'Italy':113},
+'Smileunion Smileunion':{'Germany':3589},
+'Smileup':{'Portugal':111},
+'Soft Smile Aligners':{'United States':1154},
+'Soonline Dental':{'Spain':620},
+'Sorridente':{'Italy':472},
+'Stars Aligners':{'Portugal':44},
+'Straight Teeth Direct':{'United Kingdom':891},
+'Swift Dental Group':{'United Kingdom':442},
+'TOP Orthodontie':{'Netherlands':718},
+'TSmile Israel':{'Israel':119},
+'TSmile Rotterdam':{'Netherlands':29},
+'The Brace':{'United Kingdom':198},
+'The Smile Guru':{'United Kingdom':8},
+'ToothPillow':{'United States':178},
+'Toothfairy Toothfairy':{'United Kingdom':2438},
+'Treasure Island srl (Pagnoni)':{'Italy':130},
+'Treeline Dental':{'United Kingdom':15},
+'Vela Lasagabaster':{'Spain':93},
+'Vidaluc':{'Spain':185},
+'Wally':{'United States':1275},
+'Wave Dental':{'United States':1479},
+'XLUR':{'United States':2699},
+'XLUR Doctors':{'United States':726},
+'Your Aligners - Dr Boccio':{'Spain':1186},
+'iForma':{'Belgium':89},
+'stepsdental':{'Jordan':331,'Bahrain':12}
+};
+var CLIENT_SHIPPING_FETCH_DATE = '2026-05-31';
 var MES_DIST_WORK_DAYS = 22;
 
 var AVG_ALIGNERS_PER_CASE = 18;
@@ -10130,6 +10977,45 @@ function _runReallocEligibilityCore() {
     } else {
         logDetails = 'Logistics data not loaded.';
     }
+    // Also check published rates for source and target
+    var pubSrcRoutes = [], pubTgtRoutes = [];
+    if (typeof staticRatesData !== 'undefined' && staticRatesData.length) {
+        pubSrcRoutes = staticRatesData.filter(function(r){ return r.fid === srcFac; });
+        pubTgtRoutes = staticRatesData.filter(function(r){ return r.fid === tgtFac; });
+        if (pubSrcRoutes.length || pubTgtRoutes.length) {
+            logDetails += '<br><strong>Published rates (General):</strong><br>';
+            // Find common destinations
+            var pubDestMap = {};
+            pubSrcRoutes.forEach(function(r) {
+                if (!pubDestMap[r.country]) pubDestMap[r.country] = {};
+                if (!pubDestMap[r.country].src || r.rate < pubDestMap[r.country].src.rate) pubDestMap[r.country].src = r;
+            });
+            pubTgtRoutes.forEach(function(r) {
+                if (!pubDestMap[r.country]) pubDestMap[r.country] = {};
+                if (!pubDestMap[r.country].tgt || r.rate < pubDestMap[r.country].tgt.rate) pubDestMap[r.country].tgt = r;
+            });
+            var pubCountries = Object.keys(pubDestMap).sort();
+            var pubLines = [];
+            pubCountries.slice(0, 8).forEach(function(c) {
+                var d = pubDestMap[c];
+                var line = c + ': ';
+                if (d.src) line += fromName + ' ' + d.src.currency + ' ' + d.src.rate.toFixed(2);
+                else line += fromName + ' N/A';
+                line += ' vs ';
+                if (d.tgt) line += toName + ' ' + d.tgt.currency + ' ' + d.tgt.rate.toFixed(2);
+                else line += toName + ' N/A';
+                if (d.src && d.tgt) {
+                    var diff = d.tgt.rate - d.src.rate;
+                    if (diff > 1) line += ' <span style="color:#c62828;">(+' + diff.toFixed(2) + ')</span>';
+                    else if (diff < -1) line += ' <span style="color:#2e7d32;">(' + diff.toFixed(2) + ')</span>';
+                    else line += ' <span style="color:#666;">(~same)</span>';
+                }
+                pubLines.push(line);
+            });
+            logDetails += pubLines.join('<br>');
+        }
+    }
+    
     if (logDiscrep) discrepCount++;
     categories.push({
         name: 'Logistics / Shipping Cost',
@@ -10258,7 +11144,7 @@ function _runReallocEligibilityCore() {
     var discrepCount = categories.filter(function(c){ return c.hasDiscrepancy; }).length;
     var matchCount = categories.length - discrepCount;
 
-    // ====== RENDER ======
+    // ====== RENDER — Compact 2-column checklist (same as New Client) ======
     var html = '';
 
     // Transfer summary bar
@@ -10268,7 +11154,7 @@ function _runReallocEligibilityCore() {
     html += '<div class="realloc-transfer-box to"><div style="font-size:10px;color:#2e7d32;font-weight:700;">TO</div><div style="font-size:16px;font-weight:700;color:#1a1a2e;">' + toName + '</div><div style="font-size:10px;color:#666;">' + (tgtProfile.location || '') + '</div></div>';
     html += '</div>';
 
-    // Client info + spec status
+    // Client info
     html += '<div style="padding:10px 14px; background:#f8f9fa; border-radius:8px; margin-bottom:14px; font-size:12px;">';
     html += '<strong>' + reallocSelectedClient.name + '</strong>';
     html += ' &mdash; Volume: ' + (reallocSelectedClient.volume > 0 ? reallocSelectedClient.volume.toLocaleString() + ' aligners/day' : 'N/A');
@@ -10277,53 +11163,66 @@ function _runReallocEligibilityCore() {
     else html += ' &mdash; <span style="color:#e65100;">&#9888; Client specs not found</span>';
     html += '</div>';
 
-    // Overall
-    var overallClass = discrepCount === 0 ? 'pnp-pass' : 'pnp-fail';
-    html += '<div class="pnp-card ' + overallClass + '">';
-    html += '<div class="pnp-card-header">';
-    html += '<div class="pnp-fac-info"><div><div class="pnp-fac-name">Transfer Assessment</div><div class="pnp-fac-loc">' + fromName + ' &#8594; ' + toName + '</div></div></div>';
-    html += '<div class="pnp-status-badge">' + (discrepCount === 0 ? 'NO DISCREPANCIES' : discrepCount + ' DISCREPANC' + (discrepCount === 1 ? 'Y' : 'IES')) + '</div>';
-    html += '</div>';
-
-    // Summary chips
-    html += '<div class="pnp-body"><div class="pnp-summary">';
-    html += '<span class="pnp-summary-chip pass">Match: ' + matchCount + '</span>';
-    if (discrepCount > 0) html += '<span class="pnp-summary-chip fail">Discrepancies: ' + discrepCount + '</span>';
-    html += '</div>';
-
-    // Section: Client-Specific checks first
-    var clientCats = categories.filter(function(c){ return c.isClientSpec; });
-    var facilityCats = categories.filter(function(c){ return !c.isClientSpec; });
-
-    if (clientCats.length) {
-        html += '<div style="margin-top:14px; padding:6px 10px; background:#e3f2fd; border-radius:6px; font-size:11px; font-weight:700; color:#1565c0; text-transform:uppercase; letter-spacing:0.5px;">Client-Specific Checks</div>';
-        html += '<div class="pnp-factors" style="margin-top:8px;">';
-        var sortedClient = clientCats.slice().sort(function(a,b){ return (b.hasDiscrepancy?1:0) - (a.hasDiscrepancy?1:0); });
-        sortedClient.forEach(function(cat) {
-            html += '<div class="pnp-factor-row">';
-            html += '<div class="pnp-factor-badge ' + (cat.hasDiscrepancy ? 'fail' : 'pass') + '">' + (cat.hasDiscrepancy ? 'DISCREPANCY' : 'MATCH') + '</div>';
-            html += '<div class="pnp-factor-content"><div class="pnp-factor-name">' + cat.icon + ' ' + cat.name + '</div>';
-            html += '<div class="pnp-factor-detail">' + cat.details + '</div>';
-            html += '</div></div>';
-        });
-        html += '</div>';
-    }
-
-    if (facilityCats.length) {
-        html += '<div style="margin-top:14px; padding:6px 10px; background:#fff3e0; border-radius:6px; font-size:11px; font-weight:700; color:#e65100; text-transform:uppercase; letter-spacing:0.5px;">Facility Profile Comparison</div>';
-        html += '<div class="pnp-factors" style="margin-top:8px;">';
-        var sortedFac = facilityCats.slice().sort(function(a,b){ return (b.hasDiscrepancy?1:0) - (a.hasDiscrepancy?1:0); });
-        sortedFac.forEach(function(cat) {
-            html += '<div class="pnp-factor-row">';
-            html += '<div class="pnp-factor-badge ' + (cat.hasDiscrepancy ? 'fail' : 'pass') + '">' + (cat.hasDiscrepancy ? 'DISCREPANCY' : 'MATCH') + '</div>';
-            html += '<div class="pnp-factor-content"><div class="pnp-factor-name">' + cat.icon + ' ' + cat.name + '</div>';
-            html += '<div class="pnp-factor-detail">' + cat.details + '</div>';
-            html += '</div></div>';
-        });
-        html += '</div>';
-    }
-
+    // Card with header + checklist grid
+    var borderColor = discrepCount === 0 ? '#2e7d32' : '#c62828';
+    var scoreColor = discrepCount === 0 ? '#2e7d32' : discrepCount <= 2 ? '#e65100' : '#c62828';
+    
+    html += '<div style="margin-bottom:16px; border:1px solid #e0e7ef; border-left:5px solid ' + borderColor + '; border-radius:10px; overflow:hidden; background:#fff; box-shadow:0 2px 6px rgba(0,0,0,0.06);">';
+    
+    // Header
+    html += '<div style="padding:12px 16px; background:' + (discrepCount === 0 ? '#f0faf0' : '#fff8f8') + '; display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #eee;">';
+    html += '<div><div style="font-size:16px; font-weight:700; color:#1a1a2e;">Transfer Assessment</div>';
+    html += '<div style="font-size:10px; color:#888;">' + fromName + ' → ' + toName + '</div></div>';
+    html += '<div style="display:flex; align-items:center; gap:14px;">';
+    html += '<div style="padding:5px 14px; border-radius:20px; font-size:11px; font-weight:700; letter-spacing:0.5px; color:#fff; background:' + borderColor + ';">' + matchCount + '/' + categories.length + ' PASS</div>';
     html += '</div></div>';
+
+    // 2-column checklist grid
+    html += '<div style="padding:8px 12px; display:grid; grid-template-columns:1fr 1fr; gap:8px;">';
+    
+    categories.forEach(function(cat) {
+        var ok = !cat.hasDiscrepancy;
+        var border = ok ? '#c8e6c9' : '#ffcdd2';
+        var bg = ok ? '#fafdf9' : '#fff8f8';
+        var ico = ok ? '<span style="color:#2e7d32;font-size:14px;">✅</span>' : '<span style="color:#c62828;font-size:14px;">❌</span>';
+        
+        html += '<div style="padding:8px 10px; border:1px solid ' + border + '; border-radius:8px; background:' + bg + ';">';
+        html += '<div style="display:flex; align-items:center; gap:6px; margin-bottom:4px;">';
+        html += ico;
+        html += '<span style="font-size:11px; font-weight:700; color:' + (ok ? '#1a1a2e' : '#c62828') + ';">' + cat.name + '</span>';
+        if (cat.isClientSpec) html += '<span style="font-size:8px; background:#e3f2fd; color:#1565c0; padding:1px 4px; border-radius:3px;">CLIENT</span>';
+        html += '</div>';
+        
+        // Details as compact sub-items
+        var detailHtml = cat.details || '';
+        // Convert <br> separated details to individual checklist lines
+        var lines = detailHtml.split('<br>').filter(function(l){ return l.trim(); });
+        lines.forEach(function(line) {
+            var stripped = line.replace(/<[^>]+>/g, '').trim();
+            if (!stripped) return;
+            var isPass = line.indexOf('color:#2e7d32') >= 0 || line.indexOf('&#10003;') >= 0;
+            var isFail = line.indexOf('color:#c62828') >= 0 || line.indexOf('&#10006;') >= 0;
+            var isInfo = line.indexOf('color:#1565c0') >= 0 || line.indexOf('&#10010;') >= 0;
+            var isWarn = line.indexOf('color:#e65100') >= 0 || line.indexOf('&#9888;') >= 0;
+            
+            if (isPass) {
+                html += '<div style="font-size:9px; color:#2e7d32; padding:1px 0; line-height:1.3;">☑ ' + stripped + '</div>';
+            } else if (isFail) {
+                html += '<div style="font-size:9px; color:#c62828; padding:1px 0; line-height:1.3;">☐ ' + stripped + '</div>';
+            } else if (isWarn) {
+                html += '<div style="font-size:9px; color:#e65100; padding:1px 0; line-height:1.3;">⚠ ' + stripped + '</div>';
+            } else if (isInfo) {
+                html += '<div style="font-size:9px; color:#1565c0; padding:1px 0; line-height:1.3;">ℹ ' + stripped + '</div>';
+            } else {
+                html += '<div style="font-size:9px; color:#666; padding:1px 0; line-height:1.3;">' + stripped + '</div>';
+            }
+        });
+        
+        html += '</div>';
+    });
+    
+    html += '</div>'; // end grid
+    html += '</div>'; // end card
 
     container.innerHTML = html;
 
@@ -10517,6 +11416,73 @@ function processCsvImport() {
     alert('Imported ' + (rows.length - 1) + ' rows for ' + target + '. (Processing would update the relevant section.)');
     closeCsvImport();
 }
+
+
+function renderShipClients() {
+    if (typeof CLIENT_SHIPPING_DATA === 'undefined') return;
+    var container = document.getElementById('shipClientTable');
+    var search = (document.getElementById('shipClientSearch') || {}).value || '';
+    var countryFilter = (document.getElementById('shipCountryFilter') || {}).value || '';
+    var searchLow = search.toLowerCase();
+    
+    // Build country list for filter dropdown
+    var allCountries = {};
+    for (var dist in CLIENT_SHIPPING_DATA) {
+        for (var c in CLIENT_SHIPPING_DATA[dist]) allCountries[c] = (allCountries[c]||0) + 1;
+    }
+    var sel = document.getElementById('shipCountryFilter');
+    if (sel && sel.options.length <= 1) {
+        Object.keys(allCountries).sort().forEach(function(c) {
+            var opt = document.createElement('option');
+            opt.value = c; opt.text = c + ' (' + allCountries[c] + ')';
+            sel.appendChild(opt);
+        });
+    }
+    
+    var html = '<table style="width:100%; border-collapse:collapse; font-size:11px;">';
+    html += '<thead><tr style="background:#1F4E79; color:#fff; position:sticky; top:0;">';
+    html += '<th style="padding:8px 12px; text-align:left;">Distributor</th>';
+    html += '<th style="padding:8px 12px; text-align:left;">Shipping Countries</th>';
+    html += '<th style="padding:8px 8px; text-align:right;">Total Aligners</th>';
+    html += '</tr></thead><tbody>';
+    
+    var count = 0;
+    var sorted = Object.keys(CLIENT_SHIPPING_DATA).sort(function(a,b) {
+        var ta = 0, tb = 0;
+        for (var c in CLIENT_SHIPPING_DATA[a]) ta += CLIENT_SHIPPING_DATA[a][c];
+        for (var c in CLIENT_SHIPPING_DATA[b]) tb += CLIENT_SHIPPING_DATA[b][c];
+        return tb - ta;
+    });
+    
+    sorted.forEach(function(dist) {
+        if (searchLow && dist.toLowerCase().indexOf(searchLow) < 0) return;
+        var countries = CLIENT_SHIPPING_DATA[dist];
+        if (countryFilter && !countries[countryFilter]) return;
+        
+        var totalAln = 0;
+        var countryParts = [];
+        var sortedC = Object.keys(countries).sort(function(a,b){ return countries[b] - countries[a]; });
+        sortedC.forEach(function(c) {
+            totalAln += countries[c];
+            var bg = countries[c] > 5000 ? '#e8f5e9' : countries[c] > 1000 ? '#fff8e1' : '#f5f5f5';
+            countryParts.push('<span style="display:inline-block; padding:2px 6px; margin:1px; border-radius:4px; background:' + bg + '; font-size:10px;">' + c + ': ' + countries[c].toLocaleString() + '</span>');
+        });
+        
+        html += '<tr style="border-bottom:1px solid #f0f0f0;">';
+        html += '<td style="padding:6px 12px; font-weight:600;">' + dist + '</td>';
+        html += '<td style="padding:6px 12px;">' + countryParts.join(' ') + '</td>';
+        html += '<td style="padding:6px 8px; text-align:right; font-weight:600;">' + totalAln.toLocaleString() + '</td>';
+        html += '</tr>';
+        count++;
+    });
+    
+    html += '</tbody></table>';
+    if (container) container.innerHTML = html;
+    var countEl = document.getElementById('shipClientCount');
+    if (countEl) countEl.textContent = count + ' of ' + sorted.length + ' distributors';
+}
+
+function filterShipClients() { renderShipClients(); }
 
 </script>
 
