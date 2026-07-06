@@ -13367,7 +13367,7 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
     var lbl=document.getElementById('tickets-sync-time');
     if(lbl) lbl.textContent='⏳ Syncing…';
     try{
-      var resp = await fetch('/.netlify/functions/zoho-sync');
+      var resp = await fetch('/api/zoho-sync');
       var data = await resp.json();
       if(!data.ok) throw new Error(data.error || 'Sync failed');
       var tickets = data.tickets || [];
