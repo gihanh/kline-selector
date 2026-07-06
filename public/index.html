@@ -9833,6 +9833,8 @@ function approveNewClient() {
         if(res && res.ok) console.log('Allocation saved to shared database:', res.id);
         else console.warn('DB save warning:', res && res.error);
       });
+      // Dismiss the ticket now that allocation is approved
+      if(window._currentTicketId && typeof window.ticketDismiss === 'function') window.ticketDismiss(window._currentTicketId);
     }
     allocateFromEligibility(clientName, ncConfirmedFacility, dailyVol);
     
@@ -13535,6 +13537,7 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
     var crmBlock=document.getElementById('crm-ref-block');
     if(crmBlock && (t.name||t.category||t.volume||t.caseUrl||t.firstOrderNotes||t.journeyNotes)) crmBlock.style.display='';
     window._currentTicketId = t.id;
+    // NOTE: ticket is dismissed on approval, not here
     var navEl=null;
     document.querySelectorAll('.nav-item').forEach(function(n){ if(n.textContent&&n.textContent.trim().indexOf('New Client')!==-1) navEl=n; });
     switchPage('questions',navEl);
@@ -13545,7 +13548,6 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
         if(arrow) arrow.classList.remove('collapsed');
       });
     },80);
-    window.ticketDismiss(id);
   };
 
   /* ── nav hook: auto-sync on every visit to tickets tab ── */
