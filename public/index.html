@@ -1174,11 +1174,11 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
               </div>
               <div style="margin-top:10px;">
                 <label style="font-size:11px; font-weight:600; color:#555;">First Order Notes</label>
-                <textarea id="firstOrderNotes" rows="2" placeholder="&#8212;" style="width:100%; margin-top:4px; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px; box-sizing:border-box; resize:vertical;"></textarea>
+                <textarea id="firstOrderNotes" rows="2" placeholder="&#8212;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';" style="width:100%; margin-top:4px; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px; box-sizing:border-box; resize:none; overflow:hidden; min-height:60px;"></textarea>
               </div>
               <div style="margin-top:10px;">
                 <label style="font-size:11px; font-weight:700; color:#e65100;">&#9888; Journey Notes</label>
-                <textarea id="journeyNotes" rows="2" placeholder="&#8212;" style="width:100%; margin-top:4px; padding:8px; border:1px solid #ffa726; border-radius:6px; font-size:12px; background:#fff8e1; box-sizing:border-box; resize:vertical;"></textarea>
+                <textarea id="journeyNotes" rows="2" placeholder="&#8212;" oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px';" style="width:100%; margin-top:4px; padding:8px; border:1px solid #ffa726; border-radius:6px; font-size:12px; background:#fff8e1; box-sizing:border-box; resize:none; overflow:hidden; min-height:60px;"></textarea>
               </div>
             </div>
 
@@ -13537,6 +13537,13 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
     var crmBlock=document.getElementById('crm-ref-block');
     if(crmBlock && (t.name||t.category||t.volume||t.caseUrl||t.firstOrderNotes||t.journeyNotes)) crmBlock.style.display='';
     window._currentTicketId = t.id;
+    // Auto-expand note textareas to show full content
+    setTimeout(function(){
+      ['firstOrderNotes','journeyNotes'].forEach(function(id){
+        var el=document.getElementById(id);
+        if(el && el.value){ el.style.height='auto'; el.style.height=el.scrollHeight+'px'; }
+      });
+    },60);
     // NOTE: ticket is dismissed on approval, not here
     var navEl=null;
     document.querySelectorAll('.nav-item').forEach(function(n){ if(n.textContent&&n.textContent.trim().indexOf('New Client')!==-1) navEl=n; });
