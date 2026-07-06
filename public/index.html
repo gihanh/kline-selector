@@ -13371,7 +13371,9 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
       var data = await resp.json();
       if(!data.ok) throw new Error(data.error || 'Sync failed');
       var tickets = data.tickets || [];
-      window._PENDING_TICKETS = tickets;
+      if(tickets.length > 0){
+        window._PENDING_TICKETS = tickets;
+      }
       var now=new Date();
       window._PENDING_TICKETS_TS=now.toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'})+' '+now.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
       renderTickets();
