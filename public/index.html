@@ -1147,6 +1147,41 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
                 </select></div>
                 <div class="field-group"><label>Date of Assessment</label><input type="date" id="assessDate"></div>
             </div>
+
+            <!-- CRM Reference Data (auto-filled from Manufacturing Ticket) -->
+            <div id="crm-ref-block" style="margin-top:16px; padding:14px 16px; background:#f0f4ff; border-radius:8px; border-left:3px solid #1a73e8; display:none;">
+              <div style="font-size:11px; font-weight:700; color:#1a73e8; letter-spacing:0.08em; margin-bottom:12px;">&#128203; CRM REFERENCE DATA (from ticket)</div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px 20px;">
+                <div class="field-group" style="margin:0;">
+                  <label style="font-size:11px;">Doctor / Contact Name</label>
+                  <input type="text" id="doctorName" placeholder="&#8212;" style="font-size:13px;">
+                </div>
+                <div class="field-group" style="margin:0;">
+                  <label style="font-size:11px;">Category (from CRM)</label>
+                  <input type="text" id="crmCategory" readonly placeholder="&#8212;" style="font-size:13px; background:#fff; cursor:default;">
+                </div>
+                <div class="field-group" style="margin:0;">
+                  <label style="font-size:11px;">Volume (from CRM)</label>
+                  <input type="text" id="crmVolume" readonly placeholder="&#8212;" style="font-size:13px; background:#fff; cursor:default;">
+                </div>
+                <div class="field-group" style="margin:0;">
+                  <label style="font-size:11px;">D-Plan / First Order Case</label>
+                  <div style="display:flex; gap:6px; align-items:center;">
+                    <input type="text" id="dPlanUrl" placeholder="https://..." style="font-size:13px; flex:1;">
+                    <a id="dPlanLink" href="#" target="_blank" onclick="var u=document.getElementById('dPlanUrl').value; if(!u||u==='&#8212;')return false; this.href=u;" style="font-size:12px; color:#1a73e8; white-space:nowrap; padding:6px 10px; border:1px solid #1a73e8; border-radius:6px; text-decoration:none;">Open &#8599;</a>
+                  </div>
+                </div>
+              </div>
+              <div style="margin-top:10px;">
+                <label style="font-size:11px; font-weight:600; color:#555;">First Order Notes</label>
+                <textarea id="firstOrderNotes" rows="2" placeholder="&#8212;" style="width:100%; margin-top:4px; padding:8px; border:1px solid #ddd; border-radius:6px; font-size:12px; box-sizing:border-box; resize:vertical;"></textarea>
+              </div>
+              <div style="margin-top:10px;">
+                <label style="font-size:11px; font-weight:700; color:#e65100;">&#9888; Journey Notes</label>
+                <textarea id="journeyNotes" rows="2" placeholder="&#8212;" style="width:100%; margin-top:4px; padding:8px; border:1px solid #ffa726; border-radius:6px; font-size:12px; background:#fff8e1; box-sizing:border-box; resize:vertical;"></textarea>
+              </div>
+            </div>
+
             <input type="hidden" id="exchangeRate" value="1.08">
         </div>
     </div>
@@ -4768,6 +4803,9 @@ function resetForm() {
     document.getElementById('clientName').value = '';
     document.getElementById('accountMgr').value = '';
     document.getElementById('assessDate').value = '';
+    ['doctorName','crmCategory','crmVolume','dPlanUrl','firstOrderNotes','journeyNotes'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
+    var crmBlock=document.getElementById('crm-ref-block'); if(crmBlock) crmBlock.style.display='none';
+    window._currentTicketId = null;
     document.getElementById('exchangeRate').value = '1.08';
     updateResults(); updateProgress();
     switchPage('questions', document.querySelector('.nav-item'));
@@ -9785,8 +9823,11 @@ function approveNewClient() {
         submittedBy: record.approvedBy || '',
         status: 'Approved',
         notes: record.decisionNotes || '',
-        caseUrl: '',
-        crmContactId: record.crmContactId || ''
+        caseUrl: (function(){ var el=document.getElementById('dPlanUrl'); return el ? el.value : ''; })(),
+        doctorName: (function(){ var el=document.getElementById('doctorName'); return el ? el.value : ''; })(),
+        firstOrderNotes: (function(){ var el=document.getElementById('firstOrderNotes'); return el ? el.value : ''; })(),
+        journeyNotes: (function(){ var el=document.getElementById('journeyNotes'); return el ? el.value : ''; })(),
+        crmContactId: window._currentTicketId || record.crmContactId || ''
       };
       klineDbSave(dbPayload, function(res){
         if(res && res.ok) console.log('Allocation saved to shared database:', res.id);
@@ -13482,9 +13523,18 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
     var tickets=getTickets();
     var t=tickets.filter(function(x){ return x.id===id; })[0];
     if(!t) return;
-    var setVal=function(elId,v){ var el=document.getElementById(elId); if(el&&v) el.value=v; };
+    var setVal=function(elId,v){ var el=document.getElementById(elId); if(el) el.value=(v||''); };
     setVal('clientName', t.mesDistributorName||t.name);
     setVal('accountMgr', t.onboardingAdmin);
+    setVal('doctorName', t.name);
+    setVal('crmCategory', t.category);
+    setVal('crmVolume', t.volume);
+    setVal('dPlanUrl', t.caseUrl);
+    setVal('firstOrderNotes', t.firstOrderNotes);
+    setVal('journeyNotes', t.journeyNotes);
+    var crmBlock=document.getElementById('crm-ref-block');
+    if(crmBlock && (t.name||t.category||t.volume||t.caseUrl||t.firstOrderNotes||t.journeyNotes)) crmBlock.style.display='';
+    window._currentTicketId = t.id;
     var navEl=null;
     document.querySelectorAll('.nav-item').forEach(function(n){ if(n.textContent&&n.textContent.trim().indexOf('New Client')!==-1) navEl=n; });
     switchPage('questions',navEl);
