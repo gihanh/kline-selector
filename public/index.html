@@ -1105,7 +1105,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
         <div class="sidebar-progress-text" id="progressText">0 of 21 answered</div>
     </div>
     <div style="padding:14px 20px 6px; font-size:10px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px;">Knowledge Base</div>
-    <nav style="padding-bottom:20px;">
+    <nav style="padding-bottom:4px;">
         <div class="nav-item" onclick="switchPage('compliance', this);">Regulatory Compliance</div>
         <div class="nav-item" onclick="switchPage('profiles', this);">Facility Profiles</div>
         <div class="nav-item" onclick="switchPage('utilization', this);">Facilities Utilization</div>
@@ -1114,6 +1114,18 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
         <div class="nav-item" onclick="switchPage('logistics', this);">Logistics Costs</div>
         <div class="nav-item" onclick="switchPage('upslookup', this);">Shipping Rates</div>
         <div class="nav-item" onclick="switchPage('clientshipping', this);">Client Shipping</div>
+    </nav>
+    <!-- Backup & Restore -->
+    <div style="padding:14px 20px 6px; font-size:10px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px;">Backup &amp; Restore</div>
+    <nav style="padding-bottom:24px;">
+      <div class="nav-item" onclick="exportFullBackup()" style="display:flex;align-items:center;gap:8px;">
+        <span>&#11015;</span><span>Export Backup</span>
+      </div>
+      <div class="nav-item" onclick="document.getElementById('backup-import-input').click()" style="display:flex;align-items:center;gap:8px;">
+        <span>&#11014;</span><span>Restore Backup</span>
+      </div>
+      <input type="file" id="backup-import-input" accept=".json" style="display:none" onchange="importBackup(this)">
+      <div id="backup-status" style="font-size:11px;color:rgba(255,255,255,0.5);padding:4px 20px 0;min-height:16px;"></div>
     </nav>
 </div>
 
@@ -10057,7 +10069,7 @@ function approveNewClient() {
         var rid = escHtml(r['ID']||'');
         row += '<td style="padding:8px 12px;"><button onclick="historyShowDetails(this)" data-row="'+encodeURIComponent(JSON.stringify(r))+'" style="padding:3px 10px;font-size:11px;background:#e8f0fe;color:#1a73e8;border:1px solid #c5d8fb;border-radius:5px;cursor:pointer;">View &#8599;</button></td>';
         row += '</tr>';
-        row += '<td style="padding:8px 12px;"><button onclick="historyShowEdit(this)" data-id="'+encodeURIComponent(rid)+'" data-facility="'+encodeURIComponent(escHtml(r['Allocated Facility']||''))+'" data-status="'+encodeURIComponent(escHtml(r['Status']||''))+'" data-notes="'+encodeURIComponent(r['Notes']||'')+'" style="padding:3px 10px;font-size:11px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;border-radius:5px;cursor:pointer;">Edit ✎</button></td>';
+        row += '<td style="padding:8px 12px;"><button onclick="historyShowEdit(this)" data-id="'+encodeURIComponent(rid)+'" data-facility="'+encodeURIComponent(escHtml(r['Allocated Facility']||''))+'" data-status="'+encodeURIComponent(escHtml(r['Status']||''))+'" data-notes="'+encodeURIComponent(r['Notes']||'')+'" data-client="'+encodeURIComponent(escHtml(r['Client Name']||''))+'" style="padding:3px 10px;font-size:11px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;border-radius:5px;cursor:pointer;">Edit ✎</button></td>';
         row += '</tr>';
         row += '<tr id="hist-dr-'+rid+'" style="display:none;"><td colspan="11" style="padding:0 0 0 8px;"><div id="hist-di-'+rid+'" style="padding:16px 20px; background:#f8f9ff; border-left:3px solid #1a73e8; font-size:12px;"></div></td></tr>';
         row += '<tr id="hist-er-'+rid+'" style="display:none;"><td colspan="11" style="padding:0;"><div id="hist-ei-'+rid+'" style="padding:16px 20px; background:#fff8e1; border-left:3px solid #e65100;"></div></td></tr>';
@@ -10156,6 +10168,7 @@ function approveNewClient() {
 
   function historyShowEdit(btn){
     var rid = decodeURIComponent(btn.getAttribute("data-id"));
+    var clientName = decodeURIComponent(btn.getAttribute("data-client")||"");
     var editRow = document.getElementById("hist-er-"+rid);
     var inner = document.getElementById("hist-ei-"+rid);
     if(!editRow||!inner) return;
@@ -10174,7 +10187,7 @@ function approveNewClient() {
       + '<select id="edit-stat-'+rid+'" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;">'+statOptions+"</select></div>"
       + '<div style="flex:1;min-width:200px;"><label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Decision Notes</label>'
       + '<textarea id="edit-notes-'+rid+'" rows="2" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;">'+escHtml(curNotes)+"</textarea></div>"
-      + '<div style="padding-top:18px;"><button onclick="historySaveEdit(\''+rid+'\')" '
+      + '<div style="padding-top:18px;"><button onclick="historySaveEdit(\''+rid+'\',\''+encodeURIComponent(clientName)+'\')" '
       + 'style="padding:8px 18px;background:#1B5E20;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">&#10003; Save</button>'
       + ' <button onclick="historyCloseEdit(\''+rid+'\')" '
       + 'style="padding:8px 12px;background:#f5f5f5;color:#555;border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer;margin-left:6px;">Cancel</button></div>'
@@ -10183,7 +10196,15 @@ function approveNewClient() {
     btn.textContent="Close ✕";
   }
 
-  function historySaveEdit(rid){
+  // Map edit-dropdown display names → localStorage facility IDs
+  var HIST_FAC_ID_MAP = {
+    'PT - Portugal':       'pt',
+    'CFZ - Cairo Free Zone': 'cfz',
+    'TJ - Tijuana':        'tj',
+    'FL - Florida':        'fl'
+  };
+
+  function historySaveEdit(rid, encodedClient){
     if(!KLINE_DB_URL){ alert("No database connected."); return; }
     var facEl = document.getElementById("edit-fac-"+rid);
     var statEl = document.getElementById("edit-stat-"+rid);
@@ -10191,20 +10212,42 @@ function approveNewClient() {
     var msgEl = document.getElementById("edit-msg-"+rid);
     if(!facEl||!statEl) return;
     if(msgEl) msgEl.textContent="Saving...";
+    var newFacility = facEl.value;
+    var newStatus   = statEl.value;
+    var newNotes    = notesEl ? notesEl.value : "";
+    var clientName  = encodedClient ? decodeURIComponent(encodedClient) : "";
     fetch(KLINE_DB_URL, {
         method:"POST", mode:"cors",
         headers:{"Content-Type":"text/plain"},
         body: JSON.stringify({
           action: "updateRecord",
           id: rid,
-          allocatedFacility: facEl.value,
-          status: statEl.value,
-          notes: notesEl ? notesEl.value : ""
+          allocatedFacility: newFacility,
+          status: newStatus,
+          notes: newNotes
         })
     }).then(function(r){ return r.json(); })
     .then(function(d){
         if(d.ok){
           if(msgEl) msgEl.innerHTML='<span style="color:#2e7d32;">&#10003; Saved!</span>';
+          // ── Sync localStorage (Allocation Decision page) ──
+          if(clientName){
+            try{
+              var subs = JSON.parse(localStorage.getItem('kline_submissions_db')||'[]');
+              var facId = HIST_FAC_ID_MAP[newFacility] || newFacility;
+              var updated = false;
+              subs.forEach(function(s){
+                if((s.clientName||'').toLowerCase() === clientName.toLowerCase()){
+                  s.allocatedFacility = facId;
+                  s.allocatedFacilityName = newFacility;
+                  s.status = newStatus.toLowerCase();
+                  if(newNotes) s.decisionNotes = newNotes;
+                  updated = true;
+                }
+              });
+              if(updated) localStorage.setItem('kline_submissions_db', JSON.stringify(subs));
+            }catch(e){ console.warn('localStorage sync failed:', e); }
+          }
           // Refresh history list
           setTimeout(function(){ historyLoad(); }, 800);
         } else {
@@ -10250,6 +10293,139 @@ function approveNewClient() {
         if(msg) msg.innerHTML = '<span style="color:red;">Error: ' + e.message + '. Make sure the Web App is deployed with "Anyone" access.</span>';
       });
   }
+
+// ══════════════════════════════════════════════════
+// BACKUP & RESTORE
+// ══════════════════════════════════════════════════
+var BACKUP_LS_KEYS = [
+  'kline_submissions_db',        // Allocation decisions
+  'kline_client_allocations',    // Client allocation map
+  'kline_audit_trail',           // Audit log
+  'kline_facility_profiles',     // Facility profiles (user-edited)
+  'kline_realloc_history',       // Re-allocation history
+  'kline_ups_rates',             // UPS shipping rates
+  'kline_util_approval',         // Utilization approvals
+  'kline_util_data',             // Utilization snapshot
+  'kline_client_specs',          // Client specifications
+  'kline_client_specs_ts',       // Client specs timestamp
+  'kline_db_url',                // GAS database URL
+  'kline_mfg_tickets',           // Tickets cache
+  'kline_mfg_tickets_dismissed', // Dismissed ticket IDs
+  'zoho_crm_live_sync'           // Zoho credentials
+];
+
+function setBackupStatus(msg, color) {
+  var el = document.getElementById('backup-status');
+  if (el) { el.textContent = msg; el.style.color = color || 'rgba(255,255,255,0.5)'; }
+}
+
+window.exportFullBackup = async function() {
+  setBackupStatus('Preparing…', '#81c784');
+  var backup = {
+    version: '2.0',
+    app: 'Kline Facility Allocation Tool',
+    exportedAt: new Date().toISOString(),
+    note: 'Knowledge base (regulatory texts, facility specs, inventory) is embedded in the HTML file on GitHub — download that file to back it up.',
+    local: {},
+    database: { records: [], facilityProfiles: null }
+  };
+
+  // 1 — collect all localStorage
+  BACKUP_LS_KEYS.forEach(function(k) {
+    var raw = localStorage.getItem(k);
+    if (raw) {
+      try { backup.local[k] = JSON.parse(raw); }
+      catch(e) { backup.local[k] = raw; }
+    }
+  });
+
+  // 2 — fetch live database records
+  if (KLINE_DB_URL) {
+    try {
+      var r1 = await fetch(KLINE_DB_URL + '?action=read');
+      var d1 = await r1.json();
+      if (d1.ok) backup.database.records = d1.records || [];
+    } catch(e) { console.warn('DB fetch failed during backup:', e.message); }
+    try {
+      var r2 = await fetch(KLINE_DB_URL + '?action=loadFacilityProfiles', { mode:'cors' });
+      var d2 = await r2.json();
+      if (d2.ok) backup.database.facilityProfiles = d2.profiles || null;
+    } catch(e) {}
+  }
+
+  // 3 — also push to Google Sheets Backups tab (silent)
+  if (KLINE_DB_URL) {
+    try {
+      fetch(KLINE_DB_URL, {
+        method:'POST', mode:'cors',
+        headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({ action:'saveFullBackup', triggeredBy:'manual-export', backup: backup })
+      }).catch(function(){});
+    } catch(e) {}
+  }
+
+  // 4 — download local JSON file
+  var json = JSON.stringify(backup, null, 2);
+  var blob = new Blob([json], { type: 'application/json' });
+  var url  = URL.createObjectURL(blob);
+  var a    = document.createElement('a');
+  var date = new Date().toISOString().slice(0,10);
+  a.href = url; a.download = 'kline-backup-' + date + '.json';
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  var rCount = backup.database.records.length;
+  var lKeys  = Object.keys(backup.local).length;
+  setBackupStatus('✓ ' + lKeys + ' local + ' + rCount + ' DB + cloud copy saved', '#a5d6a7');
+  setTimeout(function(){ setBackupStatus(''); }, 6000);
+};
+
+window.importBackup = function(input) {
+  var file = input.files[0];
+  if (!file) return;
+  setBackupStatus('Reading file…', '#81c784');
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      var backup = JSON.parse(e.target.result);
+      if (!backup.local && !backup.database) throw new Error('Not a valid Kline backup file.');
+
+      // Confirm before overwriting
+      var dbCount = (backup.database && backup.database.records) ? backup.database.records.length : 0;
+      var lkCount = backup.local ? Object.keys(backup.local).length : 0;
+      var msg = 'Restore backup from ' + (backup.exportedAt || 'unknown date') + '?\n\n'
+              + '• ' + lkCount + ' local data stores\n'
+              + '• ' + dbCount + ' database records (shown in Allocation History — not written back to Google Sheets)\n\n'
+              + 'This will OVERWRITE your current local data. Continue?';
+      if (!confirm(msg)) { setBackupStatus('Cancelled.', 'rgba(255,255,255,0.4)'); input.value=''; return; }
+
+      // Restore localStorage
+      var restored = 0;
+      if (backup.local) {
+        Object.keys(backup.local).forEach(function(k) {
+          var val = backup.local[k];
+          localStorage.setItem(k, typeof val === 'string' ? val : JSON.stringify(val));
+          restored++;
+        });
+        // Re-load DB URL from restored data
+        var newUrl = localStorage.getItem('kline_db_url');
+        if (newUrl && newUrl !== KLINE_DB_URL) { KLINE_DB_URL = newUrl; }
+      }
+
+      setBackupStatus('✓ Restored ' + restored + ' stores. Reload to apply.', '#a5d6a7');
+      setTimeout(function() {
+        if (confirm('Backup restored. Reload the page now to apply all changes?')) {
+          location.reload();
+        }
+      }, 800);
+    } catch(err) {
+      setBackupStatus('Error: ' + err.message, '#ef9a9a');
+    }
+    input.value = '';
+  };
+  reader.readAsText(file);
+};
 
 function renderSubmissions() { renderDecisionTable(); }
 
