@@ -3457,10 +3457,13 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
     <div class="util-header">
         <h1>Facilities Utilization</h1>
         <p>Production utilization based on MES confirmed cases | Last 21 days (Jun 6 sync)</p>
-        <span class="util-period" id="util-period-text">May 15 &ndash; Jun 05, 2026 (21 calendar days / 15 working days)</span>
-        <div style="margin-top:10px; display:flex; gap:8px; align-items:center;">
-            
-            <button onclick="showCsvImport()" style="background:#fff;color:#1a237e;border:2px solid #1a237e;padding:8px 18px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">
+        <span class="util-period" id="util-period-text">Jun 22 &ndash; Jul 6, 2026 (Last 15 days, 11 working days)</span>
+        <div style="margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button onclick="document.getElementById('excel-upload-input').click()" style="background:#fff;color:#1a237e;border:none;padding:9px 20px;border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;">
+                &#x1F4C2; Upload DataSheet Excel
+            </button>
+            <input type="file" id="excel-upload-input" accept=".xlsx,.xls" style="display:none" onchange="if(this.files[0]) parseExcelFile(this.files[0]); this.value='';">
+            <button onclick="showCsvImport()" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.4);padding:9px 18px;border-radius:8px;font-weight:600;font-size:13px;cursor:pointer;">
                 &#x1F4CB; Paste MES Export
             </button>
         </div>
@@ -3489,19 +3492,19 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
 
     <div class="util-summary">
         <div class="util-summary-card">
-            <div class="util-big">5,894</div>
+            <div class="util-big">2,537</div>
             <div class="util-label">Total Cases</div>
         </div>
         <div class="util-summary-card">
-            <div class="util-big">127,142</div>
+            <div class="util-big">41,989</div>
             <div class="util-label">Total Units (MES)</div>
         </div>
         <div class="util-summary-card">
-            <div class="util-big">118,366</div>
+            <div class="util-big">37,696</div>
             <div class="util-label">Aligners</div>
         </div>
         <div class="util-summary-card">
-            <div class="util-big">11,558</div>
+            <div class="util-big">3,817</div>
             <div class="util-label">Daily Avg (units)</div>
         </div>
     </div>
@@ -3510,7 +3513,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
     
     
     <div class="util-grid">
-        <div class="util-card" data-profile="pt" data-default-capacity="6000" data-cases="3656" data-aligners="77300" data-retainers="1961" data-templates="3607" data-total-units="82868">
+        <div class="util-card" data-profile="pt" data-default-capacity="6000" data-cases="1693" data-aligners="29750" data-retainers="1198" data-templates="1646" data-total-units="32594">
             <div class="util-card-header">
                 <h3>Portugal</h3>
                 <span class="util-badge mapped">PT</span>
@@ -3518,18 +3521,18 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
             <div class="util-card-body">
                 <div class="util-gauge-row">
                     <div class="util-gauge-bar">
-                        <div class="util-gauge-fill red" style="width:100%" id="util-gauge-pt"></div>
+                        <div class="util-gauge-fill green" style="width:49%" id="util-gauge-pt"></div>
                     </div>
-                    <div class="util-gauge-pct red" id="util-pct-pt">135%</div>
+                    <div class="util-gauge-pct green" id="util-pct-pt">49%</div>
                 </div>
                 <div class="util-stats">
-                    <div class="util-stat"><span class="util-stat-label">Cases (15d)</span><span class="util-stat-value">3,720</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Daily Avg Cases</span><span class="util-stat-value">338</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Aligners</span><span class="util-stat-value">83,214</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Retainers</span><span class="util-stat-value">2,084</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Templates</span><span class="util-stat-value">3,669</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Total Units</span><span class="util-stat-value">88,967</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Daily Avg Units</span><span class="util-stat-value">8,088</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Cases (15d)</span><span class="util-stat-value">1,693</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Daily Avg Cases</span><span class="util-stat-value">154</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Aligners</span><span class="util-stat-value">29,750</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Retainers</span><span class="util-stat-value">1,198</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Templates</span><span class="util-stat-value">1,646</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Total Units</span><span class="util-stat-value">32,594</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Daily Avg Units</span><span class="util-stat-value">2,963</span></div>
                     <div class="util-stat"><span class="util-stat-label">Daily Capacity</span><span class="util-stat-value" id="util-cap-pt">6,000 units</span></div>
                 </div>
                 <div class="util-calc-breakdown" id="util-calc-pt" style="display:none; padding:8px 14px; margin:0 0 8px 0; background:#f0f5fa; border-radius:6px; font-size:11px; color:#555; line-height:1.6;"></div>
@@ -3539,7 +3542,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
                 
             </div>
         </div>
-        <div class="util-card" data-profile="cfz" data-default-capacity="3900" data-cases="890" data-aligners="19311" data-retainers="517" data-templates="1041" data-total-units="20869">
+        <div class="util-card" data-profile="cfz" data-default-capacity="3900" data-cases="160" data-aligners="2458" data-retainers="185" data-templates="16" data-total-units="2659">
             <div class="util-card-header">
                 <h3>CFZ</h3>
                 <span class="util-badge mapped">CFZ</span>
@@ -3547,18 +3550,18 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
             <div class="util-card-body">
                 <div class="util-gauge-row">
                     <div class="util-gauge-bar">
-                        <div class="util-gauge-fill green" style="width:41%" id="util-gauge-cfz"></div>
+                        <div class="util-gauge-fill green" style="width:6%" id="util-gauge-cfz"></div>
                     </div>
-                    <div class="util-gauge-pct green" id="util-pct-cfz">41%</div>
+                    <div class="util-gauge-pct green" id="util-pct-cfz">6%</div>
                 </div>
                 <div class="util-stats">
-                    <div class="util-stat"><span class="util-stat-label">Cases (15d)</span><span class="util-stat-value">847</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Daily Avg Cases</span><span class="util-stat-value">77</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Aligners</span><span class="util-stat-value">16,399</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Retainers</span><span class="util-stat-value">509</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Templates</span><span class="util-stat-value">702</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Total Units</span><span class="util-stat-value">17,610</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Daily Avg Units</span><span class="util-stat-value">1,391</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Cases (15d)</span><span class="util-stat-value">160</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Daily Avg Cases</span><span class="util-stat-value">15</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Aligners</span><span class="util-stat-value">2,458</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Retainers</span><span class="util-stat-value">185</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Templates</span><span class="util-stat-value">16</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Total Units</span><span class="util-stat-value">2,659</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Daily Avg Units</span><span class="util-stat-value">242</span></div>
                     <div class="util-stat"><span class="util-stat-label">Daily Capacity</span><span class="util-stat-value" id="util-cap-cfz">3,900 units</span></div>
                 </div>
                 <div class="util-calc-breakdown" id="util-calc-cfz" style="display:none; padding:8px 14px; margin:0 0 8px 0; background:#f0f5fa; border-radius:6px; font-size:11px; color:#555; line-height:1.6;"></div>
@@ -3568,7 +3571,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
                 
             </div>
         </div>
-        <div class="util-card" data-profile="tj" data-default-capacity="10000" data-cases="823" data-aligners="4399" data-retainers="1288" data-templates="199" data-total-units="5886">
+        <div class="util-card" data-profile="tj" data-default-capacity="10000" data-cases="377" data-aligners="824" data-retainers="759" data-templates="32" data-total-units="1615">
             <div class="util-card-header">
                 <h3>Tijuana</h3>
                 <span class="util-badge mapped">TJ</span>
@@ -3576,18 +3579,18 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
             <div class="util-card-body">
                 <div class="util-gauge-row">
                     <div class="util-gauge-bar">
-                        <div class="util-gauge-fill green" style="width:3%" id="util-gauge-tj"></div>
+                        <div class="util-gauge-fill green" style="width:1%" id="util-gauge-tj"></div>
                     </div>
-                    <div class="util-gauge-pct green" id="util-pct-tj">3%</div>
+                    <div class="util-gauge-pct green" id="util-pct-tj">1%</div>
                 </div>
                 <div class="util-stats">
-                    <div class="util-stat"><span class="util-stat-label">Cases (15d)</span><span class="util-stat-value">823</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Daily Avg Cases</span><span class="util-stat-value">55</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Aligners</span><span class="util-stat-value">4,399</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Retainers</span><span class="util-stat-value">1,288</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Templates</span><span class="util-stat-value">199</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Total Units</span><span class="util-stat-value">5,886</span></div>
-                    <div class="util-stat"><span class="util-stat-label">Daily Avg Units</span><span class="util-stat-value">392</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Cases (15d)</span><span class="util-stat-value">377</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Daily Avg Cases</span><span class="util-stat-value">34</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Aligners</span><span class="util-stat-value">824</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Retainers</span><span class="util-stat-value">759</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Templates</span><span class="util-stat-value">32</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Total Units</span><span class="util-stat-value">1,615</span></div>
+                    <div class="util-stat"><span class="util-stat-label">Daily Avg Units</span><span class="util-stat-value">147</span></div>
                     <div class="util-stat"><span class="util-stat-label">Daily Capacity</span><span class="util-stat-value" id="util-cap-tj">10,000 units</span></div>
                 </div>
                 <div class="util-calc-breakdown" id="util-calc-tj" style="display:none; padding:8px 14px; margin:0 0 8px 0; background:#f0f5fa; border-radius:6px; font-size:11px; color:#555; line-height:1.6;"></div>
@@ -6995,12 +6998,12 @@ function buildKnowledgeBase() {
     var facMap = {PT: 'pt', CFZ: 'cfz', TJ: 'tj', FL: 'fl'};
     var facNames = {PT: 'Portugal', CFZ: 'Cairo Free Zone', TJ: 'Tijuana', FL: 'Florida'};
     
-    // Shipped data totals per facility (approx from utilization data)
+    // Shipped data totals per facility — last 15 days Jun 22–Jul 6 2026 (11 working days)
     var utilData = {
-    pt: {cases: 5218, units: 113209, aligners: 118171, retainers: 3338, templates: 5080},
-    cfz: {cases: 1233, units: 29151, aligners: 29238, retainers: 615, templates: 1576},
-    tj: {cases: 1222, units: 10236, aligners: 10257, retainers: 1592, templates: 303},
-    fl: {cases: 383, units: 7003, aligners: 7020, retainers: 302, templates: 212},
+    pt:  {cases: 1693, units: 32594, aligners: 29750, retainers: 1198, templates: 1646},
+    cfz: {cases: 160,  units: 2659,  aligners: 2458,  retainers: 185,  templates: 16},
+    tj:  {cases: 377,  units: 1615,  aligners: 824,   retainers: 759,  templates: 32},
+    fl:  {cases: 307,  units: 5121,  aligners: 4664,  retainers: 279,  templates: 178},
 };
     
     // Shipped data totals
@@ -8264,6 +8267,157 @@ function parseCsvImport() {
     setStatus('\u2713 Imported ' + facCount + ' facilities from paste at ' + new Date().toLocaleTimeString(), '#2e7d32');
 }
 
+// \u2500\u2500 EXCEL UPLOAD PARSER \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+// User downloads DataSheet Excel from MES/Zoho and uploads it here.
+// SheetJS parses it in-browser \u2014 no HTML push needed.
+function parseExcelFile(file) {
+    if (!window.XLSX) {
+        alert('SheetJS library not loaded. Refresh the page and try again.');
+        return;
+    }
+    setStatus('Reading Excel file\u2026', '#1a237e');
+    var reader = new FileReader();
+    reader.onload = function(e) {
+        try {
+            var wb = XLSX.read(new Uint8Array(e.target.result), {type: 'array', cellDates: false});
+            var wsName = wb.SheetNames[0];
+            var ws = wb.Sheets[wsName];
+            var rows = XLSX.utils.sheet_to_json(ws, {header: 1, defval: ''});
+
+            if (!rows || rows.length < 2) {
+                alert('No data found in the Excel file.');
+                return;
+            }
+
+            // \u2500\u2500 1. Find header row \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+            var headerIdx = -1;
+            var colMap = {};
+            for (var r = 0; r < Math.min(rows.length, 10); r++) {
+                var row = rows[r];
+                var hasFac = false, hasDate = false;
+                for (var c = 0; c < row.length; c++) {
+                    var h = String(row[c] || '').toLowerCase().trim();
+                    if (h === 'facility') hasFac = true;
+                    if (h === 'iso_shipped_at' || h === 'shipped_at') hasDate = true;
+                }
+                if (hasFac && hasDate) {
+                    headerIdx = r;
+                    for (var c2 = 0; c2 < row.length; c2++) {
+                        var hh = String(row[c2] || '').toLowerCase().trim();
+                        colMap[hh] = c2;
+                    }
+                    break;
+                }
+            }
+            if (headerIdx < 0) {
+                alert('Could not find header row with Facility and date columns.\nMake sure this is the raw DataSheet export (not a pivot).');
+                return;
+            }
+
+            var cFac  = colMap['facility'];
+            var cDate = (colMap['iso_shipped_at'] !== undefined) ? colMap['iso_shipped_at'] : colMap['shipped_at'];
+            var cRef  = colMap['ref_case'];
+            var cAln  = colMap['aligners'];
+            var cRet  = colMap['retainers'];
+            var cTmpl = colMap['templates'];
+
+            if (cFac === undefined || cDate === undefined) {
+                alert('Required columns not found: Facility, iso_shipped_at (or shipped_at).');
+                return;
+            }
+
+            // \u2500\u2500 2. First pass: find most-recent date in file \u2500\u2500\u2500\u2500\u2500
+            var maxDate = '';
+            for (var i = headerIdx + 1; i < rows.length; i++) {
+                var d = String(rows[i][cDate] || '').substring(0, 10);
+                if (d > maxDate) maxDate = d;
+            }
+            if (!maxDate) {
+                alert('No valid dates found in the date column.');
+                return;
+            }
+            // Range: maxDate minus 14 calendar days \u2192 maxDate
+            var toD   = new Date(maxDate);
+            var fromD = new Date(toD);
+            fromD.setDate(fromD.getDate() - 14);
+            var fmt = function(dt) {
+                return dt.getFullYear() + '-' +
+                    String(dt.getMonth()+1).padStart(2,'0') + '-' +
+                    String(dt.getDate()).padStart(2,'0');
+            };
+            var range    = {from: fmt(fromD), to: maxDate};
+            var workDays = countWorkingDays(range.from, range.to);
+
+            // \u2500\u2500 3. Second pass: aggregate per facility \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+            var facData = {};
+            var parseN  = function(v) { return parseInt(String(v).replace(/,/g,'')) || 0; };
+
+            for (var i = headerIdx + 1; i < rows.length; i++) {
+                var row = rows[i];
+                var dateStr = String(row[cDate] || '').substring(0, 10);
+                if (!dateStr || dateStr < range.from || dateStr > range.to) continue;
+
+                var facRaw = String(row[cFac] || '').toLowerCase().trim();
+                var pid = MES_NAME_TO_ID[facRaw];
+                if (!pid) {
+                    Object.keys(MES_NAME_TO_ID).forEach(function(k) {
+                        if (!pid && (facRaw.indexOf(k) >= 0 || k.indexOf(facRaw) >= 0)) pid = MES_NAME_TO_ID[k];
+                    });
+                }
+                if (!pid) continue;
+
+                if (!facData[pid]) facData[pid] = {cases: {}, aln: 0, ret: 0, tmpl: 0};
+
+                if (cRef !== undefined && row[cRef]) facData[pid].cases[String(row[cRef])] = 1;
+                if (cAln  !== undefined) facData[pid].aln  += parseN(row[cAln]);
+                if (cRet  !== undefined) facData[pid].ret  += parseN(row[cRet]);
+                if (cTmpl !== undefined) facData[pid].tmpl += parseN(row[cTmpl]);
+            }
+
+            // \u2500\u2500 4. Build results & call applyMesData \u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500\u2500
+            var results = {};
+            Object.keys(facData).forEach(function(pid) {
+                var d = facData[pid];
+                var aln  = d.aln, ret = d.ret, tmpl = d.tmpl;
+                results[pid] = {
+                    cases:          Object.keys(d.cases).length || 0,
+                    total_aligners: aln + ret + tmpl,
+                    aligners2:      aln,
+                    retainers:      ret,
+                    templates:      tmpl
+                };
+            });
+
+            var facCount = Object.keys(results).length;
+            if (facCount === 0) {
+                alert('No facility data found for ' + range.from + ' \u2013 ' + range.to + '.\nCheck the date range in the file.');
+                return;
+            }
+
+            applyMesData(results, workDays, range);
+            setStatus('\u2713 Excel imported: ' + facCount + ' facilities | ' + range.from + ' \u2013 ' + range.to + ' (' + workDays + ' working days)', '#2e7d32');
+
+        } catch(err) {
+            alert('Error reading Excel file: ' + err.message);
+            setStatus('Excel import failed: ' + err.message, '#c62828');
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// Baked-in utilization snapshot — Jun 22 – Jul 6 2026 (11 working days)
+var _BAKED_UTIL = {
+    timestamp: '2026-07-06T23:59:00.000Z',
+    workDays: 11,
+    range: { from: '2026-06-22', to: '2026-07-06' },
+    facilities: {
+        pt:  { cases: 1693, total_aligners: 32594, aligners2: 29750, retainers: 1198, templates: 1646 },
+        cfz: { cases: 160,  total_aligners: 2659,  aligners2: 2458,  retainers: 185,  templates: 16   },
+        tj:  { cases: 377,  total_aligners: 1615,  aligners2: 824,   retainers: 759,  templates: 32   },
+        fl:  { cases: 307,  total_aligners: 5121,  aligners2: 4664,  retainers: 279,  templates: 178  }
+    }
+};
+
 // Load cached data on init
 function loadCachedUtilData() {
     try {
@@ -8273,9 +8427,13 @@ function loadCachedUtilData() {
             if (age < 24) { // Use cached data if less than 24 hours old
                 applyMesData(cached.facilities, cached.workDays || 11, cached.range);
                 setStatus('Showing cached data from ' + new Date(cached.timestamp).toLocaleTimeString() + ' (' + Math.round(age) + 'h ago)', '#666');
+                return;
             }
         }
     } catch(e) {}
+    // Fall back to baked-in snapshot
+    applyMesData(_BAKED_UTIL.facilities, _BAKED_UTIL.workDays, _BAKED_UTIL.range);
+    setStatus('Showing baked data: Jun 22 – Jul 6, 2026 (11 working days)', '#666');
 }
 
 // Auto-load cached data when page loads
@@ -10294,8 +10452,8 @@ function approveNewClient() {
           });
           localStorage.setItem('kline_submissions_db', JSON.stringify(subs));
         }catch(e){}
-        // 2 — re-enable the ticket
-        if(crmId && typeof window.ticketUndismiss === 'function') window.ticketUndismiss(crmId);
+        // 2 — re-enable the ticket (by crmId or by client name fallback)
+        findAndUndismissTicket(crmId, clientName);
         // 3 — refresh history
         historyLoad();
       } else {
@@ -10807,17 +10965,39 @@ function toggleDecisionDetail(idx) {
     }
 }
 
+function findAndUndismissTicket(crmContactId, clientName) {
+  // Try by stored crmContactId first
+  if (crmContactId && typeof window.ticketUndismiss === 'function') {
+    window.ticketUndismiss(crmContactId);
+    return;
+  }
+  // Fallback: search current tickets by matching client name to mesDistributorName or name
+  if (!clientName) return;
+  var tickets = [];
+  try { tickets = (window._PENDING_TICKETS && window._PENDING_TICKETS.length)
+    ? window._PENDING_TICKETS
+    : JSON.parse(localStorage.getItem('kline_mfg_tickets') || '[]');
+  } catch(e) {}
+  var cn = clientName.toLowerCase();
+  var match = null;
+  for (var i = 0; i < tickets.length; i++) {
+    var t = tickets[i];
+    if ((t.mesDistributorName||'').toLowerCase() === cn || (t.name||'').toLowerCase() === cn) {
+      match = t; break;
+    }
+  }
+  if (match && match.id && typeof window.ticketUndismiss === 'function') {
+    window.ticketUndismiss(match.id);
+  }
+}
+
 function deleteSubmission(id) {
     if (!confirm('Delete this allocation decision? The Manufacturing Ticket will be re-enabled so it can be re-processed.')) return;
     var subs = getSubmissions();
-    // Find the record before deleting so we can get the CRM contact ID
     var deleted = subs.filter(function(s){ return s.id === id; })[0];
     subs = subs.filter(function(s) { return s.id !== id; });
     saveSubmissions(subs);
-    // Re-enable the ticket
-    if (deleted && deleted.crmContactId && typeof window.ticketUndismiss === 'function') {
-      window.ticketUndismiss(deleted.crmContactId);
-    }
+    if (deleted) findAndUndismissTicket(deleted.crmContactId, deleted.clientName);
     renderDecisionTable();
 }
 
