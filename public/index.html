@@ -13333,6 +13333,7 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
   function escHtml(s){
     return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
   }
+  window.escHtml = escHtml; // expose globally for historyLoad etc.
 
   /* ── render ── */
   function renderTickets(){
