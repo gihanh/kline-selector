@@ -4104,7 +4104,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
           <th style="padding:10px 12px;text-align:left;">Volume</th>
           <th style="padding:10px 12px;text-align:left;">Category</th>
           <th style="padding:10px 12px;text-align:left;">Status</th>
-          <th style="padding:10px 12px;text-align:left;">Submitted By</th><th style="padding:10px 12px;text-align:left;">Details</th><th style="padding:10px 12px;text-align:left;">Edit</th>
+          <th style="padding:10px 12px;text-align:left;">Submitted By</th><th style="padding:10px 12px;text-align:left;">Details</th><th style="padding:10px 12px;text-align:left;">Edit</th><th style="padding:10px 12px;text-align:left;">Delete</th>
         </tr>
       </thead>
       <tbody id="hist-tbody"></tbody>
@@ -10067,12 +10067,14 @@ function approveNewClient() {
         row += '<td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:rgba(0,0,0,0.08);">'+escHtml(status)+'</span></td>';
         row += '<td style="padding:8px 12px;">'+escHtml(r['Submitted By']||'')+'</td>';
         var rid = escHtml(r['ID']||'');
+        var crmId = encodeURIComponent(r['CRM Contact ID']||'');
+        var clientEnc = encodeURIComponent(escHtml(r['Client Name']||''));
         row += '<td style="padding:8px 12px;"><button onclick="historyShowDetails(this)" data-row="'+encodeURIComponent(JSON.stringify(r))+'" style="padding:3px 10px;font-size:11px;background:#e8f0fe;color:#1a73e8;border:1px solid #c5d8fb;border-radius:5px;cursor:pointer;">View &#8599;</button></td>';
+        row += '<td style="padding:8px 12px;"><button onclick="historyShowEdit(this)" data-id="'+encodeURIComponent(rid)+'" data-facility="'+encodeURIComponent(escHtml(r['Allocated Facility']||''))+'" data-status="'+encodeURIComponent(escHtml(r['Status']||''))+'" data-notes="'+encodeURIComponent(r['Notes']||'')+'" data-client="'+clientEnc+'" style="padding:3px 10px;font-size:11px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;border-radius:5px;cursor:pointer;">Edit ✎</button></td>';
+        row += '<td style="padding:8px 12px;"><button onclick="historyDeleteRow(\''+encodeURIComponent(rid)+'\',\''+crmId+'\',\''+clientEnc+'\')" style="padding:3px 10px;font-size:11px;background:#fce4ec;color:#c62828;border:1px solid #ef9a9a;border-radius:5px;cursor:pointer;">🗑 Delete</button></td>';
         row += '</tr>';
-        row += '<td style="padding:8px 12px;"><button onclick="historyShowEdit(this)" data-id="'+encodeURIComponent(rid)+'" data-facility="'+encodeURIComponent(escHtml(r['Allocated Facility']||''))+'" data-status="'+encodeURIComponent(escHtml(r['Status']||''))+'" data-notes="'+encodeURIComponent(r['Notes']||'')+'" data-client="'+encodeURIComponent(escHtml(r['Client Name']||''))+'" style="padding:3px 10px;font-size:11px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;border-radius:5px;cursor:pointer;">Edit ✎</button></td>';
-        row += '</tr>';
-        row += '<tr id="hist-dr-'+rid+'" style="display:none;"><td colspan="11" style="padding:0 0 0 8px;"><div id="hist-di-'+rid+'" style="padding:16px 20px; background:#f8f9ff; border-left:3px solid #1a73e8; font-size:12px;"></div></td></tr>';
-        row += '<tr id="hist-er-'+rid+'" style="display:none;"><td colspan="11" style="padding:0;"><div id="hist-ei-'+rid+'" style="padding:16px 20px; background:#fff8e1; border-left:3px solid #e65100;"></div></td></tr>';
+        row += '<tr id="hist-dr-'+rid+'" style="display:none;"><td colspan="12" style="padding:0 0 0 8px;"><div id="hist-di-'+rid+'" style="padding:16px 20px; background:#f8f9ff; border-left:3px solid #1a73e8; font-size:12px;"></div></td></tr>';
+        row += '<tr id="hist-er-'+rid+'" style="display:none;"><td colspan="12" style="padding:0;"><div id="hist-ei-'+rid+'" style="padding:16px 20px; background:#fff8e1; border-left:3px solid #e65100;"></div></td></tr>';
         tbody.innerHTML += row;
       });
     });
@@ -10264,6 +10266,38 @@ function approveNewClient() {
     // reset button text
     document.querySelectorAll('[data-id="'+encodeURIComponent(rid)+'"]').forEach(function(b){ b.textContent='Edit ✎'; });
   }
+
+  window.historyDeleteRow = function(encodedRid, encodedCrmId, encodedClient){
+    var rid = decodeURIComponent(encodedRid);
+    var crmId = decodeURIComponent(encodedCrmId);
+    var clientName = decodeURIComponent(encodedClient);
+    if(!confirm('Delete allocation record for "'+clientName+'"?\n\nThis will:\n• Remove it from the shared database\n• Re-enable the Manufacturing Ticket so it can be re-processed\n\nThis cannot be undone.')) return;
+    if(!KLINE_DB_URL){ alert('No database connected.'); return; }
+    fetch(KLINE_DB_URL, {
+      method:'POST', mode:'cors',
+      headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'deleteRecord', id: rid })
+    }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if(d.ok){
+        // 1 — remove from localStorage submissions (Allocation Decision page)
+        try{
+          var subs = JSON.parse(localStorage.getItem('kline_submissions_db')||'[]');
+          subs = subs.filter(function(s){
+            return (s.clientName||'').toLowerCase() !== clientName.toLowerCase() &&
+                   (!s.crmContactId || s.crmContactId !== crmId);
+          });
+          localStorage.setItem('kline_submissions_db', JSON.stringify(subs));
+        }catch(e){}
+        // 2 — re-enable the ticket
+        if(crmId && typeof window.ticketUndismiss === 'function') window.ticketUndismiss(crmId);
+        // 3 — refresh history
+        historyLoad();
+      } else {
+        alert('Delete failed: ' + (d.error||'unknown'));
+      }
+    }).catch(function(e){ alert('Failed: '+e.message); });
+  };
 
   function historyConnectDb(){
     var inp = document.getElementById('hist-db-url-input');
@@ -10674,10 +10708,16 @@ function toggleDecisionDetail(idx) {
 }
 
 function deleteSubmission(id) {
-    if (!confirm('Delete this allocation decision record?')) return;
+    if (!confirm('Delete this allocation decision? The Manufacturing Ticket will be re-enabled so it can be re-processed.')) return;
     var subs = getSubmissions();
+    // Find the record before deleting so we can get the CRM contact ID
+    var deleted = subs.filter(function(s){ return s.id === id; })[0];
     subs = subs.filter(function(s) { return s.id !== id; });
     saveSubmissions(subs);
+    // Re-enable the ticket
+    if (deleted && deleted.crmContactId && typeof window.ticketUndismiss === 'function') {
+      window.ticketUndismiss(deleted.crmContactId);
+    }
     renderDecisionTable();
 }
 
@@ -13968,6 +14008,15 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
   window.ticketDismiss = function(id){
     var dismissed=safeLS(STORAGE_KEY+'_dismissed','[]');
     if(dismissed.indexOf(id)===-1) dismissed.push(id);
+    try{ localStorage.setItem(STORAGE_KEY+'_dismissed',JSON.stringify(dismissed)); }catch(e){}
+    renderTickets();
+  };
+
+  // Re-enable a ticket (called when its allocation is deleted)
+  window.ticketUndismiss = function(id){
+    if(!id) return;
+    var dismissed=safeLS(STORAGE_KEY+'_dismissed','[]');
+    dismissed=dismissed.filter(function(d){ return d!==id; });
     try{ localStorage.setItem(STORAGE_KEY+'_dismissed',JSON.stringify(dismissed)); }catch(e){}
     renderTickets();
   };
