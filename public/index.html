@@ -5844,7 +5844,7 @@ function publishProfilesToDb(){
     if(msg){ msg.textContent="Publishing..."; msg.style.opacity="1"; msg.style.color="#1a73e8"; }
     fetch(KLINE_DB_URL, {
         method:"POST", mode:"cors",
-        headers:{"Content-Type":"application/json"},
+        headers:{"Content-Type":"text/plain"},
         body: JSON.stringify({ action:"saveFacilityProfiles", profiles: all, savedAt: new Date().toISOString() })
     }).then(function(r){ return r.json(); })
     .then(function(d){
@@ -10193,7 +10193,7 @@ function approveNewClient() {
     if(msgEl) msgEl.textContent="Saving...";
     fetch(KLINE_DB_URL, {
         method:"POST", mode:"cors",
-        headers:{"Content-Type":"application/json"},
+        headers:{"Content-Type":"text/plain"},
         body: JSON.stringify({
           action: "updateRecord",
           id: rid,
