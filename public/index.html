@@ -4092,7 +4092,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
           <th style="padding:10px 12px;text-align:left;">Volume</th>
           <th style="padding:10px 12px;text-align:left;">Category</th>
           <th style="padding:10px 12px;text-align:left;">Status</th>
-          <th style="padding:10px 12px;text-align:left;">Submitted By</th><th style="padding:10px 12px;text-align:left;">Details</th>
+          <th style="padding:10px 12px;text-align:left;">Submitted By</th><th style="padding:10px 12px;text-align:left;">Details</th><th style="padding:10px 12px;text-align:left;">Edit</th>
         </tr>
       </thead>
       <tbody id="hist-tbody"></tbody>
@@ -10057,7 +10057,10 @@ function approveNewClient() {
         var rid = escHtml(r['ID']||'');
         row += '<td style="padding:8px 12px;"><button onclick="historyShowDetails(this)" data-row="'+encodeURIComponent(JSON.stringify(r))+'" style="padding:3px 10px;font-size:11px;background:#e8f0fe;color:#1a73e8;border:1px solid #c5d8fb;border-radius:5px;cursor:pointer;">View &#8599;</button></td>';
         row += '</tr>';
-        row += '<tr id="hist-dr-'+rid+'" style="display:none;"><td colspan="10" style="padding:0 0 0 8px;"><div id="hist-di-'+rid+'" style="padding:16px 20px; background:#f8f9ff; border-left:3px solid #1a73e8; font-size:12px;"></div></td></tr>';
+        row += '<td style="padding:8px 12px;"><button onclick="historyShowEdit(this)" data-id="'+encodeURIComponent(rid)+'" data-facility="'+encodeURIComponent(escHtml(r['Allocated Facility']||''))+'" data-status="'+encodeURIComponent(escHtml(r['Status']||''))+'" data-notes="'+encodeURIComponent(r['Notes']||'')+'" style="padding:3px 10px;font-size:11px;background:#fff3e0;color:#e65100;border:1px solid #ffcc80;border-radius:5px;cursor:pointer;">Edit ✎</button></td>';
+        row += '</tr>';
+        row += '<tr id="hist-dr-'+rid+'" style="display:none;"><td colspan="11" style="padding:0 0 0 8px;"><div id="hist-di-'+rid+'" style="padding:16px 20px; background:#f8f9ff; border-left:3px solid #1a73e8; font-size:12px;"></div></td></tr>';
+        row += '<tr id="hist-er-'+rid+'" style="display:none;"><td colspan="11" style="padding:0;"><div id="hist-ei-'+rid+'" style="padding:16px 20px; background:#fff8e1; border-left:3px solid #e65100;"></div></td></tr>';
         tbody.innerHTML += row;
       });
     });
@@ -10093,18 +10096,41 @@ function approveNewClient() {
     try{ qa=JSON.parse(fd.questionsAnswers||'{}'); }catch(e){}
     var fl={margin:'Margin',capacity:'Capacity',compliance:'Compliance',proximity:'Proximity',stock:'Material Stock'};
     var html='';
+
+    // ── 1. DECISION SUMMARY (always shown — from main sheet columns) ──
+    var statusCol = {'Approved':'#e8f5e9','Pending':'#fff3e0','In Progress':'#e3f2fd','Completed':'#f1f8e9','Rejected':'#fce4ec'};
+    var st = r['Status']||'Pending';
+    html+='<div style="margin-bottom:12px;padding:12px 14px;background:#fff;border-radius:8px;border:1px solid #c5d8fb;border-left:4px solid #1a73e8;">';
+    html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:10px;font-size:13px;">&#9989; Decision Summary</div>';
+    html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;">';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Allocated Facility</div><div style="font-weight:700;color:#1B5E20;font-size:13px;">'+escHtml(r['Allocated Facility']||'—')+'</div></div>';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Status</div><div style="display:inline-block;padding:2px 10px;border-radius:12px;font-size:12px;font-weight:600;background:'+(statusCol[st]||'#f5f5f5')+';">'+escHtml(st)+'</div></div>';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Preferred Facility</div><div style="font-size:13px;">'+escHtml(r['Preferred Facility']||'—')+'</div></div>';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Country</div><div style="font-size:13px;">'+escHtml(r['Country']||'—')+'</div></div>';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Volume</div><div style="font-size:13px;">'+escHtml(String(r['Volume']||'—'))+'</div></div>';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Category</div><div style="font-size:13px;">'+escHtml(r['Category']||'—')+'</div></div>';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Submitted By</div><div style="font-size:13px;">'+escHtml(r['Submitted By']||'—')+'</div></div>';
+    html+='<div><div style="font-size:10px;color:#888;text-transform:uppercase;margin-bottom:2px;">Responsible Person</div><div style="font-size:13px;">'+escHtml(r['Responsible Person']||'—')+'</div></div>';
+    html+='</div>';
+    if(r['Notes']) html+='<div style="margin-top:10px;padding:8px 10px;background:#f8f9ff;border-radius:6px;border-left:3px solid #1a73e8;font-size:12px;"><b>Decision Notes:</b> '+escHtml(r['Notes'])+'</div>';
+    html+='</div>';
+
+    // ── 2. CRM INFO ──
     if(fd.doctorNameCrm||fd.caseUrl||fd.firstOrderNotes||fd.journeyNotes){
-      html+='<div style="margin-bottom:12px;padding:10px;background:#fff;border-radius:6px;border:1px solid #e0e0e0;">';
-      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:6px;">CRM Info</div>';
-      if(fd.doctorNameCrm) html+='<div><b>Doctor:</b> '+escHtml(fd.doctorNameCrm)+'</div>';
-      if(fd.caseUrl) html+='<div><b>D-Plan:</b> <a href="'+escHtml(fd.caseUrl)+'" target="_blank">Open &#8599;</a></div>';
+      html+='<div style="margin-bottom:12px;padding:12px 14px;background:#fff;border-radius:8px;border:1px solid #e0e0e0;">';
+      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:8px;font-size:13px;">CRM Info</div>';
+      if(fd.doctorNameCrm) html+='<div style="margin-bottom:4px;"><b>Doctor:</b> '+escHtml(fd.doctorNameCrm)+'</div>';
+      if(fd.caseUrl) html+='<div style="margin-bottom:4px;"><b>D-Plan:</b> <a href="'+escHtml(fd.caseUrl)+'" target="_blank" style="color:#1a73e8;">Open &#8599;</a></div>';
       if(fd.firstOrderNotes) html+='<div style="margin-top:6px;"><b>First Order Notes:</b><pre style="margin:4px 0 0;font-size:11px;white-space:pre-wrap;font-family:inherit;">'+escHtml(fd.firstOrderNotes)+'</pre></div>';
       if(fd.journeyNotes) html+='<div style="margin-top:6px;background:#fff8e1;padding:6px 8px;border-radius:4px;border-left:3px solid #ffa726;">&#9888; <b>Journey Notes:</b><pre style="margin:4px 0 0;font-size:11px;white-space:pre-wrap;font-family:inherit;">'+escHtml(fd.journeyNotes)+'</pre></div>';
       html+='</div>';
     }
+
+    // ── 3. ELIGIBILITY RESULTS ──
     if(elig.length>0){
-      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:8px;">Eligibility Results</div>';
-      html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:14px;">';
+      html+='<div style="margin-bottom:12px;">';
+      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:8px;font-size:13px;">Eligibility Results</div>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;">';
       elig.forEach(function(f){
         var ok=f.allPass;
         html+='<div style="background:'+(ok?'#e8f5e9':'#fff3e0')+';border-radius:6px;padding:10px;border:1px solid '+(ok?'#a5d6a7':'#ffcc80')+'">';
@@ -10112,18 +10138,81 @@ function approveNewClient() {
         if(f.factors){ Object.keys(f.factors).forEach(function(k){ var v=f.factors[k]; html+='<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;"><span>'+(fl[k]||k)+'</span><span style="font-weight:600;color:'+(v.pass?'#2e7d32':'#c62828')+'">'+(v.pass?'PASS':'FAIL')+'</span></div>'; }); }
         html+='</div>';
       });
-      html+='</div>';
+      html+='</div></div>';
     }
+
+    // ── 4. QUESTIONNAIRE ANSWERS ──
     if(Object.keys(qa).length>0){
-      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:8px;">Questionnaire Answers</div>';
-      html+='<table style="width:100%;font-size:11px;border-collapse:collapse;background:#fff;border-radius:6px;overflow:hidden;">';
-      Object.keys(qa).forEach(function(k){ if(!qa[k]&&qa[k]!==0) return; html+='<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:4px 10px;color:#666;width:40%;">'+escHtml(k)+'</td><td style="padding:4px 10px;font-weight:500;">'+escHtml(String(qa[k]))+'</td></tr>'; });
+      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:8px;font-size:13px;">Questionnaire Answers</div>';
+      html+='<table style="width:100%;font-size:11px;border-collapse:collapse;background:#fff;border-radius:6px;overflow:hidden;margin-bottom:10px;">';
+      Object.keys(qa).forEach(function(k){ if(!qa[k]&&qa[k]!==0) return; html+='<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:5px 10px;color:#666;width:40%;">'+escHtml(k)+'</td><td style="padding:5px 10px;font-weight:500;">'+escHtml(String(qa[k]))+'</td></tr>'; });
       html+='</table>';
     }
-    if(!html) html='<div style="color:#888;">No detailed data saved for this record.</div>';
+
     inner.innerHTML=html;
     detailRow.style.display='';
     btn.textContent='Hide ▴';
+  }
+
+  function historyShowEdit(btn){
+    var rid = decodeURIComponent(btn.getAttribute("data-id"));
+    var editRow = document.getElementById("hist-er-"+rid);
+    var inner = document.getElementById("hist-ei-"+rid);
+    if(!editRow||!inner) return;
+    if(editRow.style.display!=="none"){ editRow.style.display="none"; btn.textContent="Edit ✎"; return; }
+    var curFacility = decodeURIComponent(btn.getAttribute("data-facility")||"");
+    var curStatus = decodeURIComponent(btn.getAttribute("data-status")||"");
+    var curNotes = decodeURIComponent(btn.getAttribute("data-notes")||"");
+    var facilityOpts = ["PT - Portugal","CFZ - Cairo Free Zone","TJ - Tijuana","FL - Florida","Other"];
+    var statusOpts = ["Approved","Pending","In Progress","Completed","Rejected"];
+    var facOptions = facilityOpts.map(function(f){ return '<option value="'+f+'" '+(f===curFacility?"selected":"")+'>'+f+"</option>"; }).join("");
+    var statOptions = statusOpts.map(function(s){ return '<option value="'+s+'" '+(s===curStatus?"selected":"")+'>'+s+"</option>"; }).join("");
+    inner.innerHTML = '<div style="display:flex;gap:12px;align-items:flex-start;flex-wrap:wrap;">'
+      + '<div><label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Allocated Facility</label>'
+      + '<select id="edit-fac-'+rid+'" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;">'+facOptions+"</select></div>"
+      + '<div><label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Status</label>'
+      + '<select id="edit-stat-'+rid+'" style="padding:6px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;">'+statOptions+"</select></div>"
+      + '<div style="flex:1;min-width:200px;"><label style="font-size:11px;font-weight:600;color:#555;display:block;margin-bottom:4px;">Decision Notes</label>'
+      + '<textarea id="edit-notes-'+rid+'" rows="2" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;">'+escHtml(curNotes)+"</textarea></div>"
+      + '<div style="padding-top:18px;"><button onclick="historySaveEdit(\''+rid+'\')" '
+      + 'style="padding:8px 18px;background:#1B5E20;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">&#10003; Save</button>'
+      + ' <button onclick="document.getElementById('hist-er-'+\''+rid+'\').style.display='none';" '
+      + 'style="padding:8px 12px;background:#f5f5f5;color:#555;border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer;margin-left:6px;">Cancel</button></div>'
+      + '<div id="edit-msg-'+rid+'" style="font-size:12px;padding-top:20px;"></div></div>';
+    editRow.style.display="";
+    btn.textContent="Close ✕";
+  }
+
+  function historySaveEdit(rid){
+    if(!KLINE_DB_URL){ alert("No database connected."); return; }
+    var facEl = document.getElementById("edit-fac-"+rid);
+    var statEl = document.getElementById("edit-stat-"+rid);
+    var notesEl = document.getElementById("edit-notes-"+rid);
+    var msgEl = document.getElementById("edit-msg-"+rid);
+    if(!facEl||!statEl) return;
+    if(msgEl) msgEl.textContent="Saving...";
+    fetch(KLINE_DB_URL, {
+        method:"POST", mode:"cors",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          action: "updateRecord",
+          id: rid,
+          allocatedFacility: facEl.value,
+          status: statEl.value,
+          notes: notesEl ? notesEl.value : ""
+        })
+    }).then(function(r){ return r.json(); })
+    .then(function(d){
+        if(d.ok){
+          if(msgEl) msgEl.innerHTML='<span style="color:#2e7d32;">&#10003; Saved!</span>';
+          // Refresh history list
+          setTimeout(function(){ historyLoad(); }, 800);
+        } else {
+          if(msgEl) msgEl.innerHTML='<span style="color:#c62828;">Error: '+(d.error||"unknown")+"</span>";
+        }
+    }).catch(function(e){
+        if(msgEl) msgEl.innerHTML='<span style="color:#c62828;">Failed: '+e.message+"</span>";
+    });
   }
 
   function historyConnectDb(){
