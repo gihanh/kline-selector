@@ -1118,8 +1118,11 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
     <!-- Backup & Restore -->
     <div style="padding:14px 20px 6px; font-size:10px; font-weight:700; color:rgba(255,255,255,0.4); text-transform:uppercase; letter-spacing:1px;">Backup &amp; Restore</div>
     <nav style="padding-bottom:24px;">
+      <div class="nav-item" onclick="exportExcelBackup()" style="display:flex;align-items:center;gap:8px;">
+        <span>&#11015;</span><span>Export Excel (.xlsx)</span>
+      </div>
       <div class="nav-item" onclick="exportFullBackup()" style="display:flex;align-items:center;gap:8px;">
-        <span>&#11015;</span><span>Export Backup</span>
+        <span>&#11015;</span><span>Export JSON (full)</span>
       </div>
       <div class="nav-item" onclick="document.getElementById('backup-import-input').click()" style="display:flex;align-items:center;gap:8px;">
         <span>&#11014;</span><span>Restore Backup</span>
@@ -4117,6 +4120,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════
 // QUESTION DEFINITIONS
@@ -9936,7 +9940,8 @@ function approveNewClient() {
         dailyVolume: dailyVol,
         decisionNotes: decisionNotes,
         market: answers.market || '',
-        country: (document.getElementById('clientCountry')||{}).value || ''
+        country: (document.getElementById('clientCountry')||{}).value || '',
+        crmContactId: window._currentTicketId || ''
     };
     
     var subs = getSubmissions();
@@ -10352,6 +10357,101 @@ function setBackupStatus(msg, color) {
   var el = document.getElementById('backup-status');
   if (el) { el.textContent = msg; el.style.color = color || 'rgba(255,255,255,0.5)'; }
 }
+
+window.exportExcelBackup = async function() {
+  if (typeof XLSX === 'undefined') { alert('Excel library not loaded yet — please wait a moment and try again.'); return; }
+  setBackupStatus('Building Excel…', '#81c784');
+  var wb = XLSX.utils.book_new();
+  var date = new Date().toISOString().slice(0,10);
+
+  // ── Sheet 1: Allocation History (from database) ──
+  var dbRows = [['ID','Date','Client','Responsible','Country','Preferred Facility','Allocated Facility','Volume','Category','Submitted By','Status','Notes','Case URL','CRM Contact ID']];
+  if (KLINE_DB_URL) {
+    try {
+      var r = await fetch(KLINE_DB_URL + '?action=read');
+      var d = await r.json();
+      if (d.ok && d.records) {
+        d.records.forEach(function(rec) {
+          dbRows.push([
+            rec['ID']||'', rec['Timestamp']||'', rec['Client Name']||'', rec['Responsible Person']||'',
+            rec['Country']||'', rec['Preferred Facility']||'', rec['Allocated Facility']||'',
+            rec['Volume']||'', rec['Category']||'', rec['Submitted By']||'',
+            rec['Status']||'', rec['Notes']||'', rec['Case URL']||'', rec['CRM Contact ID']||''
+          ]);
+        });
+      }
+    } catch(e) {}
+  }
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(dbRows), 'Allocation History');
+
+  // ── Sheet 2: Allocation Decisions (localStorage) ──
+  var subs = [];
+  try { subs = JSON.parse(localStorage.getItem('kline_submissions_db')||'[]'); } catch(e) {}
+  var subRows = [['ID','Date','Type','Client','Allocated Facility','Volume/mo','Status','Approved By','Country','Market','Decision Notes','CRM Contact ID']];
+  subs.forEach(function(s) {
+    subRows.push([
+      s.id||'', (s.approvedDate||s.timestamp||'').slice(0,10),
+      s.type||'new_client', s.clientName||'',
+      s.allocatedFacilityName||s.allocatedFacility||'',
+      s.monthlyVolume||'', s.status||'', s.approvedBy||'',
+      s.country||'', s.market||'', s.decisionNotes||'', s.crmContactId||''
+    ]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(subRows), 'Allocation Decisions');
+
+  // ── Sheet 3: Re-Allocation History ──
+  var realloc = [];
+  try { realloc = JSON.parse(localStorage.getItem('kline_realloc_history')||'[]'); } catch(e) {}
+  var reallocRows = [['ID','Date','Client','From Facility','To Facility','Volume','Status','Approved By','Reason']];
+  realloc.forEach(function(s) {
+    reallocRows.push([
+      s.id||'', (s.approvedDate||s.timestamp||'').slice(0,10),
+      s.clientName||'', s.fromFacilityName||'', s.allocatedFacilityName||'',
+      s.monthlyVolume||'', s.status||'', s.approvedBy||'', s.reallocReason||''
+    ]);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(reallocRows), 'Re-Allocations');
+
+  // ── Sheet 4: Client Allocations map ──
+  var allocMap = [];
+  try { allocMap = JSON.parse(localStorage.getItem('kline_client_allocations')||'[]'); } catch(e) {}
+  var allocRows = [['Client','Facility','Volume/day','Aligners/mo','Country','Market']];
+  allocMap.forEach(function(a) {
+    allocRows.push([a.client||'', a.fac||'', a.volume||'', a.aligners||'', a.country||'', a.market||'']);
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(allocRows), 'Client Map');
+
+  // ── Sheet 5: Facility Profiles (summary) ──
+  var profiles = {};
+  try { profiles = JSON.parse(localStorage.getItem('kline_facility_profiles')||'{}'); } catch(e) {}
+  var profRows = [['Facility','Field','Value']];
+  Object.keys(profiles).forEach(function(fac) {
+    var fp = profiles[fac];
+    if (typeof fp === 'object') {
+      Object.keys(fp).forEach(function(k) {
+        var v = fp[k];
+        profRows.push([fac, k, Array.isArray(v) ? v.join(', ') : String(v||'')]);
+      });
+    }
+  });
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(profRows), 'Facility Profiles');
+
+  // ── Sheet 6: Settings ──
+  var settingsRows = [['Key','Value'],
+    ['Database URL', localStorage.getItem('kline_db_url')||''],
+    ['Export Date', new Date().toISOString()],
+    ['Total DB Records', dbRows.length - 1],
+    ['Total Decisions', subRows.length - 1],
+    ['Total Re-Allocations', reallocRows.length - 1],
+    ['Total Clients', allocRows.length - 1]
+  ];
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(settingsRows), 'Settings');
+
+  // Download
+  XLSX.writeFile(wb, 'kline-backup-' + date + '.xlsx');
+  setBackupStatus('✓ Excel backup downloaded', '#a5d6a7');
+  setTimeout(function(){ setBackupStatus(''); }, 5000);
+};
 
 window.exportFullBackup = async function() {
   setBackupStatus('Preparing…', '#81c784');
