@@ -3425,7 +3425,10 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
 </div>
 
     <div class="profile-actions">
-        <button onclick="saveFacilityProfiles(true)" style="padding:8px 18px; background:#1F4E79; color:white; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">&#128190; Save Profiles</button>
+        <button onclick="saveFacilityProfiles(true)" style="padding:8px 18px; background:#1F4E79; color:white; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">&#128190; Save Locally</button>
+        <button onclick="publishProfilesToDb()" style="padding:8px 18px; background:#1B5E20; color:white; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">&#9729;&#65039; Publish to Database</button>
+        <button onclick="loadProfilesFromDb()" style="padding:8px 18px; background:#0d47a1; color:white; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">&#8681; Load from Database</button>
+        <button onclick="generateFacilityProfilePDF()" style="padding:8px 18px; background:#4a148c; color:white; border:none; border-radius:6px; font-size:13px; font-weight:600; cursor:pointer;">&#128196; Export PDF</button>
         <button onclick="resetFacilityProfile()" style="padding:8px 14px; background:#f5f5f5; color:#555; border:1px solid #ccc; border-radius:6px; font-size:12px; cursor:pointer;">Reset Current</button>
         <button onclick="exportFacilityProfiles()" style="padding:8px 14px; background:#f5f5f5; color:#555; border:1px solid #ccc; border-radius:6px; font-size:12px; cursor:pointer;">Export JSON</button>
         <span class="save-msg" id="profileSaveMsg">Saved!</span>
@@ -4089,7 +4092,7 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
           <th style="padding:10px 12px;text-align:left;">Volume</th>
           <th style="padding:10px 12px;text-align:left;">Category</th>
           <th style="padding:10px 12px;text-align:left;">Status</th>
-          <th style="padding:10px 12px;text-align:left;">Submitted By</th>
+          <th style="padding:10px 12px;text-align:left;">Submitted By</th><th style="padding:10px 12px;text-align:left;">Details</th>
         </tr>
       </thead>
       <tbody id="hist-tbody"></tbody>
@@ -5825,6 +5828,125 @@ function exportFacilityProfiles() {
 
 
 
+
+function publishProfilesToDb(){
+    if(!KLINE_DB_URL){ alert("No database connected. Go to Allocation History > Settings to connect first."); return; }
+    var all = {};
+    FACILITY_IDS.forEach(function(facId){
+        all[facId] = {};
+        PROFILE_FIELDS_SIMPLE.forEach(function(field){
+            var el = document.getElementById("fp_"+facId+"_"+field);
+            if(el) all[facId][field] = el.type==="number" ? parseFloat(el.value)||0 : el.value;
+        });
+        MS_FIELDS_LIST.forEach(function(field){ all[facId][field] = getMsValues("fp_"+facId+"_"+field); });
+    });
+    var msg = document.getElementById("profileSaveMsg");
+    if(msg){ msg.textContent="Publishing..."; msg.style.opacity="1"; msg.style.color="#1a73e8"; }
+    fetch(KLINE_DB_URL, {
+        method:"POST", mode:"cors",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({ action:"saveFacilityProfiles", profiles: all, savedAt: new Date().toISOString() })
+    }).then(function(r){ return r.json(); })
+    .then(function(d){
+        if(msg){
+            if(d.ok){ msg.textContent="Published to database!"; msg.style.color="#2e7d32"; }
+            else { msg.textContent="Error: "+(d.error||"unknown"); msg.style.color="#c62828"; }
+            setTimeout(function(){ msg.style.opacity="0"; }, 3000);
+        }
+    }).catch(function(e){
+        if(msg){ msg.textContent="Failed: "+e.message; msg.style.color="#c62828"; setTimeout(function(){ msg.style.opacity="0"; },3000); }
+    });
+}
+
+function loadProfilesFromDb(){
+    if(!KLINE_DB_URL){ alert("No database connected. Go to Allocation History > Settings to connect first."); return; }
+    var msg = document.getElementById("profileSaveMsg");
+    if(msg){ msg.textContent="Loading from database..."; msg.style.opacity="1"; msg.style.color="#1a73e8"; }
+    fetch(KLINE_DB_URL+"?action=loadFacilityProfiles", { mode:"cors" })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+        if(!d.ok||!d.profiles){ if(msg){ msg.textContent="No profiles saved in database yet"; msg.style.color="#e65100"; setTimeout(function(){ msg.style.opacity="0"; },3000); } return; }
+        var saved = d.profiles;
+        localStorage.setItem("kline_facility_profiles", JSON.stringify(saved));
+        FACILITY_IDS.forEach(function(facId){
+            var data = saved[facId]; if(!data) return;
+            PROFILE_FIELDS_SIMPLE.forEach(function(field){
+                var el = document.getElementById("fp_"+facId+"_"+field);
+                if(el && data[field]!==undefined) el.value = data[field];
+            });
+            MS_FIELDS_LIST.forEach(function(field){
+                if(data[field]) setMsValues("fp_"+facId+"_"+field, Array.isArray(data[field]) ? data[field] : data[field].split(", "));
+            });
+        });
+        if(msg){ msg.textContent="Loaded from database!"; msg.style.color="#2e7d32"; setTimeout(function(){ msg.style.opacity="0"; },3000); }
+    }).catch(function(e){
+        if(msg){ msg.textContent="Failed: "+e.message; msg.style.color="#c62828"; setTimeout(function(){ msg.style.opacity="0"; },3000); }
+    });
+}
+
+function generateFacilityProfilePDF(){
+    var btn = event && event.target ? event.target : null;
+    if(btn){ btn.textContent="Generating..."; btn.disabled=true; }
+    var facNames = {pt:"PT — Portugal",cfz:"CFZ — Cairo Free Zone",tj:"TJ — Tijuana",fl:"FL — Florida"};
+    var facColors = {pt:"#1F4E79",cfz:"#1B5E20",tj:"#4a148c",fl:"#b71c1c"};
+    var html = "<div style=\"font-family:Arial,sans-serif; padding:24px; background:#fff;\">";
+    html += "<div style=\"padding:16px 24px; background:linear-gradient(135deg,#1F4E79,#2E75B6); color:#fff; border-radius:8px; margin-bottom:20px;\">";
+    html += "<div style=\"font-size:20px; font-weight:700;\">KLINE MANUFACTURING</div>";
+    html += "<div style=\"font-size:11px; opacity:0.8;\">Facility Profiles — "+new Date().toLocaleDateString("en-GB",{day:"2-digit",month:"long",year:"numeric"})+" | CONFIDENTIAL</div>";
+    html += "</div>";
+    FACILITY_IDS.forEach(function(facId){
+        var col = facColors[facId]||"#1F4E79";
+        var fname = facNames[facId]||facId.toUpperCase();
+        html += "<div style=\"margin-bottom:20px; border:1px solid #ddd; border-radius:8px; overflow:hidden;\">";
+        html += "<div style=\"padding:10px 16px; background:"+col+"; color:#fff; font-size:14px; font-weight:700;\">"+fname+"</div>";
+        html += "<table style=\"width:100%; border-collapse:collapse; font-size:11px;\">";
+        var rows = [];
+        PROFILE_FIELDS_SIMPLE.forEach(function(field){
+            var el = document.getElementById("fp_"+facId+"_"+field);
+            if(el && el.value) rows.push([field.replace(/_/g," "), el.value]);
+        });
+        MS_FIELDS_LIST.forEach(function(field){
+            var vals = getMsValues("fp_"+facId+"_"+field);
+            if(vals && vals.length) rows.push([field.replace(/_/g," "), vals.join(", ")]);
+        });
+        rows.forEach(function(r,i){
+            var bg = i%2===0?"#fff":"#f9f9f9";
+            html += "<tr style=\"background:"+bg+";\"><td style=\"padding:5px 12px; color:#555; width:35%; border-bottom:1px solid #eee; text-transform:capitalize;\">"+r[0]+"</td><td style=\"padding:5px 12px; font-weight:500; border-bottom:1px solid #eee;\">"+r[1]+"</td></tr>";
+        });
+        html += "</table></div>";
+    });
+    html += "<div style=\"text-align:center;font-size:9px;color:#999;padding:12px;border-top:1px solid #ddd;margin-top:8px;\">Kline Manufacturing — Confidential — "+new Date().toISOString().split("T")[0]+"</div>";
+    html += "</div>";
+    var wrapper = document.createElement("div");
+    wrapper.style.cssText = "position:absolute;left:-9999px;top:0;width:900px;background:#fff;";
+    wrapper.innerHTML = html;
+    document.body.appendChild(wrapper);
+    html2canvas(wrapper,{scale:2,useCORS:true,logging:false,backgroundColor:"#ffffff"}).then(function(canvas){
+        document.body.removeChild(wrapper);
+        var jsPDF=(window.jspdf||jspdf).jsPDF;
+        var pdfW=210,margin=8,footerH=10;
+        var usableW=pdfW-margin*2;
+        var ratio=usableW/canvas.width;
+        var imgH=canvas.height*ratio;
+        var pageH=297-margin-footerH;
+        var srcPageHpx=Math.floor(pageH/ratio);
+        var overlap=Math.round(20/ratio);
+        var totalPages=Math.ceil((canvas.height-overlap)/(srcPageHpx-overlap));
+        var doc=new jsPDF("p","mm","a4");
+        for(var pg=0;pg<totalPages;pg++){
+            var srcY=pg*(srcPageHpx-overlap);
+            var sliceH=Math.min(srcPageHpx,canvas.height-srcY);
+            var sliceCanvas=document.createElement("canvas");
+            sliceCanvas.width=canvas.width; sliceCanvas.height=sliceH;
+            sliceCanvas.getContext("2d").drawImage(canvas,0,srcY,canvas.width,sliceH,0,0,canvas.width,sliceH);
+            if(pg>0) doc.addPage();
+            doc.addImage(sliceCanvas.toDataURL("image/jpeg",0.92),"JPEG",margin,margin,usableW,sliceH*ratio);
+            doc.setFontSize(7); doc.setTextColor(150); doc.text("Page "+(pg+1)+" of "+totalPages,pdfW-margin,297-4,"right");
+        }
+        doc.save("Kline_Facility_Profiles_"+new Date().toISOString().split("T")[0]+".pdf");
+        if(btn){ btn.textContent="Export PDF"; btn.disabled=false; }
+    }).catch(function(e){ document.body.removeChild(wrapper); if(btn){btn.textContent="Export PDF";btn.disabled=false;} alert("PDF error: "+e.message); });
+}
 
 // INIT
 // ══════════════════════════════════════════════════
@@ -9827,7 +9949,10 @@ function approveNewClient() {
         doctorName: (function(){ var el=document.getElementById('doctorName'); return el ? el.value : ''; })(),
         firstOrderNotes: (function(){ var el=document.getElementById('firstOrderNotes'); return el ? el.value : ''; })(),
         journeyNotes: (function(){ var el=document.getElementById('journeyNotes'); return el ? el.value : ''; })(),
-        crmContactId: window._currentTicketId || record.crmContactId || ''
+        crmContactId: window._currentTicketId || record.crmContactId || '',
+        eligibilityReport: JSON.stringify(record.eligibility || []),
+        questionsAnswers: JSON.stringify(record.answers || {}),
+        doctorNameCrm: (function(){ var el=document.getElementById('doctorName'); return el ? el.value : ''; })()
       };
       klineDbSave(dbPayload, function(res){
         if(res && res.ok) console.log('Allocation saved to shared database:', res.id);
@@ -9929,7 +10054,10 @@ function approveNewClient() {
         row += '<td style="padding:8px 12px;">'+escHtml(r['Category']||'')+'</td>';
         row += '<td style="padding:8px 12px;"><span style="padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600;background:rgba(0,0,0,0.08);">'+escHtml(status)+'</span></td>';
         row += '<td style="padding:8px 12px;">'+escHtml(r['Submitted By']||'')+'</td>';
+        var rid = escHtml(r['ID']||'');
+        row += '<td style="padding:8px 12px;"><button onclick="historyShowDetails(this)" data-row="'+encodeURIComponent(JSON.stringify(r))+'" style="padding:3px 10px;font-size:11px;background:#e8f0fe;color:#1a73e8;border:1px solid #c5d8fb;border-radius:5px;cursor:pointer;">View &#8599;</button></td>';
         row += '</tr>';
+        row += '<tr id="hist-dr-'+rid+'" style="display:none;"><td colspan="10" style="padding:0 0 0 8px;"><div id="hist-di-'+rid+'" style="padding:16px 20px; background:#f8f9ff; border-left:3px solid #1a73e8; font-size:12px;"></div></td></tr>';
         tbody.innerHTML += row;
       });
     });
@@ -9946,6 +10074,56 @@ function approveNewClient() {
   function historyShowInstructions(){
     var el = document.getElementById('hist-instructions');
     if(el) el.style.display = el.style.display === 'none' ? '' : 'none';
+  }
+
+  function historyShowDetails(btn){
+    var rowJson = decodeURIComponent(btn.getAttribute('data-row'));
+    var r;
+    try { r = JSON.parse(rowJson); } catch(e){ return; }
+    var rid = escHtml(r['ID']||'');
+    var detailRow = document.getElementById('hist-dr-'+rid);
+    var inner = document.getElementById('hist-di-'+rid);
+    if(!detailRow||!inner) return;
+    if(detailRow.style.display !== 'none'){ detailRow.style.display='none'; btn.textContent='View ↗'; return; }
+    var fd={};
+    try{ fd=JSON.parse(r['Full Data']||'{}'); }catch(e){}
+    var elig=[];
+    try{ elig=JSON.parse(fd.eligibilityReport||'[]'); }catch(e){}
+    var qa={};
+    try{ qa=JSON.parse(fd.questionsAnswers||'{}'); }catch(e){}
+    var fl={margin:'Margin',capacity:'Capacity',compliance:'Compliance',proximity:'Proximity',stock:'Material Stock'};
+    var html='';
+    if(fd.doctorNameCrm||fd.caseUrl||fd.firstOrderNotes||fd.journeyNotes){
+      html+='<div style="margin-bottom:12px;padding:10px;background:#fff;border-radius:6px;border:1px solid #e0e0e0;">';
+      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:6px;">CRM Info</div>';
+      if(fd.doctorNameCrm) html+='<div><b>Doctor:</b> '+escHtml(fd.doctorNameCrm)+'</div>';
+      if(fd.caseUrl) html+='<div><b>D-Plan:</b> <a href="'+escHtml(fd.caseUrl)+'" target="_blank">Open &#8599;</a></div>';
+      if(fd.firstOrderNotes) html+='<div style="margin-top:6px;"><b>First Order Notes:</b><pre style="margin:4px 0 0;font-size:11px;white-space:pre-wrap;font-family:inherit;">'+escHtml(fd.firstOrderNotes)+'</pre></div>';
+      if(fd.journeyNotes) html+='<div style="margin-top:6px;background:#fff8e1;padding:6px 8px;border-radius:4px;border-left:3px solid #ffa726;">&#9888; <b>Journey Notes:</b><pre style="margin:4px 0 0;font-size:11px;white-space:pre-wrap;font-family:inherit;">'+escHtml(fd.journeyNotes)+'</pre></div>';
+      html+='</div>';
+    }
+    if(elig.length>0){
+      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:8px;">Eligibility Results</div>';
+      html+='<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;margin-bottom:14px;">';
+      elig.forEach(function(f){
+        var ok=f.allPass;
+        html+='<div style="background:'+(ok?'#e8f5e9':'#fff3e0')+';border-radius:6px;padding:10px;border:1px solid '+(ok?'#a5d6a7':'#ffcc80')+'">';
+        html+='<div style="font-weight:700;margin-bottom:6px;">'+(ok?'&#10003;':'&#9888;')+' '+escHtml(f.name||f.facility)+'</div>';
+        if(f.factors){ Object.keys(f.factors).forEach(function(k){ var v=f.factors[k]; html+='<div style="display:flex;justify-content:space-between;font-size:11px;margin-bottom:2px;"><span>'+(fl[k]||k)+'</span><span style="font-weight:600;color:'+(v.pass?'#2e7d32':'#c62828')+'">'+(v.pass?'PASS':'FAIL')+'</span></div>'; }); }
+        html+='</div>';
+      });
+      html+='</div>';
+    }
+    if(Object.keys(qa).length>0){
+      html+='<div style="font-weight:700;color:#1a3a5c;margin-bottom:8px;">Questionnaire Answers</div>';
+      html+='<table style="width:100%;font-size:11px;border-collapse:collapse;background:#fff;border-radius:6px;overflow:hidden;">';
+      Object.keys(qa).forEach(function(k){ if(!qa[k]&&qa[k]!==0) return; html+='<tr style="border-bottom:1px solid #f5f5f5;"><td style="padding:4px 10px;color:#666;width:40%;">'+escHtml(k)+'</td><td style="padding:4px 10px;font-weight:500;">'+escHtml(String(qa[k]))+'</td></tr>'; });
+      html+='</table>';
+    }
+    if(!html) html='<div style="color:#888;">No detailed data saved for this record.</div>';
+    inner.innerHTML=html;
+    detailRow.style.display='';
+    btn.textContent='Hide ▴';
   }
 
   function historyConnectDb(){
