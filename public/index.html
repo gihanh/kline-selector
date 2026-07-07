@@ -10176,7 +10176,7 @@ function approveNewClient() {
       + '<textarea id="edit-notes-'+rid+'" rows="2" style="width:100%;padding:6px;border:1px solid #ddd;border-radius:6px;font-size:13px;box-sizing:border-box;">'+escHtml(curNotes)+"</textarea></div>"
       + '<div style="padding-top:18px;"><button onclick="historySaveEdit(\''+rid+'\')" '
       + 'style="padding:8px 18px;background:#1B5E20;color:#fff;border:none;border-radius:6px;font-size:13px;font-weight:600;cursor:pointer;">&#10003; Save</button>'
-      + ' <button onclick="document.getElementById('hist-er-'+\''+rid+'\').style.display='none';" '
+      + ' <button onclick="historyCloseEdit(\''+rid+'\')" '
       + 'style="padding:8px 12px;background:#f5f5f5;color:#555;border:1px solid #ddd;border-radius:6px;font-size:12px;cursor:pointer;margin-left:6px;">Cancel</button></div>'
       + '<div id="edit-msg-'+rid+'" style="font-size:12px;padding-top:20px;"></div></div>';
     editRow.style.display="";
@@ -10213,6 +10213,13 @@ function approveNewClient() {
     }).catch(function(e){
         if(msgEl) msgEl.innerHTML='<span style="color:#c62828;">Failed: '+e.message+"</span>";
     });
+  }
+
+  function historyCloseEdit(rid){
+    var el = document.getElementById('hist-er-'+rid);
+    if(el) el.style.display='none';
+    // reset button text
+    document.querySelectorAll('[data-id="'+encodeURIComponent(rid)+'"]').forEach(function(b){ b.textContent='Edit ✎'; });
   }
 
   function historyConnectDb(){
