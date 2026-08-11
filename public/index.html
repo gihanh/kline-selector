@@ -1273,9 +1273,26 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
 
 <!-- PAGE: REGULATORY COMPLIANCE -->
 <div id="page-compliance" class="page">
-    <div style="padding: 0 0 20px 0;">
-        <h1 style="margin:0; font-size:22px; color:#1F4E79;">Regulatory Compliance — Market Requirements</h1>
-        <p style="margin:6px 0 0 0; font-size:13px; color:#666;">Certificates and registrations required for shipping clear aligners / medical devices to each market. <strong>Last updated: July 2026.</strong></p>
+    <div style="padding: 0 0 16px 0; display:flex; align-items:flex-end; justify-content:space-between; flex-wrap:wrap; gap:10px;">
+        <div>
+            <h1 style="margin:0; font-size:22px; color:#1F4E79;">Regulatory Compliance — Market Requirements</h1>
+            <p style="margin:6px 0 0 0; font-size:13px; color:#666;">Certificates and registrations required for shipping clear aligners / medical devices to each market. <strong>Last updated: July 2026.</strong></p>
+        </div>
+        <button id="reg-update-btn" onclick="checkRegUpdates()" style="background:#1F4E79;color:#fff;border:none;border-radius:8px;padding:9px 16px;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;box-shadow:0 2px 6px rgba(31,78,121,0.3);transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+            🔍 Check for Latest Updates
+        </button>
+    </div>
+
+    <!-- Live regulatory updates panel -->
+    <div id="reg-updates-panel" style="display:none; margin-bottom:20px; background:#fff; border:1px solid #d0dff0; border-radius:10px; overflow:hidden; box-shadow:0 2px 8px rgba(0,0,0,0.07);">
+        <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 16px; background:linear-gradient(135deg,#1F4E79,#2E75B6); color:#fff;">
+            <span style="font-size:13px; font-weight:700;">📡 Live Regulatory News Feeds</span>
+            <button onclick="document.getElementById('reg-updates-panel').style.display='none'" style="background:rgba(255,255,255,0.2);color:#fff;border:none;border-radius:6px;padding:3px 10px;cursor:pointer;font-size:12px;">✕ Close</button>
+        </div>
+        <div id="reg-updates-body" style="padding:16px; font-size:12px;">
+            <div style="text-align:center; padding:20px; color:#888;">Loading feeds…</div>
+        </div>
+        <div id="reg-updates-footer" style="padding:8px 16px; background:#f5f8fc; border-top:1px solid #e0e7ef; font-size:10px; color:#888;"></div>
     </div>
 
     <!-- EU / UK / DACH -->
@@ -1294,7 +1311,8 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>UDI (Unique Device Identification)</strong> — Required under EU MDR</div>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>Biocompatibility Testing</strong> — ISO 10993 series</div>
                         <div style="margin-top:8px; padding:8px 10px; background:#fff8e1; border-left:3px solid #f9a825; border-radius:4px; font-size:11px;">
-                            <strong>🆕 NEW — EUDAMED Mandatory from 28 May 2026:</strong> Actor registration + Single Registration Number (SRN) required before placing devices on EU market. New devices must be registered in EUDAMED before market placement; legacy devices by 28 Nov 2026. Notified Bodies must register all MDR certificates issued from 28 May 2026.<br>
+                            <strong>✅ ACTIVE — EUDAMED Mandatory from 28 May 2026:</strong> Actor registration + Single Registration Number (SRN) required before placing new devices on EU market. Notified Bodies must register all MDR certificates issued from 28 May 2026.<br>
+                            <strong>⚠️ URGENT — EUDAMED Legacy Device Deadline: 27 Nov 2026 (3 months):</strong> All devices already on the market before 28 May 2026 must be fully registered in EUDAMED by 27 November 2026. Non-compliant devices risk market suspension. Begin registration immediately — Notified Bodies and regulatory consultants are at capacity.<br>
                             <strong>🆕 NEW — Commission Implementing Regulation (EU) 2026/977 (4 May 2026):</strong> Harmonised rules for Notified Bodies. Sets EU-wide maximum timelines: 30 days application review, 120 days QMS audit, 90 days product verification, 15 days certificate issuance. Applies from 25 Feb 2027.
                         </div>
                     </div>
@@ -1332,8 +1350,8 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
                 <div><span style="display:inline-block;width:6px;height:6px;background:#2196f3;border-radius:50%;margin-right:6px;"></span><strong>US Agent</strong> — Required if manufacturer is outside the US</div>
                 <div><span style="display:inline-block;width:6px;height:6px;background:#2196f3;border-radius:50%;margin-right:6px;"></span><strong>Biocompatibility Testing</strong> — ISO 10993 series</div>
                 <div style="margin-top:8px; padding:8px 10px; background:#fff8e1; border-left:3px solid #f9a825; border-radius:4px; font-size:11px;">
-                    <strong>🆕 NEW — QMSR Effective 2 February 2026:</strong> FDA's Quality Management System Regulation (21 CFR Part 820) now incorporates ISO 13485:2016 by reference. QSIT inspection technique withdrawn; replaced by new risk-based inspection strategy organized into 6 QMS Areas + 4 OAFRs.<br>
-                    <strong>🆕 NEW — eSTAR 7.0 Mandatory from 3 August 2026:</strong> All new 510(k) applications must use the new eSTAR 7.0 template. Older versions will no longer be accepted.
+                    <strong>✅ ACTIVE — QMSR Effective 2 February 2026:</strong> FDA's Quality Management System Regulation (21 CFR Part 820) now incorporates ISO 13485:2016 by reference. QSIT inspection technique withdrawn; replaced by new risk-based inspection strategy organized into 6 QMS Areas + 4 OAFRs.<br>
+                    <strong>✅ NOW ACTIVE — eSTAR 7.0 Mandatory from 3 August 2026:</strong> All new 510(k) applications must use the new eSTAR 7.0 template. Older template versions are no longer accepted by FDA as of this date.
                 </div>
             </div>
         </div>
@@ -1389,11 +1407,11 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>Arabic + English Labeling</strong> — Mandatory bilingual labeling</div>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#2196f3;border-radius:50%;margin-right:6px;"></span><strong>EU-aligned framework</strong> — EU-compliant documentation accepted to accelerate review</div>
                     </div>
-                    <div style="font-size:12px; font-weight:700; color:#1F4E79; margin-bottom:8px; margin-top:14px;">UAE (NHRA / MOH)</div>
+                    <div style="font-size:12px; font-weight:700; color:#1F4E79; margin-bottom:8px; margin-top:14px;">UAE (EDE / MOH)</div>
                     <div style="font-size:12px; color:#333; line-height:1.8;">
-                        <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>UAE MOH / NHRA Registration</strong> — All devices must be registered</div>
+                        <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>UAE EDE Registration</strong> — All devices must be registered with the Emirates Drug Establishment (EDE)</div>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>Free Zone Authority Licence</strong> — If operating from DHCC/JAFZA</div>
-                        <div style="margin-top:6px; padding:6px 8px; background:#fff8e1; border-left:3px solid #f9a825; border-radius:4px; font-size:11px;"><strong>🆕 NEW — Registration Deadline 1 Feb 2026:</strong> NHRA Resolution No. 48/2020 — all medical devices must have been registered by 1 February 2026.</div>
+                        <div style="margin-top:6px; padding:6px 8px; background:#fff8e1; border-left:3px solid #f9a825; border-radius:4px; font-size:11px;"><strong>✅ ACTIVE — EDE Restructuring (Dec 2025):</strong> Under Federal Decree-Law No. 38 of 2024 (effective 29 Dec 2025), the Emirates Drug Establishment (EDE) took over all medical device marketing authorizations from the DCD/MOHAP Drug Control Department. All new applications and renewals go to EDE. Registration deadline for existing devices was 1 Feb 2026.</div>
                     </div>
                 </div>
                 <div>
@@ -1437,7 +1455,8 @@ window._PENDING_TICKETS_TS = "06 Jul 2026 (48 clients)";</script>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>COFEPRIS Registration</strong> — Required for all medical devices</div>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>Local Responsible Party</strong> — Mandatory Mexican representative</div>
                         <div><span style="display:inline-block;width:6px;height:6px;background:#4caf50;border-radius:50%;margin-right:6px;"></span><strong>Spanish Labeling</strong> — Mandatory</div>
-                        <div><span style="display:inline-block;width:6px;height:6px;background:#2196f3;border-radius:50%;margin-right:6px;"></span><strong>Timeline: ~30 business days</strong></div>
+                        <div><span style="display:inline-block;width:6px;height:6px;background:#2196f3;border-radius:50%;margin-right:6px;"></span><strong>Timeline: ~30 business days (standard)</strong></div>
+                        <div style="margin-top:6px; padding:6px 8px; background:#fff8e1; border-left:3px solid #f9a825; border-radius:4px; font-size:11px;"><strong>✅ NEW — Fast-Track Equivalency Pathway (operational 2026):</strong> Devices with existing FDA 510(k), CE marking, or other reference authority approval qualify for a 30-business-day expedited review. COFEPRIS relies on the reference authority's technical assessment. Renewals can now be granted for up to 10 years (vs. 5 previously).</div>
                     </div>
                 </div>
                 <div>
@@ -14344,6 +14363,106 @@ padding:8px 20px; border:1px solid #ddd; background:#fff; border-radius:6px; cur
   if(document.readyState!=='loading') renderTickets();
 
 })();
+
+// ─────────────────────────────────────────────────────────────
+//  Regulatory Live Update Feed
+// ─────────────────────────────────────────────────────────────
+function checkRegUpdates() {
+    var panel = document.getElementById('reg-updates-panel');
+    var body  = document.getElementById('reg-updates-body');
+    var footer= document.getElementById('reg-updates-footer');
+    var btn   = document.getElementById('reg-update-btn');
+
+    // Show panel with loading state
+    panel.style.display = 'block';
+    body.innerHTML = '<div style="text-align:center;padding:24px;color:#888;"><span style="font-size:20px;">⏳</span><br>Fetching live feeds from FDA, TGA &amp; MHRA…</div>';
+    footer.textContent = '';
+    btn.disabled = true;
+    btn.textContent = '⏳ Fetching…';
+
+    // Check localStorage cache (1 hour)
+    try {
+        var cached = JSON.parse(localStorage.getItem('kline_reg_updates'));
+        if (cached && cached.fetchedAt) {
+            var age = (Date.now() - new Date(cached.fetchedAt).getTime()) / 60000; // minutes
+            if (age < 60) {
+                renderRegUpdates(cached);
+                btn.disabled = false;
+                btn.textContent = '🔍 Check for Latest Updates';
+                return;
+            }
+        }
+    } catch(e) {}
+
+    fetch('/api/reg-update')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+            try { localStorage.setItem('kline_reg_updates', JSON.stringify(data)); } catch(e) {}
+            renderRegUpdates(data);
+        })
+        .catch(function(err) {
+            body.innerHTML = '<div style="padding:16px;color:#c62828;">⚠️ Could not fetch updates: ' + err.message + '</div>';
+        })
+        .finally(function() {
+            btn.disabled = false;
+            btn.textContent = '🔍 Check for Latest Updates';
+        });
+}
+
+function renderRegUpdates(data) {
+    var body   = document.getElementById('reg-updates-body');
+    var footer = document.getElementById('reg-updates-footer');
+
+    if (!data || !data.items || data.items.length === 0) {
+        body.innerHTML = '<div style="padding:16px;color:#888;">No recent items found. Feeds may be temporarily unavailable.</div>';
+        return;
+    }
+
+    var feedStatus = (data.feeds || []).map(function(f) {
+        return f.ok
+            ? '<span style="color:#2e7d32;">✔ ' + (f.label || f.source) + ' (' + f.items.length + ')</span>'
+            : '<span style="color:#c62828;">✘ ' + (f.label || f.source) + ' (unavailable)</span>';
+    }).join(' &nbsp;|&nbsp; ');
+
+    var html = '<div style="margin-bottom:12px;font-size:11px;color:#555;">' + feedStatus + '</div>';
+
+    html += '<div style="display:flex;flex-direction:column;gap:8px;">';
+    data.items.forEach(function(item) {
+        var dateStr = '';
+        if (item.pubDate) {
+            try { dateStr = new Date(item.pubDate).toLocaleDateString('en-GB', {day:'2-digit',month:'short',year:'numeric'}); } catch(e) { dateStr = item.pubDate.substring(0,16); }
+        }
+        var sourceColor = {
+            'FDA (USA)':        '#0071bc',
+            'TGA (Australia)':  '#1B5E20',
+            'MHRA (UK)':        '#c62828'
+        }[item.source] || '#555';
+
+        html += '<div style="background:#f8fafd;border:1px solid #e0e7ef;border-radius:8px;padding:10px 12px;">';
+        html += '<div style="display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">';
+        html += '<div style="flex:1;">';
+        html += '<span style="display:inline-block;font-size:10px;font-weight:700;color:' + sourceColor + ';background:' + sourceColor + '18;border-radius:4px;padding:1px 6px;margin-bottom:4px;">' + item.source + '</span> ';
+        if (dateStr) html += '<span style="font-size:10px;color:#888;">' + dateStr + '</span>';
+        html += '<div style="font-weight:600;color:#1F4E79;margin:3px 0 4px;">';
+        if (item.link) {
+            html += '<a href="' + item.link + '" target="_blank" rel="noopener" style="color:#1F4E79;text-decoration:none;" onmouseover="this.style.textDecoration=\'underline\'" onmouseout="this.style.textDecoration=\'none\'">' + item.title + ' ↗</a>';
+        } else {
+            html += item.title;
+        }
+        html += '</div>';
+        if (item.description) {
+            html += '<div style="color:#555;font-size:11px;line-height:1.5;">' + item.description + (item.description.length >= 278 ? '…' : '') + '</div>';
+        }
+        html += '</div></div></div>';
+    });
+    html += '</div>';
+
+    body.innerHTML = html;
+
+    var fetchTime = data.fetchedAt ? new Date(data.fetchedAt).toLocaleString('en-GB') : '';
+    footer.innerHTML = '📡 ' + data.items.length + ' items fetched' + (fetchTime ? ' · ' + fetchTime : '') + ' · Results cached 1 hour · Sources: FDA.gov, TGA.gov.au, GOV.UK/MHRA';
+}
+
 </script>
 
 </body>
