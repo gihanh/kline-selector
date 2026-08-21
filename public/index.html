@@ -7849,12 +7849,10 @@ function refreshUtilization() {
         // Cut type breakdown
         var cutDiv = document.getElementById('util-cut-' + profileId);
         var pData = getProfileData(profileId);
-        var sm = pData.scallop_mix || '';
-
-// Cut type breakdown
-        var cutDiv = document.getElementById('util-cut-' + profileId);
-        var sm = pData.scallop_mix || '';
-        if (cutDiv && sm) {
+        var sm = pData.scallop_mix;
+        // scallop_mix is normally a plain number (% scallop) in Facility Profiles.
+        // Only attempt to parse a "Name 50%, Name 30%" style breakdown when it's actually a string.
+        if (cutDiv && typeof sm === 'string' && sm) {
             var parts = sm.split(',').map(function(p) { return p.trim(); }).filter(function(p) { return p; });
             if (parts.length > 0) {
                 var cutH = '<div style="display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;">';
