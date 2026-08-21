@@ -4151,6 +4151,36 @@ window._REG_UPDATES_TS = "17 Aug 2026 (14 updates)";</script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script>
 // ══════════════════════════════════════════════════
+// GLOBAL SAFETY NET — surface any page error visibly instead of silent failure
+// ══════════════════════════════════════════════════
+(function(){
+    var lastShown = 0;
+    function showGlobalError(msg, source) {
+        var now = Date.now();
+        if (now - lastShown < 2000) return; // avoid banner spam from repeated errors
+        lastShown = now;
+        console.error('Page error:', msg, source || '');
+        var existing = document.getElementById('globalErrorBanner');
+        if (existing) existing.remove();
+        var banner = document.createElement('div');
+        banner.id = 'globalErrorBanner';
+        banner.style.cssText = 'position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:999999; background:#c62828; color:#fff; padding:14px 22px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 4px 16px rgba(0,0,0,0.35); max-width:640px; text-align:center; line-height:1.5;';
+        banner.innerHTML = '&#9888;&#65039; This page hit an error. Some buttons may not work.<br>' +
+            '<span style="font-weight:400;font-size:11px;opacity:0.9;">' + String(msg).replace(/</g,'&lt;') + '</span><br>' +
+            '<span style="font-weight:400;font-size:11px;opacity:0.9;">Please screenshot this message and send it to support, then try a hard refresh (Ctrl+Shift+R).</span>' +
+            '<div style="margin-top:8px;"><button onclick="document.getElementById(\'globalErrorBanner\').remove()" style="background:#fff;color:#c62828;border:none;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;">Dismiss</button></div>';
+        if (document.body) document.body.appendChild(banner);
+        else window.addEventListener('DOMContentLoaded', function(){ document.body.appendChild(banner); });
+    }
+    window.addEventListener('error', function(e){
+        showGlobalError(e.message || 'Unknown script error', e.filename ? (e.filename + ':' + e.lineno) : '');
+    });
+    window.addEventListener('unhandledrejection', function(e){
+        showGlobalError((e.reason && e.reason.message) ? e.reason.message : String(e.reason));
+    });
+})();
+
+// ══════════════════════════════════════════════════
 // QUESTION DEFINITIONS
 // ══════════════════════════════════════════════════
 const questions = [
@@ -4657,7 +4687,24 @@ function updateProgress() {
 // ══════════════════════════════════════════════════
 // SUBMIT -> ELIGIBILITY
 // ══════════════════════════════════════════════════
+function showSubmitError(err) {
+    console.error('submitQuestions failed:', err);
+    var msg = (err && err.message) ? err.message : String(err);
+    var existing = document.getElementById('submitErrorBanner');
+    if (existing) existing.remove();
+    var banner = document.createElement('div');
+    banner.id = 'submitErrorBanner';
+    banner.style.cssText = 'position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:99999; background:#c62828; color:#fff; padding:14px 22px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 4px 16px rgba(0,0,0,0.35); max-width:640px; text-align:center; line-height:1.5;';
+    banner.innerHTML = '&#9888;&#65039; Eligibility check hit an error and could not finish.<br>' +
+        '<span style="font-weight:400;font-size:11px;opacity:0.9;">' + msg + '</span><br>' +
+        '<span style="font-weight:400;font-size:11px;opacity:0.9;">Please screenshot this message and send it to support.</span>' +
+        '<div style="margin-top:8px;"><button onclick="document.getElementById(\'submitErrorBanner\').remove()" style="background:#fff;color:#c62828;border:none;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;cursor:pointer;">Dismiss</button></div>';
+    document.body.appendChild(banner);
+    setTimeout(function(){ if(banner.parentNode) banner.remove(); }, 30000);
+}
+
 function submitQuestions() {
+  try {
     // 1) Recalc utilization from latest MES data (synchronous)
     if (typeof recalcUtilizationFromMES === 'function') recalcUtilizationFromMES();
 
@@ -4667,20 +4714,27 @@ function submitQuestions() {
     var didFallback = false;
 
     function finishSubmit() {
-        if (didFallback) return;
-        didFallback = true;
-        updateResults();
-        buildKnowledgeBase();
-        buildRecommendation();
-        var eligDiv = document.getElementById('eligibilityResults');
-        if (eligDiv) {
-            eligDiv.style.display = 'block';
-            eligDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        try {
+            if (didFallback) return;
+            didFallback = true;
+            updateResults();
+            buildKnowledgeBase();
+            buildRecommendation();
+            var eligDiv = document.getElementById('eligibilityResults');
+            if (eligDiv) {
+                eligDiv.style.display = 'block';
+                eligDiv.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+        } catch (innerErr) {
+            showSubmitError(innerErr);
         }
     }
 
     // Use embedded data (Claude syncs live data)
     finishSubmit();
+  } catch (err) {
+    showSubmitError(err);
+  }
 }
 
 // ══════════════════════════════════════════════════
